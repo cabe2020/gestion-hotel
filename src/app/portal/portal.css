@@ -1,0 +1,20 @@
+@reference "tailwindcss";
+.portal-card {
+  @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6 transition-all;
+}
+
+.portal-input {
+  @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-shadow;
+}
+
+.portal-btn-primary {
+  @apply w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white py-3 rounded-xl font-semibold text-sm transition-colors;
+}
+
+.portal-btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors;
+}
+
+.signature-canvas {
+  @apply w-full border-2 border-dashed border-gray-300 rounded-xl bg-white cursor-crosshair touch-none;
+}

@@ -1,0 +1,20 @@
+@reference "tailwindcss";
+.booking-engine-step-active {
+  @apply border-blue-600 bg-blue-600 text-white;
+}
+
+.booking-engine-step-completed {
+  @apply border-green-500 bg-green-500 text-white;
+}
+
+.booking-engine-step-pending {
+  @apply border-gray-300 bg-white text-gray-400;
+}
+
+.booking-engine-card {
+  @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6 transition-all hover:shadow-xl;
+}
+
+.booking-engine-input {
+  @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-shadow;
+}

@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GestHotel - Sistema de Gestion Hotelera
 
-## Getting Started
+Sistema completo de gestion hotelera construido con Next.js, Prisma y SQLite.
 
-First, run the development server:
+## Caracteristicas
 
+- **Dashboard**: Estadisticas de ocupacion, ingresos, reservas recientes
+- **Habitaciones**: Gestion de habitaciones con estados y tipos
+- **Reservas**: Creacion y seguimiento de reservas con deteccion de conflictos de fechas
+- **Calendario**: Vista mensual por habitacion
+- **Check-in / Check-out**: Flujos de trabajo rapidos
+- **Huespedes**: CRUD completo con historial de reservas
+- **Facturas**: Generacion y gestion de facturas
+- **Caja**: Registro de caja y movimientos de ingresos/gastos
+- **Reportes**: Reportes por periodo con graficos
+- **Configuracion**: Datos del hotel y tipos de habitacion
+- **Autenticacion**: Login con base de datos, registro de usuarios, middleware de proteccion
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Base de datos**: SQLite via Prisma 6
+- **Autenticacion**: NextAuth.js v4 con bcrypt
+- **Validacion**: Zod
+- **UI**: Tailwind CSS v4 + Lucide Icons
+
+## Primeros Pasos
+
+1. Instalar dependencias:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Configurar variables de entorno (archivo `.env`):
+```
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="tu-clave-secreta-aqui"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Ejecutar migraciones y crear datos iniciales:
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Iniciar el servidor de desarrollo:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Abrir http://localhost:3000 - Se redirige al login
 
-To learn more about Next.js, take a look at the following resources:
+## Credenciales por defecto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Admin**: admin@hotel.com / admin123
+- **Recepcionista**: recepcion@hotel.com / recep123
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estructura del Proyecto
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/
+    api/          # Rutas API con validacion Zod
+    auth/         # Pagina de login
+    dashboard/    # Dashboard principal
+    rooms/        # Gestion de habitaciones
+    bookings/     # Gestion de reservas
+    calendar/     # Vista calendario
+    checkin/      # Check-in
+    checkout/     # Check-out
+    guests/       # Gestion de huespedes
+    invoices/     # Facturas
+    cash/         # Caja y movimientos
+    reports/      # Reportes
+    settings/     # Configuracion
+  components/     # Componentes reutilizables
+  lib/            # Utilidades, Prisma client, validaciones
+  middleware.ts   # Proteccion de rutas
+prisma/           # Schema y migraciones
+```

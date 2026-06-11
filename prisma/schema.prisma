@@ -1,0 +1,306 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id              String             @id @default(cuid())
+  name            String
+  email           String             @unique
+  password        String
+  role            String             @default("receptionist")
+  active          Boolean            @default(true)
+  hotelId         String?
+  hotel           Hotel?             @relation(fields: [hotelId], references: [id])
+  auditLogs       AuditLog[]
+  assignedTasks   HousekeepingTask[] @relation("AssignedUser")
+  notifications   Notification[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model Hotel {
+  id                String            @id @default(cuid())
+  name              String
+  address           String            @default("")
+  phone             String            @default("")
+  email             String            @default("")
+  currency          String            @default("USD")
+  taxRate           Float             @default(0)
+  logo              String            @default("")
+  taxId             String            @default("")
+  timezone          String            @default("America/Mexico_City")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  rooms             Room[]
+  roomTypes         RoomType[]
+  guests            Guest[]
+  bookings          Booking[]
+  cashMoves         CashMove[]
+  invoices          Invoice[]
+  cashRegisters     CashRegister[]
+  users             User[]
+  auditLogs         AuditLog[]
+  housekeepingTasks HousekeepingTask[]
+  ratePlans         RatePlan[]
+  guestTags         GuestTag[]
+  notifications     Notification[]
+}
+
+model RoomType {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  basePrice Float
+  capacity  Int      @default(2)
+  amenities String   @default("")
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id])
+  rooms     Room[]
+  ratePlans RatePlan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String   @default("")
+  details   String   @default("")
+  hotelId   String?
+  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model HousekeepingTask {
+  id          String    @id @default(cuid())
+  roomId      String
+  room        Room      @relation(fields: [roomId], references: [id])
+  type        String    @default("cleaning")
+  status      String    @default("pending")
+  assignedTo  String?
+  assignedUser User?    @relation("AssignedUser", fields: [assignedTo], references: [id])
+  priority    String    @default("normal")
+  notes       String    @default("")
+  completedAt DateTime?
+  hotelId     String
+  hotel       Hotel     @relation(fields: [hotelId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model BookingRoom {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomRate  Float
+  createdAt DateTime @default(now())
+
+  @@unique([bookingId, roomId])
+}
+
+model RatePlan {
+  id          String   @id @default(cuid())
+  name        String
+  roomTypeId  String
+  roomType    RoomType @relation(fields: [roomTypeId], references: [id])
+  startDate   DateTime
+  endDate     DateTime
+  price       Float
+  minStay     Int      @default(1)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FolioItem {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  concept   String
+  amount    Float
+  category  String   @default("room")
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model GuestTag {
+  id        String             @id @default(cuid())
+  name      String
+  color     String             @default("blue")
+  hotelId   String
+  hotel     Hotel              @relation(fields: [hotelId], references: [id])
+  guests    GuestTagAssignment[]
+  createdAt DateTime           @default(now())
+
+  @@unique([hotelId, name])
+}
+
+model GuestTagAssignment {
+  id        String    @id @default(cuid())
+  guestId   String
+  guest     Guest     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       GuestTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@unique([guestId, tagId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  hotelId   String?
+  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id             String             @id @default(cuid())
+  number         String
+  floor          Int                @default(1)
+  status         String             @default("available")
+  cleaningStatus String             @default("clean")
+  smoking        Boolean            @default(false)
+  view           String             @default("")
+  hotelId        String
+  hotel          Hotel              @relation(fields: [hotelId], references: [id])
+  roomTypeId     String
+  roomType       RoomType           @relation(fields: [roomTypeId], references: [id])
+  bookings       Booking[]
+  housekeepingTasks HousekeepingTask[]
+  bookingRooms   BookingRoom[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([hotelId, number])
+}
+
+model Guest {
+  id         String             @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String             @default("")
+  phone      String             @default("")
+  idNumber   String             @default("")
+  nationality String            @default("")
+  address    String             @default("")
+  notes      String             @default("")
+  vip        Boolean            @default(false)
+  dateOfBirth DateTime?
+  hotelId    String
+  hotel      Hotel              @relation(fields: [hotelId], references: [id])
+  bookings   Booking[]
+  tags       GuestTagAssignment[]
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([hotelId, idNumber])
+}
+
+model Booking {
+  id             String       @id @default(cuid())
+  code           String       @unique
+  status         String       @default("confirmed")
+  checkIn        DateTime
+  checkOut       DateTime
+  adults         Int          @default(1)
+  children       Int          @default(0)
+  roomRate       Float
+  totalNights    Int
+  totalAmount    Float
+  paidAmount     Float        @default(0)
+  notes          String       @default("")
+  source         String       @default("direct")
+  specialRequests String      @default("")
+  depositAmount  Float        @default(0)
+  hotelId        String
+  hotel          Hotel        @relation(fields: [hotelId], references: [id])
+  guestId        String
+  guest          Guest        @relation(fields: [guestId], references: [id])
+  roomId         String?
+  room           Room?        @relation(fields: [roomId], references: [id])
+  payments       Payment[]
+  invoice        Invoice?
+  bookingRooms   BookingRoom[]
+  folioItems     FolioItem[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Payment {
+  id        String    @id @default(cuid())
+  amount    Float
+  method    String
+  reference String    @default("")
+  bookingId String
+  booking   Booking   @relation(fields: [bookingId], references: [id])
+  cashMoveId String?
+  cashMove  CashMove? @relation(fields: [cashMoveId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+model CashMove {
+  id        String    @id @default(cuid())
+  type      String
+  category  String
+  amount    Float
+  concept   String
+  method    String    @default("cash")
+  reference String    @default("")
+  hotelId   String
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  number       String   @unique
+  date         DateTime @default(now())
+  taxAmount    Float    @default(0)
+  total        Float
+  status       String   @default("pending")
+  cancelled    Boolean  @default(false)
+  cancelReason String   @default("")
+  bookingId    String   @unique
+  booking      Booking  @relation(fields: [bookingId], references: [id])
+  hotelId      String
+  hotel        Hotel    @relation(fields: [hotelId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CashRegister {
+  id           String   @id @default(cuid())
+  openedAt     DateTime @default(now())
+  closedAt     DateTime?
+  openingCash  Float    @default(0)
+  closingCash  Float?
+  totalIncome  Float    @default(0)
+  totalExpense Float    @default(0)
+  notes        String   @default("")
+  status       String   @default("open")
+  openedBy     String   @default("")
+  closedBy     String   @default("")
+  hotelId      String
+  hotel        Hotel    @relation(fields: [hotelId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

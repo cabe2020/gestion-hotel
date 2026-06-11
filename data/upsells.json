@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "name": "Late Checkout (2pm)",
+    "description": "Extender checkout hasta las 2pm",
+    "price": 25,
+    "category": "late-checkout",
+    "active": true
+  },
+  {
+    "id": "2",
+    "name": "Early Check-in (12pm)",
+    "description": "Check-in temprano desde las 12pm",
+    "price": 20,
+    "category": "early-checkin",
+    "active": true
+  },
+  {
+    "id": "3",
+    "name": "Desayuno Buffet",
+    "description": "Desayuno buffet diario",
+    "price": 15,
+    "category": "breakfast",
+    "active": true
+  },
+  {
+    "id": "4",
+    "name": "Traslado Aeropuerto",
+    "description": "Traslado ida y vuelta al aeropuerto",
+    "price": 50,
+    "category": "airport-transfer",
+    "active": true
+  },
+  {
+    "id": "5",
+    "name": "Acceso Spa",
+    "description": "Acceso completo al spa y zona humeda",
+    "price": 30,
+    "category": "spa",
+    "active": true
+  },
+  {
+    "id": "6",
+    "name": "Package Minibar Premium",
+    "description": "Minibar premium incluido",
+    "price": 35,
+    "category": "minibar-package",
+    "active": true
+  }
+]
