@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveHotelId } from "@/lib/rbac";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel found" }, { status: 404 });
+
+    const hotel = await prisma.hotel.findUnique({ where: { id: hotelId }, select: { currency: true } });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -15,12 +18,7 @@ export async function GET() {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    const lastWeekStart = new Date(today);
-    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekEnd.getDate() + 1);
-
-    const sameDayLastWeek = new Date(today);
+  const sameDayLastWeek = new Date(today);
     sameDayLastWeek.setDate(sameDayLastWeek.getDate() - 7);
     const sameDayNextWeek = new Date(sameDayLastWeek);
     sameDayNextWeek.setDate(sameDayNextWeek.getDate() + 1);
@@ -29,6 +27,9 @@ export async function GET() {
     prevWeekStart.setDate(prevWeekStart.getDate() - 14);
     const prevWeekEnd = new Date(prevWeekStart);
     prevWeekEnd.setDate(prevWeekEnd.getDate() + 7);
+
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const [
       totalRooms,
@@ -45,61 +46,63 @@ export async function GET() {
       todayArrivals,
       todayDepartures,
       notifications,
+      allWeekCashMoves,
     ] = await Promise.all([
-      prisma.room.count({ where: { hotelId: hotel.id } }),
+      prisma.room.count({ where: { hotelId: hotelId } }),
       prisma.room.count({
-        where: { hotelId: hotel.id, status: "occupied" },
+        where: { hotelId: hotelId, status: "occupied" },
       }),
       prisma.booking.count({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           checkIn: { gte: today, lt: tomorrow },
           status: { in: ["confirmed", "checked-in"] },
         },
       }),
       prisma.booking.count({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           checkOut: { gte: today, lt: tomorrow },
           status: "checked-in",
         },
       }),
-      prisma.guest.count({ where: { hotelId: hotel.id } }),
+      prisma.guest.count({ where: { hotelId: hotelId } }),
       prisma.booking.count({
-        where: { hotelId: hotel.id, status: { in: ["confirmed", "checked-in"] } },
+        where: { hotelId: hotelId, status: { in: ["confirmed", "checked-in"] } },
       }),
       prisma.booking.findMany({
-        where: { hotelId: hotel.id },
+        where: { hotelId: hotelId },
         include: { guest: true, room: true },
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
       prisma.cashMove.findMany({
-        where: { hotelId: hotel.id, createdAt: { gte: today } },
+        where: { hotelId: hotelId, createdAt: { gte: today } },
       }),
-      prisma.room.count({
+      prisma.booking.count({
         where: {
-          hotelId: hotel.id,
-          status: "occupied",
-          createdAt: { lt: lastWeekStart },
+          hotelId: hotelId,
+          checkIn: { lte: prevWeekEnd },
+          checkOut: { gte: prevWeekStart },
+          status: { notIn: ["cancelled", "no-show"] },
         },
       }),
       prisma.cashMove.findMany({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           createdAt: { gte: sameDayLastWeek, lt: sameDayNextWeek },
         },
       }),
       prisma.booking.count({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           createdAt: { gte: yesterday, lt: today },
           status: { in: ["confirmed", "checked-in"] },
         },
       }),
       prisma.booking.findMany({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           checkIn: { gte: today, lt: tomorrow },
           status: { in: ["confirmed", "checked-in"] },
         },
@@ -111,7 +114,7 @@ export async function GET() {
       }),
       prisma.booking.findMany({
         where: {
-          hotelId: hotel.id,
+          hotelId: hotelId,
           checkOut: { gte: today, lt: tomorrow },
           status: "checked-in",
         },
@@ -122,9 +125,12 @@ export async function GET() {
         orderBy: { checkOut: "asc" },
       }),
       prisma.notification.findMany({
-        where: { hotelId: hotel.id },
+        where: { hotelId: hotelId },
         orderBy: { createdAt: "desc" },
         take: 5,
+      }),
+      prisma.cashMove.findMany({
+        where: { hotelId: hotelId, createdAt: { gte: sevenDaysAgo } },
       }),
     ]);
 
@@ -149,7 +155,7 @@ export async function GET() {
 
     const todayNewBookings = await prisma.booking.count({
       where: {
-        hotelId: hotel.id,
+        hotelId: hotelId,
         createdAt: { gte: today, lt: tomorrow },
         status: { in: ["confirmed", "checked-in"] },
       },
@@ -178,7 +184,7 @@ export async function GET() {
 
     const roomsByStatus = await prisma.room.groupBy({
       by: ["status"],
-      where: { hotelId: hotel.id },
+      where: { hotelId: hotelId },
       _count: { status: true },
     });
 
@@ -188,11 +194,12 @@ export async function GET() {
       d.setDate(d.getDate() - i);
       const nextD = new Date(d);
       nextD.setDate(nextD.getDate() + 1);
-      const dayMoves = await prisma.cashMove.findMany({
-        where: { hotelId: hotel.id, createdAt: { gte: d, lt: nextD } },
-      });
+      const dateStr = d.toISOString().split("T")[0];
+      const dayMoves = allWeekCashMoves.filter(
+        (m) => m.createdAt >= d && m.createdAt < nextD
+      );
       last7Days.push({
-        date: d.toISOString().split("T")[0],
+        date: dateStr,
         income: dayMoves
           .filter((m) => m.type === "income")
           .reduce((s, m) => s + m.amount, 0),
@@ -215,7 +222,7 @@ export async function GET() {
       recentBookings,
       roomsByStatus,
       revenueChart: last7Days,
-      currency: hotel.currency,
+      currency: hotel?.currency || "USD",
       comparison: {
         occupancyDiff,
         prevWeekOccupancyRate,

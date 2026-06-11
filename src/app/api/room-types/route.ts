@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { roomTypeSchema } from "@/lib/validations";
-import { requireAdmin } from "@/lib/rbac";
+import { requireAdmin, resolveHotelId } from "@/lib/rbac";
 import { ZodError } from "zod";
 
-export async function GET() {
-  const hotel = await prisma.hotel.findFirst();
-  if (!hotel) return NextResponse.json([]);
+export async function GET(request: Request) {
+  const hotelId = await resolveHotelId(request.headers);
+  if (!hotelId) return NextResponse.json([]);
   const types = await prisma.roomType.findMany({
-    where: { hotelId: hotel.id },
+    where: { hotelId },
     orderBy: { basePrice: "asc" },
   });
   return NextResponse.json(types);
@@ -18,11 +18,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const data = roomTypeSchema.parse(body);
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
     const type = await prisma.roomType.create({
-      data: { ...data, hotelId: hotel.id },
+      data: { ...data, hotelId },
     });
     return NextResponse.json(type, { status: 201 });
   } catch (error: unknown) {

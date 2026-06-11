@@ -7,8 +7,11 @@ import Modal from "@/components/Modal";
 import StatusBadge from "@/components/StatusBadge";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
-import { Plus, Edit2, Trash2, Search, Eye, Star, Tag, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, Eye, Star, Tag, X, Clock } from "lucide-react";
 import { formatDate, bookingStatuses } from "@/lib/utils";
+import Link from "next/link";
+import { useToast } from "@/components/Toast";
+import { registerShortcutAction } from "@/components/KeyboardShortcuts";
 
 interface Booking {
   id: string;
@@ -52,6 +55,7 @@ export default function GuestsPage() {
 }
 
 function GuestsContent() {
+  const toast = useToast();
   const [guests, setGuests] = useState<Guest[]>([]);
   const [allTags, setAllTags] = useState<TagData[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -103,24 +107,41 @@ function GuestsContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = { ...form };
+    let ok = true;
     if (editingGuest) {
-      await fetch(`/api/guests/${editingGuest.id}`, {
+      const res = await fetch(`/api/guests/${editingGuest.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      ok = res.ok;
     } else {
-      await fetch("/api/guests", {
+      const res = await fetch("/api/guests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      ok = res.ok;
+    }
+    if (ok) {
+      toast.success(editingGuest ? "Huesped actualizado" : "Huesped creado");
+    } else {
+      toast.error("Error al guardar huesped");
     }
     setShowModal(false);
     setEditingGuest(null);
     setForm({ firstName: "", lastName: "", email: "", phone: "", idNumber: "", nationality: "", address: "", notes: "", vip: false, dateOfBirth: "" });
     load();
   };
+
+  useEffect(() => {
+    registerShortcutAction("newGuest", () => {
+      setEditingGuest(null);
+      setForm({ firstName: "", lastName: "", email: "", phone: "", idNumber: "", nationality: "", address: "", notes: "", vip: false, dateOfBirth: "" });
+      setShowModal(true);
+    });
+    return () => registerShortcutAction("newGuest", null);
+  }, []);
 
   const handleEdit = (guest: Guest) => {
     setEditingGuest(guest);
@@ -140,8 +161,9 @@ function GuestsContent() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Eliminar este huesped?")) return;
+    if (!(await toast.confirm("Eliminar este huesped?"))) return;
     await fetch(`/api/guests/${id}`, { method: "DELETE" });
+    toast.success("Huesped eliminado");
     load();
   };
 
@@ -273,10 +295,12 @@ function GuestsContent() {
                 return (
                   <tr key={guest.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {guest.vip && <Star className="h-4 w-4 text-amber-500 fill-amber-500 flex-shrink-0" />}
-                        <div>
-                          <span className="text-sm font-medium text-gray-900">{guest.firstName} {guest.lastName}</span>
+        <div className="flex items-center gap-2">
+          {guest.vip && <Star className="h-4 w-4 text-amber-500 fill-amber-500 flex-shrink-0" />}
+          <div>
+            <Link href={`/guests/${guest.id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+              {guest.firstName} {guest.lastName}
+            </Link>
                           {gTags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-0.5">
                               {gTags.map(tag => (
@@ -299,8 +323,11 @@ function GuestsContent() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => handleViewDetail(guest.id)} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Ver detalle">
+            <div className="flex items-center gap-1">
+              <Link href={`/guests/${guest.id}`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Timeline">
+                <Clock className="h-4 w-4" />
+              </Link>
+              <button onClick={() => handleViewDetail(guest.id)} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Ver detalle">
                           <Eye className="h-4 w-4" />
                         </button>
                         <button onClick={() => handleEdit(guest)} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Editar">

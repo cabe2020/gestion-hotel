@@ -4,6 +4,11 @@ import { Bell, Search, Info, AlertTriangle, CheckCircle, XCircle } from "lucide-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { openSearchCommand } from "./SearchCommand";
+import ThemeToggle from "./ThemeToggle";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslations } from "./I18nProvider";
+import HotelSelector from "./HotelSelector";
 
 interface Notification {
   id: string;
@@ -46,6 +51,7 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
   const router = useRouter();
+  const { t } = useTranslations();
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -102,25 +108,38 @@ export default function Header() {
   const latestNotifications = notifications.slice(0, 10);
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
       <form onSubmit={handleSearch} className="flex items-center gap-3 flex-1 max-w-md">
-        <Search className="h-5 w-5 text-gray-400" />
+        <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
         <input
           type="text"
-          placeholder="Buscar huespedes, reservas..."
+          placeholder={t("header.search")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+          className="w-full outline-none text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent"
         />
+        <button
+          type="button"
+          onClick={() => openSearchCommand()}
+          className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded font-mono hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          title="Buscar (Ctrl+K)"
+        >
+          Ctrl+K
+        </button>
       </form>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <HotelSelector />
+        <ThemeToggle />
+        <LanguageSwitcher />
+
         <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <Bell className="h-5 w-5 text-gray-600" />
+        <button
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label={`Notificaciones${unreadCount > 0 ? ` (${unreadCount} sin leer)` : ""}`}
+        >
+            <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -129,38 +148,38 @@ export default function Header() {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-12 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-900">Notificaciones</h3>
+            <div className="absolute right-0 top-12 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t("header.notifications")}</h3>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllRead}
-                    className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                   >
-                    Marcar todas como leidas
+                    {t("header.markAllRead")}
                   </button>
                 )}
               </div>
 
               <div className="max-h-80 overflow-y-auto">
                 {latestNotifications.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-6">Sin notificaciones</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">{t("header.noNotifications")}</p>
                 ) : (
                   latestNotifications.map((n) => (
                     <button
                       key={n.id}
                       onClick={() => markAsRead(n.id)}
-                      className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 ${
-                        !n.read ? "bg-blue-50/50" : ""
+                      className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-50 dark:border-gray-700 ${
+                        !n.read ? "bg-blue-50/50 dark:bg-blue-900/20" : ""
                       }`}
                     >
                       {typeIcon(n.type)}
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm ${!n.read ? "font-semibold text-gray-900" : "text-gray-700"}`}>
+                        <p className={`text-sm ${!n.read ? "font-semibold text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
                           {n.title}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">{n.message}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{timeAgo(n.createdAt)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{n.message}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{timeAgo(n.createdAt)}</p>
                       </div>
                       {!n.read && (
                         <div className="h-2 w-2 bg-blue-500 rounded-full mt-1.5 shrink-0" />
@@ -173,16 +192,16 @@ export default function Header() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-2">
           <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
             {initials}
           </div>
-          <span className="text-sm font-medium text-gray-700">{session?.user?.name || "Usuario"}</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{session?.user?.name || "Usuario"}</span>
           <button
             onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-            className="text-xs text-gray-400 hover:text-red-500 transition-colors ml-1"
+            className="text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors ml-1"
           >
-            Salir
+            {t("header.exit")}
           </button>
         </div>
       </div>

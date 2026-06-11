@@ -68,33 +68,37 @@ model RoomType {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  action    String
-  entity    String
-  entityId  String   @default("")
-  details   String   @default("")
-  hotelId   String?
-  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
+  id String @id @default(cuid())
+  userId String?
+  user User? @relation(fields: [userId], references: [id])
+  action String
+  entity String
+  entityId String @default("")
+  details String @default("")
+  hotelId String?
+  hotel Hotel? @relation(fields: [hotelId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([hotelId, createdAt])
 }
 
 model HousekeepingTask {
-  id          String    @id @default(cuid())
-  roomId      String
-  room        Room      @relation(fields: [roomId], references: [id])
-  type        String    @default("cleaning")
-  status      String    @default("pending")
-  assignedTo  String?
-  assignedUser User?    @relation("AssignedUser", fields: [assignedTo], references: [id])
-  priority    String    @default("normal")
-  notes       String    @default("")
+  id String @id @default(cuid())
+  roomId String
+  room Room @relation(fields: [roomId], references: [id])
+  type String @default("cleaning")
+  status String @default("pending")
+  assignedTo String?
+  assignedUser User? @relation("AssignedUser", fields: [assignedTo], references: [id])
+  priority String @default("normal")
+  notes String @default("")
   completedAt DateTime?
-  hotelId     String
-  hotel       Hotel     @relation(fields: [hotelId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hotelId])
 }
 
 model BookingRoom {
@@ -110,29 +114,33 @@ model BookingRoom {
 }
 
 model RatePlan {
-  id          String   @id @default(cuid())
-  name        String
-  roomTypeId  String
-  roomType    RoomType @relation(fields: [roomTypeId], references: [id])
-  startDate   DateTime
-  endDate     DateTime
-  price       Float
-  minStay     Int      @default(1)
-  hotelId     String
-  hotel       Hotel    @relation(fields: [hotelId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id String @id @default(cuid())
+  name String
+  roomTypeId String
+  roomType RoomType @relation(fields: [roomTypeId], references: [id])
+  startDate DateTime
+  endDate DateTime
+  price Float
+  minStay Int @default(1)
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomTypeId])
 }
 
 model FolioItem {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
   bookingId String
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  concept   String
-  amount    Float
-  category  String   @default("room")
-  date      DateTime @default(now())
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  concept String
+  amount Float
+  category String @default("room")
+  date DateTime @default(now())
   createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model GuestTag {
@@ -159,16 +167,18 @@ model GuestTagAssignment {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  message   String
-  type      String   @default("info")
-  read      Boolean  @default(false)
-  hotelId   String?
-  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  message String
+  type String @default("info")
+  read Boolean @default(false)
+  hotelId String?
+  hotel Hotel? @relation(fields: [hotelId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Room {
@@ -190,84 +200,97 @@ model Room {
   updatedAt      DateTime           @updatedAt
 
   @@unique([hotelId, number])
+  @@index([hotelId, status])
 }
 
 model Guest {
-  id         String             @id @default(cuid())
-  firstName  String
-  lastName   String
-  email      String             @default("")
-  phone      String             @default("")
-  idNumber   String             @default("")
-  nationality String            @default("")
-  address    String             @default("")
-  notes      String             @default("")
-  vip        Boolean            @default(false)
+  id String @id @default(cuid())
+  firstName String
+  lastName String
+  email String @default("")
+  phone String @default("")
+  idNumber String @default("")
+  nationality String @default("")
+  address String @default("")
+  notes String @default("")
+  vip Boolean @default(false)
   dateOfBirth DateTime?
-  hotelId    String
-  hotel      Hotel              @relation(fields: [hotelId], references: [id])
-  bookings   Booking[]
-  tags       GuestTagAssignment[]
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  bookings Booking[]
+  tags GuestTagAssignment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([hotelId, idNumber])
+  @@index([hotelId])
 }
 
 model Booking {
-  id             String       @id @default(cuid())
-  code           String       @unique
-  status         String       @default("confirmed")
-  checkIn        DateTime
-  checkOut       DateTime
-  adults         Int          @default(1)
-  children       Int          @default(0)
-  roomRate       Float
-  totalNights    Int
-  totalAmount    Float
-  paidAmount     Float        @default(0)
-  notes          String       @default("")
-  source         String       @default("direct")
-  specialRequests String      @default("")
-  depositAmount  Float        @default(0)
-  hotelId        String
-  hotel          Hotel        @relation(fields: [hotelId], references: [id])
-  guestId        String
-  guest          Guest        @relation(fields: [guestId], references: [id])
-  roomId         String?
-  room           Room?        @relation(fields: [roomId], references: [id])
-  payments       Payment[]
-  invoice        Invoice?
-  bookingRooms   BookingRoom[]
-  folioItems     FolioItem[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id String @id @default(cuid())
+  code String @unique
+  status String @default("confirmed")
+  checkIn DateTime
+  checkOut DateTime
+  adults Int @default(1)
+  children Int @default(0)
+  roomRate Float
+  totalNights Int
+  totalAmount Float
+  paidAmount Float @default(0)
+  notes String @default("")
+  source String @default("direct")
+  specialRequests String @default("")
+  depositAmount Float @default(0)
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  guestId String
+  guest Guest @relation(fields: [guestId], references: [id])
+  roomId String?
+  room Room? @relation(fields: [roomId], references: [id])
+  payments Payment[]
+  invoice Invoice?
+  bookingRooms BookingRoom[]
+  folioItems FolioItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hotelId, status])
+  @@index([roomId])
+  @@index([guestId])
+  @@index([checkIn])
+  @@index([checkOut])
 }
 
 model Payment {
-  id        String    @id @default(cuid())
-  amount    Float
-  method    String
-  reference String    @default("")
+  id String @id @default(cuid())
+  amount Float
+  method String
+  reference String @default("")
   bookingId String
-  booking   Booking   @relation(fields: [bookingId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
   cashMoveId String?
-  cashMove  CashMove? @relation(fields: [cashMoveId], references: [id])
-  createdAt DateTime  @default(now())
+  cashMove CashMove? @relation(fields: [cashMoveId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model CashMove {
-  id        String    @id @default(cuid())
-  type      String
-  category  String
-  amount    Float
-  concept   String
-  method    String    @default("cash")
-  reference String    @default("")
-  hotelId   String
-  hotel     Hotel     @relation(fields: [hotelId], references: [id])
-  payments  Payment[]
-  createdAt DateTime  @default(now())
+  id String @id @default(cuid())
+  type String
+  category String
+  amount Float
+  concept String
+  method String @default("cash")
+  reference String @default("")
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  payments Payment[]
+  createdAt DateTime @default(now())
+
+  @@index([hotelId])
+  @@index([createdAt])
 }
 
 model Invoice {

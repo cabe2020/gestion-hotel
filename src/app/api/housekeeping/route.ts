@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { housekeepingSchema } from "@/lib/validations";
 import { notifyRole } from "@/lib/notifications";
 import { logAction } from "@/lib/audit";
-import { getUserFromHeaders } from "@/lib/rbac";
+import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
 import { ZodError } from "zod";
 
 const priorityOrder: Record<string, number> = {
@@ -13,13 +13,13 @@ const priorityOrder: Record<string, number> = {
   low: 3,
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel) return NextResponse.json([]);
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) return NextResponse.json([]);
 
     const tasks = await prisma.housekeepingTask.findMany({
-      where: { hotelId: hotel.id },
+      where: { hotelId },
       include: {
         room: { include: { roomType: true } },
         assignedUser: { select: { id: true, name: true, email: true } },
@@ -43,8 +43,8 @@ export async function POST(request: Request) {
     const { id: userId } = getUserFromHeaders(request);
     const body = await request.json();
     const data = housekeepingSchema.parse(body);
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
 
     const assignedTo = data.assignedTo && data.assignedTo.trim() !== ""
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         priority: data.priority,
         assignedTo,
         notes: data.notes,
-        hotelId: hotel.id,
+        hotelId,
       },
       include: {
         room: { include: { roomType: true } },
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
     await notifyRole({
       role: "admin",
-      hotelId: hotel.id,
+      hotelId,
       title: `Nueva tarea de limpieza: Hab ${task.room?.number || data.roomId}`,
       message: `Tarea ${data.type} - Prioridad: ${data.priority}`,
       type: "info",
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       entity: "housekeeping-task",
       entityId: task.id,
       details: `Tarea de limpieza Hab ${task.room?.number || data.roomId} creada`,
-      hotelId: hotel.id,
+      hotelId,
     }).catch(() => {});
 
     return NextResponse.json(task, { status: 201 });

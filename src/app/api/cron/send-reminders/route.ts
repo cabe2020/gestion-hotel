@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail, checkInReminderHtml } from "@/lib/email";
+import { logAction } from "@/lib/audit";
+import { verifyCronSecret, resolveHotelId } from "@/lib/rbac";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!verifyCronSecret(request)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   try {
-    const hotel = await prisma.hotel.findFirst();
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) {
+      return NextResponse.json({ sent: 0, message: "No hotel found" });
+    }
+
+    const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
       return NextResponse.json({ sent: 0, message: "No hotel found" });
     }
@@ -18,7 +29,7 @@ export async function GET() {
 
     const bookings = await prisma.booking.findMany({
       where: {
-        hotelId: hotel.id,
+        hotelId,
         status: "confirmed",
         checkIn: {
           gte: tomorrow,
@@ -46,11 +57,20 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      sent,
-      total: bookings.length,
-      message: `${sent} recordatorios enviados de ${bookings.length} reservas`,
-    });
+  if (sent > 0) {
+    await logAction({
+      hotelId: hotel.id,
+      action: "CRON_REMINDERS",
+      entity: "booking",
+      details: JSON.stringify({ count: sent }),
+    }).catch(() => {});
+  }
+
+  return NextResponse.json({
+    sent,
+    total: bookings.length,
+    message: `${sent} recordatorios enviados de ${bookings.length} reservas`,
+  });
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateReceiptPDF } from "@/lib/pdf";
+import { resolveHotelId } from "@/lib/rbac";
 import { z, ZodError } from "zod";
 
 const schema = z.object({ paymentId: z.string().min(1) });
@@ -28,7 +29,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const hotel = await prisma.hotel.findFirst();
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) {
+      return NextResponse.json(
+        { error: "Hotel no encontrado" },
+        { status: 404 }
+      );
+    }
+
+    const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
       return NextResponse.json(
         { error: "Hotel no encontrado" },

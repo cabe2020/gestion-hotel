@@ -225,12 +225,12 @@ export default function InvoicesPage() {
                     <td className="px-4 py-3">{getStatusBadge(inv)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleDownloadPDF(inv)} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Descargar PDF">
-                          <Download className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handlePrint(inv)} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Imprimir">
-                          <Printer className="h-4 w-4" />
-                        </button>
+                <button onClick={() => handleDownloadPDF(inv)} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Descargar PDF">
+                  <Download className="h-4 w-4" />
+                </button>
+                <button onClick={() => window.open(`/print/invoice/${inv.id}`, "_blank")} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Imprimir">
+                  <Printer className="h-4 w-4" />
+                </button>
                         {!inv.cancelled && inv.status !== "paid" && (
                           <button onClick={() => handleMarkPaid(inv.id)} className="p-1.5 rounded hover:bg-green-50 text-green-600" title="Marcar pagada">
                             <Check className="h-4 w-4" />

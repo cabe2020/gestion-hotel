@@ -7,6 +7,7 @@ export const hotelSchema = z.object({
   email: z.string().email("Email invalido").optional().or(z.literal("")).default(""),
   currency: z.string().optional().default("USD"),
   taxRate: z.number().min(0).optional().default(0),
+  logo: z.string().optional().default(""),
 });
 
 export const roomTypeSchema = z.object({
@@ -29,7 +30,7 @@ export const guestSchema = z.object({
   lastName: z.string().min(1, "Apellido requerido"),
   email: z.string().email("Email invalido").optional().or(z.literal("")).default(""),
   phone: z.string().optional().default(""),
-  idNumber: z.string().optional().default(""),
+  idNumber: z.string().optional().transform(val => val === "" ? undefined : val),
   nationality: z.string().optional().default(""),
   address: z.string().optional().default(""),
   notes: z.string().optional().default(""),
@@ -86,7 +87,6 @@ export const cashMoveSchema = z.object({
 export const invoiceSchema = z.object({
   number: z.string().min(1, "Numero requerido"),
   bookingId: z.string().min(1, "Reserva requerida"),
-  hotelId: z.string().min(1, "Hotel requerido"),
   taxAmount: z.number().min(0).optional().default(0),
   total: z.number().min(0, "Total debe ser positivo"),
   status: z.enum(["pending", "paid"]).optional().default("pending"),
@@ -97,6 +97,21 @@ export const registerSchema = z.object({
   email: z.string().email("Email invalido"),
   password: z.string().min(6, "Minimo 6 caracteres"),
   role: z.enum(["admin", "receptionist"]).optional().default("receptionist"),
+});
+
+export const signupSchema = z.object({
+  hotel: z.object({
+    name: z.string().min(1, "Nombre del hotel requerido"),
+    address: z.string().optional().default(""),
+    phone: z.string().optional().default(""),
+    email: z.string().email("Email del hotel invalido").optional().or(z.literal("")).default(""),
+    currency: z.string().optional().default("USD"),
+  }),
+  user: z.object({
+    name: z.string().min(1, "Nombre requerido"),
+    email: z.string().email("Email invalido"),
+    password: z.string().min(6, "Minimo 6 caracteres"),
+  }),
 });
 
 export const updateUserSchema = z.object({

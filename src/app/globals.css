@@ -1,9 +1,16 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --background: #f8fafc;
     --foreground: #0f172a;
+  }
+
+  .dark {
+    --background: #111827;
+    --foreground: #f9fafb;
   }
 
   * {
@@ -25,7 +32,7 @@
   }
 
   .btn-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2;
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2;
   }
 
   .btn-danger {
@@ -37,14 +44,14 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow;
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow;
   }
 
   .label-field {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6;
   }
 }

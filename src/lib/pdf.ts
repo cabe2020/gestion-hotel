@@ -162,7 +162,7 @@ export function generateInvoicePDF(data: {
   );
 
   doc.setFontSize(8);
-  doc.text("Generado por GestHotel", 14, 285);
+  doc.text("Generado por Hosterix", 14, 285);
 
   return doc;
 }
@@ -219,7 +219,7 @@ export function generateReceiptPDF(data: {
   );
 
   doc.setFontSize(8);
-  doc.text("Generado por GestHotel", 14, 285);
+  doc.text("Generado por Hosterix", 14, 285);
 
   return doc;
 }

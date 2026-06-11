@@ -5,9 +5,12 @@ import Header from "@/components/Header";
 import Modal from "@/components/Modal";
 import StatusBadge from "@/components/StatusBadge";
 import Pagination from "@/components/Pagination";
-import { Plus, Eye, DollarSign, X as XIcon, Pencil, CalendarPlus, ArrowRightLeft, ShoppingCart } from "lucide-react";
+import { Plus, Eye, DollarSign, Pencil, CalendarPlus, ArrowRightLeft, ShoppingCart, UserX, Ban } from "lucide-react";
 import { formatCurrency, formatDate, bookingStatuses, bookingSources } from "@/lib/utils";
 import ExportButton from "@/components/ExportButton";
+import { useToast } from "@/components/Toast";
+import { registerShortcutAction } from "@/components/KeyboardShortcuts";
+import Autocomplete from "@/components/Autocomplete";
 
 interface Guest {
   id: string;
@@ -79,6 +82,7 @@ interface FolioItemData {
 }
 
 export default function BookingsPage() {
+  const toast = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<GuestOption[]>([]);
   const [rooms, setRooms] = useState<RoomOption[]>([]);
@@ -163,15 +167,28 @@ export default function BookingsPage() {
     const nights = calcNights(form.checkIn, form.checkOut);
     const baseRate = room?.roomType.basePrice || 0;
     const effectiveRate = calcOccupancyRate(baseRate, form.adults);
-    await fetch("/api/bookings", {
+    const res = await fetch("/api/bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, roomRate: effectiveRate, totalNights: nights, totalAmount: effectiveRate * nights }),
     });
+    if (res.ok) {
+      toast.success("Reserva creada correctamente");
+    } else {
+      toast.error("Error al crear reserva");
+    }
     setShowModal(false);
     setForm({ guestId: "", roomId: "", checkIn: "", checkOut: "", adults: 1, children: 0, source: "direct", notes: "" });
     load();
   };
+
+  useEffect(() => {
+    registerShortcutAction("newBooking", () => {
+      setForm(f => ({ ...f, guestId: guests[0]?.id || "", roomId: rooms.filter(r => r.status === "available")[0]?.id || "" }));
+      setShowModal(true);
+    });
+    return () => registerShortcutAction("newBooking", null);
+  }, [guests, rooms]);
 
   const handleStatusChange = async (id: string, status: string) => {
     await fetch(`/api/bookings/${id}`, {
@@ -180,6 +197,28 @@ export default function BookingsPage() {
       body: JSON.stringify({ status })
     });
     load();
+  };
+
+const handleNoShow = async (id: string) => {
+  if (!(await toast.confirm("Marcar esta reserva como No-show?"))) return;
+  await fetch(`/api/bookings/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "no-show" }),
+  });
+  toast.info("Reserva marcada como No-show");
+  load();
+};
+
+const handleCancel = async (id: string) => {
+  if (!(await toast.confirm("Cancelar esta reserva?"))) return;
+  await fetch(`/api/bookings/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "cancelled" }),
+  });
+  toast.warning("Reserva cancelada");
+  load();
   };
 
   const handlePayment = async (e: React.FormEvent) => {
@@ -192,9 +231,10 @@ export default function BookingsPage() {
     });
     if (!res.ok) {
       const err = await res.json();
-      alert(err.error || "Error al registrar pago");
+      toast.error(err.error || "Error al registrar pago");
       return;
     }
+    toast.success("Pago registrado correctamente");
     setShowPayment(false);
     setPaymentForm({ amount: 0, method: "cash", reference: "" });
     load();
@@ -456,26 +496,33 @@ export default function BookingsPage() {
                               <Eye className="h-4 w-4" />
                             </button>
                           )}
-                          {booking.status === "checked-in" && (
-                            <button
-                              onClick={() => handleStatusChange(booking.id, "checked-out")}
-                              className="p-1.5 rounded hover:bg-orange-50 text-orange-600"
-                              title="Check-out"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </button>
-                          )}
-                          {["confirmed", "checked-in"].includes(booking.status) && (
-                            <button
-                              onClick={() => {
-                                if (confirm("Cancelar reserva?")) handleStatusChange(booking.id, "cancelled");
-                              }}
-                              className="p-1.5 rounded hover:bg-red-50 text-red-600"
-                              title="Cancelar"
-                            >
-                              <XIcon className="h-4 w-4" />
-                            </button>
-                          )}
+                      {booking.status === "checked-in" && (
+                        <button
+                          onClick={() => handleStatusChange(booking.id, "checked-out")}
+                          className="p-1.5 rounded hover:bg-orange-50 text-orange-600"
+                          title="Check-out"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      )}
+                      {booking.status === "confirmed" && new Date(booking.checkIn) < new Date(new Date().toISOString().split("T")[0]) && (
+                        <button
+                          onClick={() => handleNoShow(booking.id)}
+                          className="p-1.5 rounded hover:bg-red-50 text-red-600"
+                          title="No-show"
+                        >
+                          <UserX className="h-4 w-4" />
+                        </button>
+                      )}
+                      {booking.status === "confirmed" && (
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          className="p-1.5 rounded hover:bg-gray-100 text-gray-500"
+                          title="Cancelar"
+                        >
+                          <Ban className="h-4 w-4" />
+                        </button>
+                      )}
                         </div>
                       </td>
                     </tr>
@@ -495,15 +542,25 @@ export default function BookingsPage() {
         </div>
 
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nueva Reserva" size="lg">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label-field">Huésped</label>
-                <select value={form.guestId} onChange={e => setForm(f => ({ ...f, guestId: e.target.value }))} className="input-field" required>
-                  <option value="">Seleccionar</option>
-                  {guests.map(g => <option key={g.id} value={g.id}>{g.firstName} {g.lastName}</option>)}
-                </select>
-              </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label-field">Huésped</label>
+            <Autocomplete
+              endpoint="/api/guests/search"
+              labelKey="name"
+              valueKey="id"
+              placeholder="Buscar huesped..."
+              value={form.guestId}
+              displayValue={form.guestId ? guests.find(g => g.id === form.guestId)?.firstName + " " + guests.find(g => g.id === form.guestId)?.lastName || "" : ""}
+onSelect={(item) => {
+          if (item && item.id) setForm(f => ({ ...f, guestId: item.id as string }));
+        }}
+              onCreateNew={() => {
+                window.open("/guests", "_blank");
+              }}
+            />
+          </div>
               <div>
                 <label className="label-field">Habitación</label>
                 <select value={form.roomId} onChange={e => setForm(f => ({ ...f, roomId: e.target.value }))} className="input-field" required>
@@ -564,15 +621,22 @@ export default function BookingsPage() {
         </Modal>
 
         <Modal isOpen={showEdit} onClose={() => setShowEdit(false)} title={`Editar Reserva - ${selectedBooking?.code || ""}`} size="lg">
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label-field">Huésped</label>
-                <select value={editForm.guestId} onChange={e => setEditForm(f => ({ ...f, guestId: e.target.value }))} className="input-field" required>
-                  <option value="">Seleccionar</option>
-                  {guests.map(g => <option key={g.id} value={g.id}>{g.firstName} {g.lastName}</option>)}
-                </select>
-              </div>
+    <form onSubmit={handleEditSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label-field">Huésped</label>
+            <Autocomplete
+              endpoint="/api/guests/search"
+              labelKey="name"
+              valueKey="id"
+              placeholder="Buscar huesped..."
+              value={editForm.guestId}
+              displayValue={editForm.guestId ? guests.find(g => g.id === editForm.guestId)?.firstName + " " + guests.find(g => g.id === editForm.guestId)?.lastName || "" : ""}
+onSelect={(item) => {
+          if (item && item.id) setEditForm(f => ({ ...f, guestId: item.id as string }));
+        }}
+            />
+          </div>
               <div>
                 <label className="label-field">Habitación</label>
                 <select value={editForm.roomId} onChange={e => setEditForm(f => ({ ...f, roomId: e.target.value }))} className="input-field" required>

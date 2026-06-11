@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Modal from "@/components/Modal";
-import { Save, Hotel, Plus, Trash2, Pencil, Calendar, ShoppingCart } from "lucide-react";
+import { Save, Hotel, Plus, Trash2, Pencil, Calendar, ShoppingCart, Printer } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 import { formatDate, formatCurrency } from "@/lib/utils";
+import { useToast } from "@/components/Toast";
 
 interface HotelData {
   id: string;
@@ -14,6 +16,7 @@ interface HotelData {
   email: string;
   currency: string;
   taxRate: number;
+  logo: string;
 }
 
 interface RoomTypeData {
@@ -61,6 +64,7 @@ const emptyRateForm = { name: "", roomTypeId: "", startDate: "", endDate: "", pr
 const emptyUpsellForm = { name: "", description: "", price: 0, category: "other", active: true };
 
 export default function SettingsPage() {
+  const toast = useToast();
   const [hotel, setHotel] = useState<HotelData | null>(null);
   const [roomTypes, setRoomTypes] = useState<RoomTypeData[]>([]);
   const [ratePlans, setRatePlans] = useState<RatePlanData[]>([]);
@@ -70,7 +74,6 @@ export default function SettingsPage() {
   const [showRateModal, setShowRateModal] = useState(false);
   const [rateForm, setRateForm] = useState(emptyRateForm);
   const [editingRateId, setEditingRateId] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [upsells, setUpsells] = useState<UpsellData[]>([]);
   const [showUpsellModal, setShowUpsellModal] = useState(false);
   const [upsellForm, setUpsellForm] = useState(emptyUpsellForm);
@@ -105,8 +108,7 @@ export default function SettingsPage() {
       }).then(r => r.json());
       setHotel(h);
     }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    toast.success("Datos del hotel guardados");
   };
 
   const openCreateType = () => {
@@ -143,8 +145,9 @@ export default function SettingsPage() {
   };
 
   const handleDeleteRoomType = async (id: string) => {
-    if (!confirm("Eliminar este tipo de habitacion?")) return;
+    if (!(await toast.confirm("Eliminar este tipo de habitacion?"))) return;
     await fetch(`/api/room-types/${id}`, { method: "DELETE" });
+    toast.success("Tipo de habitacion eliminado");
     load();
   };
 
@@ -189,8 +192,9 @@ export default function SettingsPage() {
   };
 
   const handleDeleteRatePlan = async (id: string) => {
-    if (!confirm("Eliminar esta tarifa?")) return;
+    if (!(await toast.confirm("Eliminar esta tarifa?"))) return;
     await fetch(`/api/rate-plans/${id}`, { method: "DELETE" });
+    toast.success("Tarifa eliminada");
     load();
   };
 
@@ -237,8 +241,9 @@ export default function SettingsPage() {
   };
 
   const handleDeleteUpsell = async (id: string) => {
-    if (!confirm("Eliminar este servicio adicional?")) return;
+    if (!(await toast.confirm("Eliminar este servicio adicional?"))) return;
     await fetch(`/api/upsells/${id}`, { method: "DELETE" });
+    toast.success("Servicio adicional eliminado");
     load();
   };
 
@@ -305,17 +310,26 @@ export default function SettingsPage() {
               </select>
             </div>
           </div>
-          <div>
-            <label className="label-field">Direccion</label>
-            <input type="text" value={hotel.address} onChange={e => setHotel({ ...hotel, address: e.target.value })} className="input-field" />
-          </div>
-          <div className="w-32">
+      <div>
+        <label className="label-field">Direccion</label>
+        <input type="text" value={hotel.address} onChange={e => setHotel({ ...hotel, address: e.target.value })} className="input-field" />
+      </div>
+      <div>
+        <label className="label-field">Logo del Hotel</label>
+        <ImageUpload
+          value={hotel.logo || ""}
+          onChange={(dataUrl) => setHotel({ ...hotel, logo: dataUrl })}
+          label="Arrastra el logo o haz clic para seleccionar"
+          maxSizeMB={2}
+        />
+      </div>
+      <div className="w-32">
             <label className="label-field">Impuesto (%)</label>
             <input type="number" step="0.1" value={hotel.taxRate} onChange={e => setHotel({ ...hotel, taxRate: parseFloat(e.target.value) || 0 })} className="input-field" />
           </div>
           <button type="submit" className="btn-primary">
-            <Save className="h-4 w-4" />
-            {saved ? "Guardado!" : "Guardar"}
+      <Save className="h-4 w-4" />
+      Guardar
           </button>
         </form>
 

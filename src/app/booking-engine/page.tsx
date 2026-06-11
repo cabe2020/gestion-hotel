@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import Autocomplete from "@/components/Autocomplete";
 
 type Hotel = {
   id: string;
@@ -176,7 +177,7 @@ export default function BookingEnginePage() {
               G
             </div>
             <span className="text-xl font-bold text-gray-900">
-              {hotel?.name || "GestHotel"}
+              {hotel?.name || "Hosterix"}
             </span>
           </div>
         </header>
@@ -270,7 +271,7 @@ export default function BookingEnginePage() {
             </div>
             <div>
               <span className="text-xl font-bold text-gray-900 block leading-tight">
-                {hotel?.name || "GestHotel"}
+                {hotel?.name || "Hosterix"}
               </span>
               {hotel?.address && (
                 <span className="text-xs text-gray-400">{hotel.address}</span>
@@ -690,14 +691,16 @@ export default function BookingEnginePage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nacionalidad
                   </label>
-                  <input
-                    type="text"
+                  <Autocomplete
+                    endpoint="/api/guests/search"
+                    labelKey="nationality"
+                    valueKey="nationality"
+                    placeholder="Ej: Mexicana"
                     value={guestForm.nationality}
-                    onChange={(e) =>
-                      setGuestForm({ ...guestForm, nationality: e.target.value })
-                    }
-                    className="booking-engine-input"
-                    placeholder="Mexicana"
+                    displayValue={guestForm.nationality}
+onSelect={(item) => {
+          if (item && item.nationality) setGuestForm({ ...guestForm, nationality: String(item.nationality) });
+        }}
                   />
                 </div>
                 <div>
@@ -911,7 +914,7 @@ export default function BookingEnginePage() {
 
       <footer className="bg-white/60 border-t border-gray-100 px-4 py-3 text-center">
         <p className="text-xs text-gray-400">
-          {hotel?.name || "GestHotel"} &middot; Reservas Online
+          {hotel?.name || "Hosterix"} &middot; Reservas Online
         </p>
       </footer>
     </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveHotelId } from "@/lib/rbac";
 
 export async function GET(request: Request) {
   try {
@@ -24,13 +25,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel) {
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) {
       return NextResponse.json([], { status: 200 });
     }
 
+    const adults = parseInt(searchParams.get("adults") || "1", 10);
+
     const roomTypes = await prisma.roomType.findMany({
-      where: { hotelId: hotel.id },
+      where: { hotelId },
       include: {
         rooms: true,
         ratePlans: {
@@ -88,7 +91,7 @@ export async function GET(request: Request) {
     );
 
     return NextResponse.json(
-      availability.filter((a) => a.availableCount > 0)
+      availability.filter((a) => a.availableCount > 0 && a.capacity >= adults)
     );
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });

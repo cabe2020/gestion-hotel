@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
@@ -43,8 +44,25 @@ export async function proxy(request: NextRequest) {
 
   if (pathname.startsWith("/api")) {
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-id", token.id as string);
+    const userId = token.id as string;
+    const hotelId = request.cookies.get("selectedHotelId")?.value || token.hotelId as string | undefined;
+
+    requestHeaders.set("x-user-id", userId);
     requestHeaders.set("x-user-role", role);
+    if (hotelId) {
+      requestHeaders.set("x-hotel-id", hotelId);
+    } else {
+      requestHeaders.set("x-hotel-id", "");
+    }
+
+    requestHeaders.set("x-middleware-verified", "true");
+
+    const sig = crypto
+      .createHmac("sha256", process.env.NEXTAUTH_SECRET!)
+      .update(`${userId}:${role}:${hotelId || ""}`)
+      .digest("hex");
+    requestHeaders.set("x-middleware-sig", sig);
+
     return NextResponse.next({
       request: { headers: requestHeaders },
     });

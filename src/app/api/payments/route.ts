@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { paymentSchema } from "@/lib/validations";
 import { notifyRole } from "@/lib/notifications";
 import { logAction } from "@/lib/audit";
-import { getUserFromHeaders } from "@/lib/rbac";
+import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
 import { ZodError } from "zod";
 
 export async function POST(request: Request) {
@@ -11,87 +11,74 @@ export async function POST(request: Request) {
     const { id: userId } = getUserFromHeaders(request);
     const body = await request.json();
     const data = paymentSchema.parse(body);
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
 
-    const booking = await prisma.booking.findUnique({
-      where: { id: data.bookingId },
-    });
-    if (!booking)
-      return NextResponse.json(
-        { error: "Reserva no encontrada" },
-        { status: 404 }
-      );
+    const result = await prisma.$transaction(async (tx) => {
+      const [booking] = await tx.$queryRaw<
+        { id: string; paidAmount: number; totalAmount: number; code: string }[]
+      >`SELECT id, "paidAmount", "totalAmount", code FROM "Booking" WHERE id = ${data.bookingId} FOR UPDATE`;
 
-    if (data.method === "refund") {
-      if (data.amount >= 0) {
-        return NextResponse.json(
-          { error: "El reembolso debe tener un monto negativo" },
-          { status: 400 }
-        );
+      if (!booking) {
+        throw Object.assign(new Error("Reserva no encontrada"), { statusCode: 404 });
       }
-      if (booking.paidAmount + data.amount < 0) {
-        return NextResponse.json(
-          { error: "El reembolso excede el monto pagado" },
-          { status: 400 }
-        );
+
+      if (data.method === "refund") {
+        if (data.amount >= 0) {
+          throw Object.assign(new Error("El reembolso debe tener un monto negativo"), { statusCode: 400 });
+        }
+        if (booking.paidAmount + data.amount < 0) {
+          throw Object.assign(new Error("El reembolso excede el monto pagado"), { statusCode: 400 });
+        }
+      } else {
+        if (data.amount <= 0) {
+          throw Object.assign(new Error("El monto debe ser positivo"), { statusCode: 400 });
+        }
+        if (booking.paidAmount + data.amount > booking.totalAmount) {
+          throw Object.assign(new Error("El pago excede el monto pendiente"), { statusCode: 400 });
+        }
       }
-    } else {
-      if (data.amount <= 0) {
-        return NextResponse.json(
-          { error: "El monto debe ser positivo" },
-          { status: 400 }
-        );
-      }
-      if (booking.paidAmount + data.amount > booking.totalAmount) {
-        return NextResponse.json(
-          { error: "El pago excede el monto pendiente" },
-          { status: 400 }
-        );
-      }
-    }
 
-    const payment = await prisma.payment.create({
-      data: {
-        bookingId: data.bookingId,
-        amount: data.amount,
-        method: data.method,
-        reference: data.reference,
-      },
+      const payment = await tx.payment.create({
+        data: {
+          bookingId: data.bookingId,
+          amount: data.amount,
+          method: data.method,
+          reference: data.reference,
+        },
+      });
+
+      const isRefund = data.method === "refund";
+      const cashMove = await tx.cashMove.create({
+        data: {
+          type: isRefund ? "expense" : "income",
+          category: isRefund ? "refund" : "room-revenue",
+          amount: Math.abs(data.amount),
+          concept: isRefund
+            ? `Reembolso reserva ${data.bookingId}`
+            : `Pago reserva ${data.bookingId}`,
+          method: isRefund ? "cash" : data.method,
+          reference: data.reference,
+          hotelId,
+        },
+      });
+
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: { cashMoveId: cashMove.id },
+      });
+
+      await tx.$executeRaw`UPDATE "Booking" SET "paidAmount" = "paidAmount" + ${data.amount} WHERE id = ${data.bookingId}`;
+
+      return { payment, bookingCode: booking.code };
     });
 
-    const isRefund = data.method === "refund";
-    const cashMove = await prisma.cashMove.create({
-      data: {
-        type: isRefund ? "expense" : "income",
-        category: isRefund ? "refund" : "room-revenue",
-        amount: Math.abs(data.amount),
-        concept: isRefund
-          ? `Reembolso reserva ${data.bookingId}`
-          : `Pago reserva ${data.bookingId}`,
-        method: isRefund ? "cash" : data.method,
-        reference: data.reference,
-        hotelId: hotel.id,
-      },
-    });
-
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: { cashMoveId: cashMove.id },
-    });
-
-    const newPaid = booking.paidAmount + data.amount;
-    await prisma.booking.update({
-      where: { id: data.bookingId },
-      data: { paidAmount: newPaid },
-    });
-
-    if (!isRefund && hotel) {
+    if (!result.payment.method?.startsWith("refund") && hotelId) {
       await notifyRole({
         role: "admin",
-        hotelId: hotel.id,
-        title: `Pago recibido: $${data.amount} para reserva ${booking.code}`,
+        hotelId,
+        title: `Pago recibido: $${data.amount} para reserva ${result.bookingCode}`,
         message: `Pago de ${data.method} por $${data.amount} registrado`,
         type: "success",
       }).catch(() => {});
@@ -99,18 +86,23 @@ export async function POST(request: Request) {
 
     await logAction({
       userId,
-      action: isRefund ? "refund" : "create",
+      action: data.method === "refund" ? "refund" : "create",
       entity: "payment",
-      entityId: payment.id,
-      details: `${isRefund ? "Reembolso" : "Pago"} $${Math.abs(data.amount)} reserva ${booking.code}`,
-      hotelId: hotel?.id,
+      entityId: result.payment.id,
+      details: `${data.method === "refund" ? "Reembolso" : "Pago"} $${Math.abs(data.amount)} reserva ${result.bookingCode}`,
+      hotelId,
     }).catch(() => {});
 
-    return NextResponse.json(payment, { status: 201 });
+    return NextResponse.json(result.payment, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
     }
+    const err = error as { statusCode?: number; message?: string };
+    if (err.statusCode) {
+      return NextResponse.json({ error: err.message }, { status: err.statusCode });
+    }
+    if (error instanceof NextResponse) return error;
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

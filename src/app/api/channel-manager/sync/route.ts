@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/rbac";
+import { requireAdmin, resolveHotelId } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { getChannels } from "@/lib/channel-manager";
 import {
@@ -33,8 +33,8 @@ export async function POST(request: Request) {
   if (adminCheck) return adminCheck;
 
   try {
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel) {
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) {
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
     }
 
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       }
 
       const roomTypes = await prisma.roomType.findMany({
-        where: { hotelId: hotel.id },
+        where: { hotelId },
         include: { rooms: true },
       });
 

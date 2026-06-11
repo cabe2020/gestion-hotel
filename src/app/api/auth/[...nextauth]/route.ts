@@ -6,12 +6,22 @@ import { prisma } from "@/lib/prisma";
 declare module "next-auth" {
   interface User {
     role?: string;
+    hotelId?: string | null;
   }
   interface Session {
     user: {
       role?: string;
       id?: string;
+      hotelId?: string | null;
     } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+    id?: string;
+    hotelId?: string | null;
   }
 }
 
@@ -40,6 +50,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          hotelId: user.hotelId,
         };
       },
     }),
@@ -50,13 +61,15 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.hotelId = user.hotelId;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-session.user.role = token.role as string | undefined;
-      session.user.id = token.id as string | undefined;
+        session.user.role = token.role as string | undefined;
+        session.user.id = token.id as string | undefined;
+        session.user.hotelId = token.hotelId as string | null | undefined;
       }
       return session;
     },

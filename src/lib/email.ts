@@ -33,7 +33,7 @@ export async function sendEmail({
   subject: string;
   html: string;
 }) {
-  const from = process.env.EMAIL_FROM || "hotel@gesthotel.com";
+  const from = process.env.EMAIL_FROM || "hotel@hosterix.com";
 
   const resend = getResendClient();
   if (resend) {

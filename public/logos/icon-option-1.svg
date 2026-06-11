@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="96" fill="#2563eb"/>
+  <rect x="128" y="100" width="96" height="160" rx="12" fill="white" opacity="0.9"/>
+  <rect x="288" y="100" width="96" height="160" rx="12" fill="white" opacity="0.9"/>
+  <rect x="144" y="120" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="184" y="120" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="304" y="120" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="344" y="120" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="144" y="160" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="184" y="160" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="304" y="160" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="344" y="160" width="24" height="24" rx="4" fill="#2563eb"/>
+  <rect x="208" y="280" width="96" height="80" rx="12" fill="white" opacity="0.9"/>
+  <rect x="232" y="304" width="48" height="56" rx="8" fill="#2563eb"/>
+  <path d="M96 380L256 440L416 380" stroke="white" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="490" font-family="system-ui, sans-serif" font-size="56" font-weight="800" fill="white" text-anchor="middle" opacity="0.15">H</text>
+</svg>

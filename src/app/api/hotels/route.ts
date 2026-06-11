@@ -5,8 +5,8 @@ import { requireAdmin } from "@/lib/rbac";
 import { ZodError } from "zod";
 
 export async function GET() {
-  const hotel = await prisma.hotel.findFirst();
-  return NextResponse.json(hotel);
+  const hotels = await prisma.hotel.findMany({ orderBy: { name: "asc" } });
+  return NextResponse.json(hotels);
 }
 
 export async function POST(request: Request) {

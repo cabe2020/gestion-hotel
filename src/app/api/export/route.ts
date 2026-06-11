@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveHotelId } from "@/lib/rbac";
 
 function escapeCsv(value: unknown): string {
   const str = String(value ?? "");
@@ -32,8 +33,8 @@ export async function GET(request: Request) {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
-  const hotel = await prisma.hotel.findFirst();
-  if (!hotel) {
+  const hotelId = await resolveHotelId(request.headers);
+  if (!hotelId) {
     return NextResponse.json({ error: "No hotel" }, { status: 404 });
   }
 
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
   switch (entity) {
     case "bookings": {
       const bookings = await prisma.booking.findMany({
-        where: { hotelId: hotel.id, ...dateFilter },
+        where: { hotelId, ...dateFilter },
         include: { guest: true, room: { include: { roomType: true } } },
         orderBy: { createdAt: "desc" },
       });
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
     }
     case "guests": {
       const guests = await prisma.guest.findMany({
-        where: { hotelId: hotel.id, ...dateFilter },
+        where: { hotelId, ...dateFilter },
         include: { tags: { include: { tag: true } } },
         orderBy: { lastName: "asc" },
       });
@@ -98,7 +99,7 @@ export async function GET(request: Request) {
     }
     case "payments": {
       const payments = await prisma.payment.findMany({
-        where: { booking: { hotelId: hotel.id } },
+        where: { booking: { hotelId } },
         include: { booking: { include: { guest: true } } },
         orderBy: { createdAt: "desc" },
       });
@@ -122,7 +123,7 @@ export async function GET(request: Request) {
     }
     case "cash-moves": {
       const moves = await prisma.cashMove.findMany({
-        where: { hotelId: hotel.id, ...dateFilter },
+        where: { hotelId, ...dateFilter },
         orderBy: { createdAt: "desc" },
       });
       csv = toCsv(
@@ -142,7 +143,7 @@ export async function GET(request: Request) {
     }
     case "invoices": {
       const invoices = await prisma.invoice.findMany({
-        where: { hotelId: hotel.id, ...dateFilter },
+        where: { hotelId, ...dateFilter },
         include: { booking: { include: { guest: true, room: true } } },
         orderBy: { createdAt: "desc" },
       });
@@ -169,7 +170,8 @@ export async function GET(request: Request) {
   const now = new Date().toISOString().split("T")[0];
   const disposition = `attachment; filename="${filename}-${now}.csv"`;
 
-  return new NextResponse(csv, {
+  const bom = "\uFEFF";
+  return new NextResponse(bom + csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": disposition,

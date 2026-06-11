@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cashRegisterSchema } from "@/lib/validations";
-import { requireAdmin, getUserFromHeaders } from "@/lib/rbac";
+import { requireAdmin, getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
 import { notifyRole } from "@/lib/notifications";
 import { logAction } from "@/lib/audit";
 import { ZodError } from "zod";
 
-export async function GET() {
-  const hotel = await prisma.hotel.findFirst();
-  if (!hotel) return NextResponse.json([]);
+export async function GET(request: Request) {
+  const hotelId = await resolveHotelId(request.headers);
+  if (!hotelId) return NextResponse.json([]);
   const registers = await prisma.cashRegister.findMany({
-    where: { hotelId: hotel.id },
+    where: { hotelId },
     orderBy: { openedAt: "desc" },
   });
   return NextResponse.json(registers);
@@ -23,16 +23,16 @@ export async function POST(request: Request) {
     const { id: userId } = getUserFromHeaders(request);
     const body = await request.json();
     const data = cashRegisterSchema.parse(body);
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
     const register = await prisma.cashRegister.create({
-      data: { ...data, hotelId: hotel.id, status: "open", openedBy: userId },
+      data: { ...data, hotelId, status: "open", openedBy: userId },
     });
 
     await notifyRole({
       role: "admin",
-      hotelId: hotel.id,
+      hotelId,
       title: "Caja abierta",
       message: `Se abrió caja con fondo de $${data.openingCash}`,
       type: "info",
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       entity: "cash-register",
       entityId: register.id,
       details: `Caja abierta con fondo $${data.openingCash}`,
-      hotelId: hotel.id,
+      hotelId,
     }).catch(() => {});
     return NextResponse.json(register, { status: 201 });
   } catch (error: unknown) {

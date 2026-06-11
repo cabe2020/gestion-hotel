@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="96" fill="#2563eb"/>
+  <path d="M256 80L140 200H180V280H332V200H372L256 80Z" fill="white" opacity="0.08"/>
+  <rect x="140" y="140" width="80" height="120" rx="10" fill="white"/>
+  <rect x="292" y="140" width="80" height="120" rx="10" fill="white"/>
+  <rect x="154" y="156" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="186" y="156" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="306" y="156" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="338" y="156" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="154" y="188" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="186" y="188" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="306" y="188" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="338" y="188" width="20" height="20" rx="3" fill="#2563eb"/>
+  <rect x="216" y="280" width="80" height="70" rx="10" fill="white"/>
+  <rect x="236" y="300" width="40" height="50" rx="6" fill="#2563eb"/>
+  <text x="256" y="430" font-family="system-ui, sans-serif" font-size="72" font-weight="800" fill="white" text-anchor="middle">Hosterix</text>
+</svg>

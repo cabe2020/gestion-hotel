@@ -277,7 +277,6 @@ describe('invoiceSchema', () => {
     const result = invoiceSchema.safeParse({
       number: 'FAC-202501-0001',
       bookingId: 'booking-1',
-      hotelId: 'hotel-1',
       total: 200,
     });
     expect(result.success).toBe(true);
@@ -287,7 +286,6 @@ describe('invoiceSchema', () => {
     const result = invoiceSchema.safeParse({
       number: '',
       bookingId: 'b1',
-      hotelId: 'h1',
       total: 100,
     });
     expect(result.success).toBe(false);
@@ -297,7 +295,6 @@ describe('invoiceSchema', () => {
     const result = invoiceSchema.safeParse({
       number: 'FAC-001',
       bookingId: 'b1',
-      hotelId: 'h1',
       total: -10,
     });
     expect(result.success).toBe(false);
@@ -307,7 +304,6 @@ describe('invoiceSchema', () => {
     const result = invoiceSchema.parse({
       number: 'FAC-001',
       bookingId: 'b1',
-      hotelId: 'h1',
       total: 100,
     });
     expect(result.status).toBe('pending');

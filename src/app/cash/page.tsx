@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Modal from "@/components/Modal";
 import StatsCard from "@/components/StatsCard";
 import Pagination from "@/components/Pagination";
-import { Plus, DollarSign, TrendingUp, TrendingDown, Lock, Unlock, AlertTriangle, CheckCircle } from "lucide-react";
+import { Plus, DollarSign, TrendingUp, TrendingDown, Lock, Unlock, AlertTriangle, CheckCircle, Printer } from "lucide-react";
 import { formatCurrency, formatDate, cashCategories } from "@/lib/utils";
 import ExportButton from "@/components/ExportButton";
 
@@ -170,6 +170,17 @@ export default function CashPage() {
           <h1 className="text-2xl font-bold text-gray-900">Caja</h1>
           <div className="flex gap-2">
             <ExportButton entity="cash-moves" />
+            <button
+              onClick={() => {
+                const params = new URLSearchParams();
+                if (dateFrom) params.set("from", dateFrom);
+                if (dateTo) params.set("to", dateTo);
+                window.open(`/print/cash?${params.toString()}`, "_blank");
+              }}
+              className="btn-secondary inline-flex items-center gap-1.5"
+            >
+              <Printer className="h-4 w-4" /> Imprimir
+            </button>
             {activeRegister ? (
               <>
                 <button onClick={() => setShowMoveModal(true)} className="btn-primary">

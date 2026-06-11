@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/rbac";
 import { getChannels } from "@/lib/channel-manager";
+import { encrypt, decrypt } from "@/lib/crypto";
 import fs from "fs";
 import path from "path";
 
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
       name: ch.name,
       color: ch.color,
       hotelCode: stored.hotelCode || "",
+      apiKey: stored.apiKey ? decrypt(stored.apiKey) : "",
       active: stored.active ?? false,
       lastSync: stored.lastSync || null,
     };
@@ -64,7 +66,7 @@ export async function POST(request: Request) {
 
     config[channel] = {
       hotelCode: hotelCode || existing.hotelCode || "",
-      apiKey: apiKey || existing.apiKey || "",
+      apiKey: apiKey ? encrypt(apiKey) : existing.apiKey || "",
       active: active ?? existing.active ?? false,
       lastSync: existing.lastSync || null,
     };

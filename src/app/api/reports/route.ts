@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveHotelId } from "@/lib/rbac";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get("period") || "month";
 
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel) return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) return NextResponse.json({ error: "No hotel" }, { status: 404 });
 
     const now = new Date();
     let startDate = new Date();
@@ -29,14 +30,14 @@ export async function GET(request: Request) {
 
     const [bookings, cashMoves, rooms] = await Promise.all([
       prisma.booking.findMany({
-        where: { hotelId: hotel.id, createdAt: { gte: startDate } },
+        where: { hotelId: hotelId, createdAt: { gte: startDate } },
         include: { guest: true, room: { include: { roomType: true } } },
       }),
       prisma.cashMove.findMany({
-        where: { hotelId: hotel.id, createdAt: { gte: startDate } },
+        where: { hotelId: hotelId, createdAt: { gte: startDate } },
       }),
       prisma.room.findMany({
-        where: { hotelId: hotel.id },
+        where: { hotelId: hotelId },
       }),
     ]);
 

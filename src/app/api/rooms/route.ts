@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { roomSchema } from "@/lib/validations";
-import { getUserFromHeaders } from "@/lib/rbac";
+import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
 import { logAction } from "@/lib/audit";
 import { ZodError } from "zod";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel) return NextResponse.json([]);
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId) return NextResponse.json([]);
 
     const rooms = await prisma.room.findMany({
-      where: { hotelId: hotel.id },
+      where: { hotelId },
       include: {
         roomType: true,
         bookings: {
@@ -32,12 +32,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const data = roomSchema.parse(body);
-    const hotel = await prisma.hotel.findFirst();
-    if (!hotel)
+    const hotelId = await resolveHotelId(request.headers);
+    if (!hotelId)
       return NextResponse.json({ error: "No hotel" }, { status: 404 });
 
     const room = await prisma.room.create({
-      data: { ...data, hotelId: hotel.id },
+      data: { ...data, hotelId },
       include: { roomType: true },
     });
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       entity: "room",
       entityId: room.id,
       details: `Habitacion ${room.number} creada`,
-      hotelId: hotel.id,
+      hotelId,
     }).catch(() => {});
 
     return NextResponse.json(room, { status: 201 });

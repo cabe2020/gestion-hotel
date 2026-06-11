@@ -535,7 +535,7 @@ function PortalContent() {
       </main>
 
       <footer className="bg-white/60 border-t border-gray-100 px-4 py-3 text-center">
-        <p className="text-xs text-gray-400">GestHotel &middot; Check-in Digital</p>
+        <p className="text-xs text-gray-400">Hosterix &middot; Check-in Digital</p>
       </footer>
     </div>
   );
