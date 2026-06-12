@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { roomTypeSchema } from '@/lib/validations';
-import { requireAdmin, resolveHotelId } from '@/lib/rbac';
+import { resolveHotelId } from '@/lib/rbac';
 import { ZodError } from 'zod';
 
 export async function GET(request: Request) {

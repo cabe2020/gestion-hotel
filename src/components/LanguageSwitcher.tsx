@@ -38,23 +38,23 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-1"
+        className="p-2 rounded-lg hover:bg-[var(--color-accent)] transition-colors flex items-center gap-1"
         aria-label="Cambiar idioma"
       >
-        <Globe className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        <Globe className="h-5 w-5 text-[var(--color-muted-foreground)]" />
         <span className="text-sm">{current.flag}</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-44 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
+        <div className="absolute right-0 top-12 w-44 popover overflow-hidden z-50">
           {languages.map((l) => (
             <button
               key={l.code}
               onClick={() => handleSelect(l.code)}
-              className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+              className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-[var(--color-accent)] transition-colors ${
                 locale === l.code
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium'
-                  : 'text-gray-700 dark:text-gray-200'
+                  ? 'bg-[var(--color-primary-light)]/50 dark:bg-[var(--color-primary-light)]/20 text-[var(--color-primary)] font-medium'
+                  : 'text-[var(--color-foreground)]'
               }`}
             >
               <span>{l.flag}</span>

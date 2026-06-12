@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 import {
-  Hotel,
   Mail,
   Lock,
   Eye,
@@ -104,7 +104,7 @@ export default function SignInPage() {
           </div>
           <div className="relative z-10 flex flex-col justify-center px-16 text-white">
             <div className="flex items-center gap-3 mb-8">
-              <img src="/logos/logo-final.svg" alt="Hosterix" className="h-12 w-auto" />
+              <Image src="/logos/logo-final.svg" alt="Hosterix" width={48} height={48} className="h-12 w-auto" />
             </div>
             <h2 className="text-3xl font-bold mb-4">Recupera tu acceso</h2>
             <p className="text-blue-200 text-lg leading-relaxed max-w-md">
@@ -208,7 +208,7 @@ export default function SignInPage() {
         />
         <div className="relative z-10 flex flex-col justify-between px-16 py-12 w-full">
           <div className="flex items-center gap-3">
-            <img src="/logos/logo-final.svg" alt="Hosterix" className="h-12 w-auto" />
+            <Image src="/logos/logo-final.svg" alt="Hosterix" width={48} height={48} className="h-12 w-auto" />
           </div>
 
           <div className="space-y-10">
@@ -247,7 +247,7 @@ export default function SignInPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <img src="/logos/logo-final.svg" alt="Hosterix" className="h-10 w-auto" />
+            <Image src="/logos/logo-final.svg" alt="Hosterix" width={40} height={40} className="h-10 w-auto" />
           </div>
 
           <div className="mb-8">

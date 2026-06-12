@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { Building2, ChevronDown, Check } from 'lucide-react';
+import Image from 'next/image';
 
 interface Hotel {
   id: string;
@@ -78,13 +79,13 @@ export default function HotelSelector() {
   if (hotels.length === 1) {
     const hotel = currentHotel || hotels[0];
     return (
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-primary-light)] border border-[var(--color-primary)] rounded-lg">
         {hotel.logo ? (
-          <img src={hotel.logo} alt={hotel.name} className="h-5 w-5 rounded object-cover" />
+          <Image src={hotel.logo} alt={hotel.name} width={20} height={20} className="h-5 w-5 rounded object-cover" />
         ) : (
-          <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
+          <Building2 className="h-4 w-4 text-[var(--color-primary)] shrink-0" />
         )}
-        <span className="text-sm font-semibold text-blue-800 truncate max-w-[160px]">
+        <span className="text-sm font-semibold text-[var(--color-primary)] truncate max-w-[160px]">
           {hotel.name}
         </span>
       </div>
@@ -95,29 +96,31 @@ export default function HotelSelector() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-primary-light)] border border-[var(--color-primary)] rounded-lg hover:bg-[var(--color-primary)]/20 transition-colors"
       >
         {currentHotel?.logo ? (
-          <img
+          <Image
             src={currentHotel.logo}
             alt={currentHotel.name}
+            width={20}
+            height={20}
             className="h-5 w-5 rounded object-cover"
           />
         ) : (
-          <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
+          <Building2 className="h-4 w-4 text-[var(--color-primary)] shrink-0" />
         )}
-        <span className="text-sm font-semibold text-blue-800 truncate max-w-[160px]">
+        <span className="text-sm font-semibold text-[var(--color-primary)] truncate max-w-[160px]">
           {currentHotel?.name || 'Seleccionar'}
         </span>
         <ChevronDown
-          className={`h-4 w-4 text-blue-600 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-[var(--color-primary)] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
-          <div className="px-3 py-2 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-500 uppercase">Propiedades</p>
+        <div className="absolute left-0 top-full mt-1 w-64 popover overflow-hidden z-50">
+          <div className="px-3 py-2 border-b border-[var(--color-popover-border)]">
+            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">Propiedades</p>
           </div>
           <div className="max-h-60 overflow-y-auto">
             {hotels.map((hotel) => (
@@ -127,22 +130,24 @@ export default function HotelSelector() {
                   setOpen(false);
                   setSwitching(hotel.id);
                 }}
-                className="w-full text-left px-3 py-2.5 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+                className="w-full text-left px-3 py-2.5 flex items-center gap-2 hover:bg-[var(--color-accent)] transition-colors"
               >
                 {hotel.logo ? (
-                  <img
+                  <Image
                     src={hotel.logo}
                     alt={hotel.name}
+                    width={20}
+                    height={20}
                     className="h-5 w-5 rounded object-cover shrink-0"
                   />
                 ) : (
-                  <Building2 className="h-4 w-4 text-gray-500 shrink-0" />
+                  <Building2 className="h-4 w-4 text-[var(--color-muted-foreground)] shrink-0" />
                 )}
-                <span className="text-sm font-medium text-gray-800 flex-1 truncate">
+                <span className="text-sm font-medium text-[var(--color-popover-foreground)] flex-1 truncate">
                   {hotel.name}
                 </span>
                 {hotel.id === selectedHotelId && (
-                  <Check className="h-4 w-4 text-blue-600 shrink-0" />
+                  <Check className="h-4 w-4 text-[var(--color-primary)] shrink-0" />
                 )}
               </button>
             ))}

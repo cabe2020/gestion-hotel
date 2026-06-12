@@ -20,16 +20,16 @@ interface SearchResults {
 
 const typeLabels: Record<string, { label: string; icon: React.ReactNode }> = {
   huespedes: {
-    label: 'Huespedes',
-    icon: <Users className="h-4 w-4 text-blue-500" />,
+    label: 'Huéspedes',
+    icon: <Users className="h-4 w-4 text-[var(--color-primary)]" />,
   },
   reservas: {
     label: 'Reservas',
-    icon: <CalendarCheck className="h-4 w-4 text-green-500" />,
+    icon: <CalendarCheck className="h-4 w-4 text-[var(--color-success)]" />,
   },
   habitaciones: {
     label: 'Habitaciones',
-    icon: <Bed className="h-4 w-4 text-purple-500" />,
+    icon: <Bed className="h-4 w-4 text-[var(--color-warning)]" />,
   },
 };
 
@@ -142,7 +142,7 @@ export default function SearchCommand() {
       className="fixed inset-0 z-[90] flex items-start justify-center pt-[15vh]"
       role="dialog"
       aria-modal="true"
-      aria-label="Busqueda"
+      aria-label="Búsqueda"
     >
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
@@ -151,9 +151,9 @@ export default function SearchCommand() {
           setQuery('');
         }}
       />
-      <div className="relative w-full max-w-lg mx-4 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
-        <div className="flex items-center gap-3 px-4 border-b border-gray-200">
-          <Search className="h-5 w-5 text-gray-400 shrink-0" />
+      <div className="relative w-full max-w-lg mx-4 card overflow-hidden shadow-2xl">
+        <div className="flex items-center gap-3 px-4 border-b border-[var(--color-card-border)]">
+          <Search className="h-5 w-5 text-[var(--color-muted-foreground)] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -161,7 +161,7 @@ export default function SearchCommand() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={t('search.placeholder')}
-            className="w-full py-4 text-sm outline-none placeholder-gray-400 text-gray-900"
+            className="w-full py-4 text-sm outline-none placeholder-[var(--color-input-placeholder)] text-[var(--color-foreground)] bg-transparent"
             role="combobox"
             aria-expanded={open}
             aria-activedescendant={
@@ -175,29 +175,29 @@ export default function SearchCommand() {
                 setResults(null);
                 inputRef.current?.focus();
               }}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              className="p-1 rounded hover:bg-[var(--color-accent)] transition-colors"
             >
-              <X className="h-4 w-4 text-gray-400" />
+              <X className="h-4 w-4 text-[var(--color-muted-foreground)]" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-gray-400 bg-gray-100 border border-gray-200 rounded font-mono">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)] border border-[var(--color-border)] rounded font-mono">
             Esc
           </kbd>
         </div>
 
         <div className="max-h-80 overflow-y-auto py-2" role="listbox">
           {loading && (
-            <div className="px-4 py-6 text-center text-sm text-gray-400">
+            <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
               {t('search.searching')}
             </div>
           )}
           {!loading && query && !results && (
-            <div className="px-4 py-6 text-center text-sm text-gray-400">
+            <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
               {t('search.typeToSearch')}
             </div>
           )}
           {!loading && results && flat.length === 0 && (
-            <div className="px-4 py-6 text-center text-sm text-gray-400">
+            <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
               {t('search.noResults')}
             </div>
           )}
@@ -213,7 +213,7 @@ export default function SearchCommand() {
               }
               return (
                 <div key={type}>
-                  <div className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <div className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold text-[var(--color-muted-foreground)] uppercase tracking-wide">
                     {meta.icon}
                     {meta.label}
                   </div>
@@ -228,13 +228,13 @@ export default function SearchCommand() {
                         id={`search-result-${globalIndex}`}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                           activeIndex === globalIndex
-                            ? 'bg-blue-50 text-blue-900'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? 'bg-[var(--color-primary-light)]/50 text-[var(--color-primary)]'
+                            : 'text-[var(--color-foreground)] hover:bg-[var(--color-accent)]'
                         }`}
                       >
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{item.label}</p>
-                          <p className="text-xs text-gray-400 truncate">{item.subtitle}</p>
+                          <p className="text-xs text-[var(--color-muted-foreground)] truncate">{item.subtitle}</p>
                         </div>
                       </button>
                     );
@@ -245,7 +245,7 @@ export default function SearchCommand() {
         </div>
 
         {!query && (
-          <div className="px-4 py-6 text-center text-sm text-gray-400">{t('search.hint')}</div>
+          <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">{t('search.hint')}</div>
         )}
       </div>
     </div>

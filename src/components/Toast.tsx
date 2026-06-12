@@ -30,24 +30,17 @@ export function useToast(): ToastContextValue {
 }
 
 const iconMap: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />,
-  error: <XCircle className="h-5 w-5 text-red-500 shrink-0" />,
-  warning: <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />,
-  info: <Info className="h-5 w-5 text-blue-500 shrink-0" />,
+  success: <CheckCircle className="h-5 w-5 text-[var(--color-success)] shrink-0" />,
+  error: <XCircle className="h-5 w-5 text-[var(--color-destructive)] shrink-0" />,
+  warning: <AlertTriangle className="h-5 w-5 text-[var(--color-warning)] shrink-0" />,
+  info: <Info className="h-5 w-5 text-[var(--color-primary)] shrink-0" />,
 };
 
-const bgMap: Record<ToastType, string> = {
-  success: 'border-green-200 bg-green-50',
-  error: 'border-red-200 bg-red-50',
-  warning: 'border-yellow-200 bg-yellow-50',
-  info: 'border-blue-200 bg-blue-50',
-};
-
-const textMap: Record<ToastType, string> = {
-  success: 'text-green-800',
-  error: 'text-red-800',
-  warning: 'text-yellow-800',
-  info: 'text-blue-800',
+const classMap: Record<ToastType, string> = {
+  success: 'border-[var(--color-success)] bg-[var(--color-success-light)] text-[var(--color-success)] dark:border-[var(--color-success)] dark:bg-[var(--color-success-light)] dark:text-[var(--color-success)]',
+  error: 'border-[var(--color-destructive)] bg-[var(--color-destructive-light)] text-[var(--color-destructive)] dark:border-[var(--color-destructive)] dark:bg-[var(--color-destructive-light)] dark:text-[var(--color-destructive)]',
+  warning: 'border-[var(--color-warning)] bg-[var(--color-warning-light)] text-[var(--color-warning)] dark:border-[var(--color-warning)] dark:bg-[var(--color-warning-light)] dark:text-[var(--color-warning)]',
+  info: 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)] dark:border-[var(--color-primary)] dark:bg-[var(--color-primary-light)] dark:text-[var(--color-primary)]',
 };
 
 let toastCounter = 0;
@@ -139,12 +132,10 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
             <div
               key={toast.id}
               onClick={() => !isConfirm && dismiss(toast.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 cursor-pointer ${
-                bgMap[toast.type]
-              } ${toast.exiting ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 cursor-pointer ${classMap[toast.type]} ${toast.exiting ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}
             >
               {iconMap[toast.type]}
-              <span className={`text-sm font-medium flex-1 ${textMap[toast.type]}`}>
+              <span className="text-sm font-medium flex-1">
                 {toast.message}
               </span>
               {isConfirm ? (
@@ -154,7 +145,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
                       e.stopPropagation();
                       resolveConfirm(toast.id, true);
                     }}
-                    className="px-2 py-1 text-xs font-medium rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    className="btn-destructive px-2 py-1 text-xs"
                   >
                     {t('common.yes')}
                   </button>
@@ -163,7 +154,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
                       e.stopPropagation();
                       resolveConfirm(toast.id, false);
                     }}
-                    className="px-2 py-1 text-xs font-medium rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                    className="btn-secondary px-2 py-1 text-xs"
                   >
                     {t('common.no')}
                   </button>
@@ -174,9 +165,9 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
                     e.stopPropagation();
                     dismiss(toast.id);
                   }}
-                  className="p-0.5 rounded hover:bg-black/5 transition-colors"
+                  className="p-0.5 rounded hover:bg-[var(--color-muted)] transition-colors"
                 >
-                  <X className="h-4 w-4 text-gray-400" />
+                  <X className="h-4 w-4 text-[var(--color-muted-foreground)]" />
                 </button>
               )}
             </div>

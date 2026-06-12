@@ -24,6 +24,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useSession, signOut } from 'next-auth/react';
@@ -90,18 +91,18 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-slate-900 text-white flex items-center justify-between px-4 h-14">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-[var(--color-card)] text-[var(--color-card-foreground)] border-b border-[var(--color-card-border)] flex items-center justify-between px-4 h-14">
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          className="p-2 rounded-lg hover:bg-[var(--color-accent)] transition-colors"
           aria-label="Abrir menú"
         >
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-2">
-          <img src="/logos/logo-sidebar.svg" alt="Hosterix" className="h-7 w-auto" />
+          <Image src="/logos/logo-sidebar.svg" alt="Hosterix" width={28} height={28} className="h-7 w-auto" />
         </div>
-        <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
+        <div className="h-8 w-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-sm font-semibold text-[var(--color-primary-foreground)]">
           {initials}
         </div>
       </div>
@@ -115,16 +116,18 @@ export default function Sidebar() {
 
       <aside
         className={cn(
-          'bg-slate-900 dark:bg-slate-950 text-white flex flex-col transition-all duration-300 h-screen',
+          'bg-[var(--color-card)] text-[var(--color-card-foreground)] border-r border-[var(--color-card-border)] flex flex-col transition-all duration-300 h-screen',
           'fixed md:sticky top-0 z-50 md:z-auto',
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
           collapsed ? 'w-64 md:w-16' : 'w-64'
         )}
       >
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700">
-          <img
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-[var(--color-card-border)]">
+          <Image
             src="/logos/logo-sidebar.svg"
             alt="Hosterix"
+            width={32}
+            height={32}
             className={cn('h-8 w-auto shrink-0', collapsed && '!h-7')}
           />
           {(!collapsed || mobileOpen) && (
@@ -152,8 +155,8 @@ export default function Sidebar() {
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-300 hover:bg-slate-800 dark:hover:bg-slate-800/50 hover:text-white'
+                      ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+                      : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-accent)] hover:text-[var(--color-foreground)]'
                   )}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
@@ -164,16 +167,16 @@ export default function Sidebar() {
         </nav>
 
         {session?.user && (
-          <div className="px-4 py-3 border-t border-slate-700 flex items-center gap-3">
-            <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold shrink-0">
+          <div className="px-4 py-3 border-t border-[var(--color-card-border)] flex items-center gap-3">
+            <div className="h-8 w-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-sm font-semibold text-[var(--color-primary-foreground)] shrink-0">
               {initials}
             </div>
             {(!collapsed || mobileOpen) && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{session.user.name || 'Usuario'}</p>
+                <p className="text-sm font-medium truncate text-[var(--color-card-foreground)]">{session.user.name || 'Usuario'}</p>
                 <button
                   onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                  className="text-xs text-slate-400 hover:text-red-400 transition-colors"
+                  className="text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-destructive)] transition-colors"
                 >
                   {t('btn.signOut')}
                 </button>
@@ -184,7 +187,7 @@ export default function Sidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex items-center justify-center py-3 border-t border-slate-700 hover:bg-slate-800 transition-colors"
+          className="hidden md:flex items-center justify-center py-3 border-t border-[var(--color-card-border)] hover:bg-[var(--color-accent)] transition-colors"
         >
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>

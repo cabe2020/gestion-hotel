@@ -66,7 +66,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       let totalAmount = existing.totalAmount;
 
       if (needsRecalc) {
-        const roomIdForCalc = data.roomId || existing.roomId;
         const adultsForCalc = data.adults !== undefined ? data.adults : existing.adults;
         let baseRate = existing.roomRate;
 

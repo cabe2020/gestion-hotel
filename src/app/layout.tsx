@@ -28,12 +28,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');var m=window.matchMedia('(prefers-color-scheme:dark)');var isDark=t==='dark'||(!t&&m.matches)||(t==='system'&&m.matches);if(isDark){document.documentElement.classList.add('dark');document.documentElement.classList.remove('light')}else{document.documentElement.classList.add('light');document.documentElement.classList.remove('dark')}}catch(e){}})();`,
           }}
         />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body>
+      <body className="theme-transition">
         <ThemeProvider>
           <I18nProvider>
             <AuthProvider>
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <KeyboardShortcuts />
                 <div className="flex min-h-screen">
                   <Sidebar />
-                  <main className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-auto md:w-auto w-full pt-14 md:pt-0">
+                  <main className="flex-1 bg-[var(--color-background)] overflow-auto md:w-auto w-full pt-14 md:pt-0">
                     {children}
                   </main>
                 </div>

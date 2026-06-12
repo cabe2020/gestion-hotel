@@ -4,12 +4,22 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ReportPrint from '../ReportPrint';
 
+interface CashMove {
+  id: string;
+  type: 'income' | 'expense';
+  amount: number;
+  concept: string;
+  category: string;
+  date: string;
+  createdAt: string;
+}
+
 export default function PrintCashContent() {
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
 
-  const [moves, setMoves] = useState<any[]>([]);
+  const [moves, setMoves] = useState<CashMove[]>([]);
   const [hotel, setHotel] = useState<{ name: string }>({ name: '' });
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpense: 0, balance: 0 });
@@ -34,11 +44,11 @@ export default function PrintCashContent() {
         const data = res.data || res;
         setMoves(Array.isArray(data) ? data : []);
         const income = data
-          .filter((m: any) => m.type === 'income')
-          .reduce((s: number, m: any) => s + m.amount, 0);
+          .filter((m: CashMove) => m.type === 'income')
+          .reduce((s: number, m: CashMove) => s + m.amount, 0);
         const expense = data
-          .filter((m: any) => m.type === 'expense')
-          .reduce((s: number, m: any) => s + m.amount, 0);
+          .filter((m: CashMove) => m.type === 'expense')
+          .reduce((s: number, m: CashMove) => s + m.amount, 0);
         setStats({ totalIncome: income, totalExpense: expense, balance: income - expense });
       })
       .catch(() => setMoves([]))

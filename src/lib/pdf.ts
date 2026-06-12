@@ -83,7 +83,8 @@ export function generateInvoicePDF(data: {
     doc.setFontSize(72);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 0, 0);
-    doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
+    const GState = (doc as { GState: new (opts: { opacity: number }) => unknown }).GState;
+    doc.setGState(new GState({ opacity: 0.15 }));
     doc.text('ANULADA', 105, 150, { align: 'center', angle: 35 });
     doc.restoreGraphicsState();
     doc.setTextColor(255, 0, 0);
@@ -135,7 +136,7 @@ export function generateInvoicePDF(data: {
     styles: { fontSize: 9 },
   });
 
-  const finalY = (doc as any).lastAutoTable.finalY + 10;
+  const finalY = (doc as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
   const subtotal = invoice.total / (1 + hotel.taxRate / 100);
   doc.setFontSize(10);
   doc.text(`Subtotal: ${currency} ${subtotal.toFixed(2)}`, 140, finalY);

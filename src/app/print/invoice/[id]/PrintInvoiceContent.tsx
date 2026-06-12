@@ -4,10 +4,27 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import InvoicePrint from '@/app/print/InvoicePrint';
 
+interface InvoiceData {
+  id: string;
+  code: string;
+  status: string;
+  totalAmount: number;
+  paidAmount: number;
+  balance: number;
+  currency: string;
+  createdAt: string;
+  guest: { firstName: string; lastName: string; email: string; phone: string; idNumber: string };
+  room: { number: string; roomType: { name: string } };
+  checkIn: string;
+  checkOut: string;
+  items: { concept: string; amount: number; category: string }[];
+  payments: { method: string; amount: number; date: string }[];
+}
+
 export default function PrintInvoiceContent() {
   const params = useParams();
   const id = params?.id as string;
-  const [invoice, setInvoice] = useState<any>(null);
+  const [invoice, setInvoice] = useState<InvoiceData | null>(null);
   const [hotel, setHotel] = useState<{
     name: string;
     address: string;

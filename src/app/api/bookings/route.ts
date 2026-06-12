@@ -171,10 +171,11 @@ export async function POST(request: Request) {
         return NextResponse.json(booking, { status: 201 });
       } catch (error: unknown) {
         lastError = error;
+        const prismaError = error as { code?: string; meta?: { target?: string[] } };
         const isUniqueConstraint =
           error instanceof Error &&
-          (error as any).code === 'P2002' &&
-          (error as any).meta?.target?.includes('code');
+          prismaError.code === 'P2002' &&
+          prismaError.meta?.target?.includes('code');
         if (!isUniqueConstraint) break;
       }
     }

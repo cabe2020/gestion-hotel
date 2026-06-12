@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 import {
-  Hotel,
   Mail,
   Lock,
   Eye,
@@ -178,7 +178,7 @@ export default function SignUpPage() {
         />
         <div className="relative z-10 flex flex-col justify-between px-14 py-12 w-full">
           <div className="flex items-center gap-3">
-            <img src="/logos/logo-final.svg" alt="Hosterix" className="h-12 w-auto" />
+            <Image src="/logos/logo-final.svg" alt="Hosterix" width={48} height={48} className="h-12 w-auto" />
           </div>
 
           <div>
@@ -220,7 +220,7 @@ export default function SignUpPage() {
         <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
           <div className="w-full max-w-lg">
             <div className="lg:hidden flex items-center gap-3 mb-8">
-              <img src="/logos/logo-final.svg" alt="Hosterix" className="h-10 w-auto" />
+              <Image src="/logos/logo-final.svg" alt="Hosterix" width={40} height={40} className="h-10 w-auto" />
             </div>
 
             <div className="mb-6">

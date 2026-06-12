@@ -1,20 +1,129 @@
-@reference "tailwindcss";
 .booking-engine-step-active {
-  @apply border-blue-600 bg-blue-600 text-white;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
 }
 
 .booking-engine-step-completed {
-  @apply border-green-500 bg-green-500 text-white;
+  border-color: var(--color-success);
+  background-color: var(--color-success);
+  color: var(--color-success-foreground);
 }
 
 .booking-engine-step-pending {
-  @apply border-gray-300 bg-white text-gray-400;
+  border-color: var(--color-border);
+  background-color: var(--color-card);
+  color: var(--color-muted-foreground);
 }
 
 .booking-engine-card {
-  @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6 transition-all hover:shadow-xl;
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+  border: 1px solid var(--color-card-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.booking-engine-card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .booking-engine-input {
-  @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-shadow;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: var(--color-input);
+  border: 1px solid var(--color-input-border);
+  color: var(--color-foreground);
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.booking-engine-input::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+.booking-engine-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-ring);
+  border-color: transparent;
+}
+
+.booking-engine-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.booking-engine-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+.booking-engine-btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.booking-engine-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+}
+
+.booking-engine-btn-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+.booking-engine-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+}
+
+.booking-engine-btn-outline:hover {
+  background-color: var(--color-accent);
+}
+
+.booking-engine-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.booking-engine-divider {
+  border-top: 1px solid var(--color-border);
 }

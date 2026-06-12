@@ -7,8 +7,8 @@ import { HelpCircle } from 'lucide-react';
 const shortcuts = [
   { keys: 'Ctrl+K', action: 'Buscar' },
   { keys: 'N', action: 'Nueva reserva', pages: ['/dashboard', '/bookings'] },
-  { keys: 'G', action: 'Nuevo huesped', pages: ['/guests'] },
-  { keys: 'R', action: 'Nueva habitacion', pages: ['/rooms'] },
+  { keys: 'G', action: 'Nuevo huésped', pages: ['/guests'] },
+  { keys: 'R', action: 'Nueva habitación', pages: ['/rooms'] },
   { keys: 'Esc', action: 'Cerrar' },
 ];
 
@@ -84,7 +84,7 @@ export default function KeyboardShortcuts() {
     <>
       <button
         onClick={() => setShowHelp(true)}
-        className="fixed bottom-4 left-4 z-50 p-2 rounded-full bg-white shadow-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:shadow-lg transition-all"
+        className="fixed bottom-4 left-4 z-50 p-2 rounded-full card shadow-md border border-[var(--color-card-border)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:shadow-lg transition-all"
         title="Atajos de teclado"
       >
         <HelpCircle className="h-5 w-5" />
@@ -97,25 +97,25 @@ export default function KeyboardShortcuts() {
         >
           <div className="fixed inset-0 bg-black/40" />
           <div
-            className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-sm mx-4 overflow-hidden"
+            className="relative card shadow-2xl border border-[var(--color-card-border)] w-full max-w-sm mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h3 className="text-base font-semibold text-gray-900">Atajos de Teclado</h3>
+            <div className="px-5 py-4 border-b border-[var(--color-card-border)]">
+              <h3 className="text-base font-semibold text-[var(--color-card-foreground)]">Atajos de Teclado</h3>
             </div>
             <div className="px-5 py-3 space-y-2">
               {availableShortcuts.map((s) => (
                 <div key={s.keys} className="flex items-center justify-between py-1.5">
-                  <span className="text-sm text-gray-700">{s.action}</span>
-                  <kbd className="inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-mono text-gray-600 bg-gray-100 border border-gray-200 rounded">
+                  <span className="text-sm text-[var(--color-foreground)]">{s.action}</span>
+                  <kbd className="inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-mono text-[var(--color-muted-foreground)] bg-[var(--color-secondary)] border border-[var(--color-border)] rounded">
                     {s.keys}
                   </kbd>
                 </div>
               ))}
             </div>
-            <div className="px-5 py-3 border-t border-gray-100 text-xs text-gray-400 text-center">
+            <div className="px-5 py-3 border-t border-[var(--color-card-border)] text-xs text-[var(--color-muted-foreground)] text-center">
               Presiona{' '}
-              <kbd className="px-1 py-0.5 bg-gray-100 border border-gray-200 rounded font-mono">
+              <kbd className="px-1 py-0.5 bg-[var(--color-secondary)] border border-[var(--color-border)] rounded font-mono">
                 ?
               </kbd>{' '}
               para abrir/cerrar

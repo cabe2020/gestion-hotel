@@ -161,20 +161,20 @@ export default function Autocomplete({
         {query ? (
           <button
             onClick={clearValue}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
             type="button"
           >
             <X className="h-4 w-4" />
           </button>
         ) : (
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-muted-foreground)]" />
         )}
       </div>
 
       {showDropdown && (results.length > 0 || loading || onCreateNew) && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 popover rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {loading && (
-            <div className="px-4 py-3 text-sm text-gray-500">{t('search.searching')}</div>
+            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">{t('search.searching')}</div>
           )}
 
           {!loading &&
@@ -182,8 +182,8 @@ export default function Autocomplete({
               <button
                 key={String(item[valueKey] || idx)}
                 onClick={() => handleSelect(item)}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${
-                  idx === highlightIndex ? 'bg-blue-50' : ''
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-[var(--color-accent)] transition-colors ${
+                  idx === highlightIndex ? 'bg-[var(--color-primary-light)]/50' : ''
                 }`}
                 type="button"
               >
@@ -192,7 +192,7 @@ export default function Autocomplete({
             ))}
 
           {!loading && results.length === 0 && query.length >= 1 && !onCreateNew && (
-            <div className="px-4 py-3 text-sm text-gray-500">{t('search.noResults')}</div>
+            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">{t('search.noResults')}</div>
           )}
 
           {!loading && onCreateNew && query.length >= 1 && (
@@ -201,8 +201,8 @@ export default function Autocomplete({
                 onCreateNew();
                 setShowDropdown(false);
               }}
-              className={`w-full text-left px-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 border-t border-gray-100 ${
-                highlightIndex === results.length ? 'bg-blue-50' : ''
+              className={`w-full text-left px-4 py-2 text-sm text-[var(--color-primary)] font-medium hover:bg-[var(--color-accent)] border-t border-[var(--color-popover-border)] ${
+                highlightIndex === results.length ? 'bg-[var(--color-primary-light)]/50' : ''
               }`}
               type="button"
             >

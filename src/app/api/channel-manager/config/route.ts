@@ -4,19 +4,21 @@ import { getChannels } from '@/lib/channel-manager';
 import fs from 'fs';
 import path from 'path';
 
+type ChannelConfig = Record<string, unknown>;
+
 const CONFIG_PATH = path.join(process.cwd(), 'data', 'channel-config.json');
 
-function readConfig(): Record<string, any> {
+function readConfig(): ChannelConfig {
   try {
     if (fs.existsSync(CONFIG_PATH)) {
       const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
-      return JSON.parse(raw);
+      return JSON.parse(raw) as ChannelConfig;
     }
   } catch {}
   return {};
 }
 
-function writeConfig(config: Record<string, any>) {
+function writeConfig(config: ChannelConfig) {
   const dir = path.dirname(CONFIG_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');

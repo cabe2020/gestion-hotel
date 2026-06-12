@@ -154,8 +154,9 @@ export default function CheckInCheckOutPage() {
         closeFolio();
         load();
       }, 1500);
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Error al procesar' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al procesar';
+      setMessage({ type: 'error', text: message });
     } finally {
       setProcessing(false);
     }

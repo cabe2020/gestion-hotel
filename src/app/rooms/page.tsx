@@ -9,6 +9,7 @@ import { roomStatuses } from './types';
 import { useToast } from '@/components/Toast';
 import { registerShortcutAction } from '@/components/KeyboardShortcuts';
 import ImageUpload from '@/components/ImageUpload';
+import Image from 'next/image';
 
 interface RoomType {
   id: string;
@@ -193,9 +194,11 @@ export default function RoomsPage() {
           {filtered.map((room) => (
             <div key={room.id} className="card hover:shadow-md transition-shadow">
               {roomImages[room.id] ? (
-                <img
+                <Image
                   src={roomImages[room.id]}
                   alt={`Hab. ${room.number}`}
+                  width={400}
+                  height={128}
                   className="w-full h-32 object-cover rounded-t-lg mb-3"
                 />
               ) : (

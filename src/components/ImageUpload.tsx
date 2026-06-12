@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageUploadProps {
   value?: string;
@@ -95,14 +96,16 @@ export default function ImageUpload({
     <div className="space-y-2">
       {preview ? (
         <div className="relative group">
-          <img
+          <Image
             src={preview}
             alt="Preview"
-            className="w-full max-h-48 object-contain rounded-lg border border-gray-200"
+            fill
+            className="max-h-48 object-contain rounded-lg border border-[var(--color-border)]"
+            sizes="100vw"
           />
           <button
             onClick={handleRemove}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 p-1 bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             type="button"
           >
             <X className="h-4 w-4" />
@@ -116,23 +119,23 @@ export default function ImageUpload({
           onClick={() => inputRef.current?.click()}
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
             dragging
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+              ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]/50'
+              : 'border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-accent)]'
           }`}
         >
-          <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-          <p className="text-sm text-gray-600">{label}</p>
-          <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP - Max {maxSizeMB}MB</p>
+          <Upload className="h-8 w-8 mx-auto text-[var(--color-muted-foreground)] mb-2" />
+          <p className="text-sm text-[var(--color-foreground)]">{label}</p>
+          <p className="text-xs text-[var(--color-muted-foreground)] mt-1">PNG, JPG, WebP - Max {maxSizeMB}MB</p>
         </div>
       )}
 
       {uploading && (
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
+        <div className="w-full bg-[var(--color-muted)] rounded-full h-2">
+          <div className="bg-[var(--color-primary)] h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-destructive)]">{error}</p>}
 
       <input
         ref={inputRef}

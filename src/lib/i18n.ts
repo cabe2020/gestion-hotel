@@ -123,6 +123,13 @@ const es = {
   'search.noResults': 'No se encontraron resultados',
   'search.hint': 'Busca huéspedes, reservas o habitaciones',
   'autocomplete.createNew': 'Crear nuevo huésped',
+  'theme.light': 'Claro',
+  'theme.dark': 'Oscuro',
+  'theme.system': 'Sistema',
+  'theme.change': 'Cambiar tema',
+  'theme.theme': 'Tema',
+  'theme.accessibility': 'Accesibilidad',
+  'theme.highContrast': 'Alto contraste',
 } as const;
 
 const en: Record<TranslationKey, string> = {
@@ -248,6 +255,13 @@ const en: Record<TranslationKey, string> = {
   'search.noResults': 'No results found',
   'search.hint': 'Search guests, bookings or rooms',
   'autocomplete.createNew': 'Create new guest',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'theme.system': 'System',
+  'theme.change': 'Change theme',
+  'theme.theme': 'Theme',
+  'theme.accessibility': 'Accessibility',
+  'theme.highContrast': 'High Contrast',
 };
 
 const pt: Record<TranslationKey, string> = {
@@ -373,6 +387,13 @@ const pt: Record<TranslationKey, string> = {
   'search.noResults': 'Nenhum resultado encontrado',
   'search.hint': 'Busque hóspedes, reservas ou quartos',
   'autocomplete.createNew': 'Criar novo hóspede',
+  'theme.light': 'Claro',
+  'theme.dark': 'Escuro',
+  'theme.system': 'Sistema',
+  'theme.change': 'Alterar tema',
+  'theme.theme': 'Tema',
+  'theme.accessibility': 'Acessibilidade',
+  'theme.highContrast': 'Alto contraste',
 };
 
 export type Locale = 'es' | 'en' | 'pt';

@@ -134,12 +134,12 @@ function OccupancyDonut({
     cleaning: '#a855f7',
   };
 
-  let accumulatedAngle = 0;
-  const arcs = ringSegments.map((seg) => {
+  const arcs = ringSegments.map((seg, index) => {
     const fraction = seg._count.status / (totalSegments || 1);
-    const startAngle = accumulatedAngle;
+    const startAngle = ringSegments
+      .slice(0, index)
+      .reduce((sum, s) => sum + s._count.status / (totalSegments || 1), 0) * circumference;
     const arcLength = fraction * circumference;
-    accumulatedAngle += arcLength;
 
     const strokeDashOffset = circumference - startAngle - arcLength;
     const strokeDashArray = `${arcLength} ${circumference - arcLength}`;
@@ -209,6 +209,40 @@ function OccupancyDonut({
   );
 }
 
+function TooltipLine({
+  values,
+  max,
+  px,
+  py,
+  chartW,
+  chartH,
+}: {
+  values: number[];
+  max: number;
+  px: number;
+  py: number;
+  chartW: number;
+  chartH: number;
+}) {
+  return (
+    <>
+      {values.map((v, i) => {
+        const x = px + (i / (values.length - 1 || 1)) * chartW;
+        const y = py + chartH - (v / max) * chartH;
+        return (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={3}
+            className="fill-current opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        );
+      })}
+    </>
+  );
+}
+
 function RevenueAreaChart({
   data,
   currency,
@@ -248,26 +282,6 @@ function RevenueAreaChart({
 
   const incomeValues = data.map((d) => d.income);
   const expenseValues = data.map((d) => d.expense);
-
-  const TooltipLine = ({ values, max }: { values: number[]; max: number }) => {
-    return (
-      <>
-        {values.map((v, i) => {
-          const x = px + (i / (values.length - 1 || 1)) * chartW;
-          const y = py + chartH - (v / max) * chartH;
-          return (
-            <circle
-              key={i}
-              cx={x}
-              cy={y}
-              r={3}
-              className="fill-current opacity-0 group-hover:opacity-100 transition-opacity"
-            />
-          );
-        })}
-      </>
-    );
-  };
 
   return (
     <div className="group relative">
@@ -352,7 +366,14 @@ function RevenueAreaChart({
           );
         })}
 
-        <TooltipLine values={incomeValues} max={maxIncome} />
+        <TooltipLine
+          values={incomeValues}
+          max={maxIncome}
+          px={px}
+          py={py}
+          chartW={chartW}
+          chartH={chartH}
+        />
       </svg>
 
       <div className="flex items-center gap-4 mt-2">

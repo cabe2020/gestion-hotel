@@ -40,27 +40,27 @@ export default function PWARegister() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 flex items-center gap-3">
-      <div className="bg-blue-100 dark:bg-blue-900/40 p-2 rounded-lg shrink-0">
-        <Download className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 popover p-4 z-50 flex items-center gap-3">
+      <div className="bg-[var(--color-primary-light)]/50 dark:bg-[var(--color-primary-light)]/20 p-2 rounded-lg shrink-0">
+        <Download className="h-5 w-5 text-[var(--color-primary)]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">Instalar Hosterix</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Usar como app en tu dispositivo</p>
+        <p className="text-sm font-medium text-[var(--color-popover-foreground)]">Instalar Hosterix</p>
+        <p className="text-xs text-[var(--color-muted-foreground)]">Usar como app en tu dispositivo</p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={handleInstall}
-          className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg transition-colors"
+          className="text-xs font-medium btn-primary px-3 py-1.5"
         >
           Instalar
         </button>
         <button
           onClick={() => setShowBanner(false)}
-          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="p-1 rounded hover:bg-[var(--color-accent)] transition-colors text-[var(--color-muted-foreground)]"
           aria-label="Cerrar"
         >
-          <X className="h-4 w-4 text-gray-400" />
+          <X className="h-4 w-4" />
         </button>
       </div>
     </div>

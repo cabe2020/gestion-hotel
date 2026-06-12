@@ -37,8 +37,8 @@ export default function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-white">
-      <p className="text-sm text-gray-700">
+    <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--color-card-border)] bg-[var(--color-card)]">
+      <p className="text-sm text-[var(--color-foreground)]">
         Mostrando <span className="font-medium">{start}</span>-
         <span className="font-medium">{end}</span> de{' '}
         <span className="font-medium">{totalItems}</span> resultados
@@ -47,13 +47,13 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-secondary px-3 py-1.5 text-sm"
         >
           Anterior
         </button>
         {getPageNumbers().map((page, i) =>
           typeof page === 'string' ? (
-            <span key={`ellipsis-${i}`} className="px-2 py-1 text-sm text-gray-500">
+            <span key={`ellipsis-${i}`} className="px-2 py-1 text-sm text-[var(--color-muted-foreground)]">
               ...
             </span>
           ) : (
@@ -62,8 +62,8 @@ export default function Pagination({
               onClick={() => onPageChange(page)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 page === currentPage
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]'
+                  : 'btn-secondary'
               }`}
             >
               {page}
@@ -73,7 +73,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-secondary px-3 py-1.5 text-sm"
         >
           Siguiente
         </button>

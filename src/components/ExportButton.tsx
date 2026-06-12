@@ -34,10 +34,10 @@ export default function ExportButton({ entity, label, from, to }: ExportButtonPr
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+          <div className="absolute right-0 mt-1 w-40 popover shadow-lg z-20 py-1">
             <button
               onClick={() => handleExport('csv')}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-700"
+              className="w-full text-left px-4 py-2 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-accent)]"
             >
               Exportar CSV
             </button>

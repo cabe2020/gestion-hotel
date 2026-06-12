@@ -68,12 +68,6 @@ function PortalContent() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
 
-  useEffect(() => {
-    if (code) {
-      handleSearch();
-    }
-  }, []);
-
   const handleSearch = useCallback(async () => {
     if (!code.trim()) {
       setError('Ingrese un codigo de reserva');
@@ -106,6 +100,12 @@ function PortalContent() {
       setLoading(false);
     }
   }, [code]);
+
+  useEffect(() => {
+    if (code) {
+      handleSearch();
+    }
+  }, [code, handleSearch]);
 
   const initCanvas = () => {
     const canvas = canvasRef.current;

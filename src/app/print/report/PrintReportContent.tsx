@@ -4,13 +4,32 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ReportPrint from '../ReportPrint';
 
+interface OccupancyData {
+  date: string;
+  totalRooms: number;
+  occupiedRooms: number;
+  occupancyRate: number;
+  avgRate: number;
+  revenue: number;
+}
+
+interface RevenueData {
+  date: string;
+  roomRevenue: number;
+  folioRevenue: number;
+  totalRevenue: number;
+  payments: number;
+}
+
+type ReportData = OccupancyData | RevenueData;
+
 export default function PrintReportContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get('type') || 'occupancy';
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
 
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<ReportData[]>([]);
   const [hotel, setHotel] = useState<{ name: string }>({ name: '' });
   const [loading, setLoading] = useState(true);
 
@@ -71,16 +90,16 @@ export default function PrintReportContent() {
     { key: 'payments', label: 'Pagos', align: 'right' as const },
   ];
 
-  const formatData = (raw: any[]) => {
+  const formatData = (raw: ReportData[]) => {
     if (type === 'occupancy') {
-      return raw.map((d) => ({
+      return raw.map((d: OccupancyData) => ({
         ...d,
         occupancyRate: `${d.occupancyRate}%`,
         avgRate: `$${d.avgRate}`,
         revenue: `$${d.revenue}`,
       }));
     }
-    return raw.map((d) => ({
+    return raw.map((d: RevenueData) => ({
       ...d,
       roomRevenue: `$${d.roomRevenue}`,
       folioRevenue: `$${d.folioRevenue}`,
