@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import StatusBadge from "@/components/StatusBadge";
-import { formatDate, formatCurrency, bookingStatuses } from "@/lib/utils";
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Header from '@/components/Header';
+import StatusBadge from '@/components/StatusBadge';
+import { formatDate, formatCurrency, bookingStatuses } from '@/lib/utils';
 import {
   ArrowLeft,
   Star,
@@ -17,7 +17,7 @@ import {
   Clock,
   Tag,
   User,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface GuestData {
   id: string;
@@ -88,32 +88,32 @@ interface TimelineData {
 }
 
 const tagColorMap: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-800",
-  green: "bg-green-100 text-green-800",
-  red: "bg-red-100 text-red-800",
-  yellow: "bg-yellow-100 text-yellow-800",
-  purple: "bg-purple-100 text-purple-800",
-  pink: "bg-pink-100 text-pink-800",
-  orange: "bg-orange-100 text-orange-800",
-  gray: "bg-gray-100 text-gray-800",
+  blue: 'bg-blue-100 text-blue-800',
+  green: 'bg-green-100 text-green-800',
+  red: 'bg-red-100 text-red-800',
+  yellow: 'bg-yellow-100 text-yellow-800',
+  purple: 'bg-purple-100 text-purple-800',
+  pink: 'bg-pink-100 text-pink-800',
+  orange: 'bg-orange-100 text-orange-800',
+  gray: 'bg-gray-100 text-gray-800',
 };
 
 const paymentMethodLabels: Record<string, string> = {
-  cash: "Efectivo",
-  card: "Tarjeta",
-  transfer: "Transferencia",
-  other: "Otro",
-  refund: "Reembolso",
+  cash: 'Efectivo',
+  card: 'Tarjeta',
+  transfer: 'Transferencia',
+  other: 'Otro',
+  refund: 'Reembolso',
 };
 
 const folioCategoryLabels: Record<string, string> = {
-  room: "Habitacion",
-  minibar: "Minibar",
-  restaurant: "Restaurante",
-  spa: "Spa",
-  laundry: "Lavanderia",
-  parking: "Estacionamiento",
-  other: "Otro",
+  room: 'Habitacion',
+  minibar: 'Minibar',
+  restaurant: 'Restaurante',
+  spa: 'Spa',
+  laundry: 'Lavanderia',
+  parking: 'Estacionamiento',
+  other: 'Otro',
 };
 
 export default function GuestTimelinePage() {
@@ -123,7 +123,9 @@ export default function GuestTimelinePage() {
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [timeline, setTimeline] = useState<TimelineData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"stays" | "payments" | "charges" | "activity">("stays");
+  const [activeTab, setActiveTab] = useState<'stays' | 'payments' | 'charges' | 'activity'>(
+    'stays'
+  );
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -174,7 +176,7 @@ export default function GuestTimelinePage() {
       <Header />
       <div className="p-6 space-y-6 max-w-6xl mx-auto">
         <button
-          onClick={() => router.push("/guests")}
+          onClick={() => router.push('/guests')}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Volver a Huespedes
@@ -198,7 +200,7 @@ export default function GuestTimelinePage() {
                 {(guest.tags || []).map((t) => (
                   <span
                     key={t.id}
-                    className={`px-2 py-0.5 rounded text-xs font-medium ${tagColorMap[t.tag?.color] || "bg-gray-100 text-gray-800"}`}
+                    className={`px-2 py-0.5 rounded text-xs font-medium ${tagColorMap[t.tag?.color] || 'bg-gray-100 text-gray-800'}`}
                   >
                     {t.tag?.name}
                   </span>
@@ -231,9 +233,7 @@ export default function GuestTimelinePage() {
                   </span>
                 )}
               </div>
-              {guest.notes && (
-                <p className="mt-2 text-sm text-gray-500 italic">{guest.notes}</p>
-              )}
+              {guest.notes && <p className="mt-2 text-sm text-gray-500 italic">{guest.notes}</p>}
             </div>
           </div>
 
@@ -260,26 +260,40 @@ export default function GuestTimelinePage() {
         <div className="card overflow-hidden">
           <div className="border-b border-gray-200 flex">
             {[
-              { key: "stays", label: "Estadias", icon: Clock, count: timeline?.bookings.length },
-              { key: "payments", label: "Pagos", icon: CreditCard, count: timeline?.payments.length },
-              { key: "charges", label: "Cargos", icon: FileText, count: timeline?.folioItems.length },
-              { key: "activity", label: "Actividad", icon: Tag, count: timeline?.auditLogs.length },
+              { key: 'stays', label: 'Estadias', icon: Clock, count: timeline?.bookings.length },
+              {
+                key: 'payments',
+                label: 'Pagos',
+                icon: CreditCard,
+                count: timeline?.payments.length,
+              },
+              {
+                key: 'charges',
+                label: 'Cargos',
+                icon: FileText,
+                count: timeline?.folioItems.length,
+              },
+              { key: 'activity', label: 'Actividad', icon: Tag, count: timeline?.auditLogs.length },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as typeof activeTab)}
                 className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.key
-                    ? "border-blue-600 text-blue-700"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? 'border-blue-600 text-blue-700'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <tab.icon className="h-4 w-4" />
                 {tab.label}
                 {tab.count !== undefined && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                    activeTab === tab.key ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
-                  }`}>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-xs ${
+                      activeTab === tab.key
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
                     {tab.count}
                   </span>
                 )}
@@ -288,9 +302,9 @@ export default function GuestTimelinePage() {
           </div>
 
           <div className="p-6">
-            {activeTab === "stays" && (
+            {activeTab === 'stays' && (
               <div className="space-y-4">
-                {(!timeline?.bookings || timeline.bookings.length === 0) ? (
+                {!timeline?.bookings || timeline.bookings.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">Sin estadias registradas</p>
                 ) : (
                   timeline.bookings.map((booking, idx) => {
@@ -306,7 +320,9 @@ export default function GuestTimelinePage() {
                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-gray-900">{booking.code}</span>
+                              <span className="text-sm font-bold text-gray-900">
+                                {booking.code}
+                              </span>
                               {status && <StatusBadge label={status.label} color={status.color} />}
                             </div>
                             <span className="text-xs text-gray-400">
@@ -317,7 +333,9 @@ export default function GuestTimelinePage() {
                             <div>
                               <p className="text-xs text-gray-500">Habitacion</p>
                               <p className="font-medium text-gray-800">
-                                {booking.room ? `Hab. ${booking.room.number} - ${booking.room.roomType?.name}` : "Sin asignar"}
+                                {booking.room
+                                  ? `Hab. ${booking.room.number} - ${booking.room.roomType?.name}`
+                                  : 'Sin asignar'}
                               </p>
                             </div>
                             <div>
@@ -333,7 +351,8 @@ export default function GuestTimelinePage() {
                             <div>
                               <p className="text-xs text-gray-500">Total / Pagado</p>
                               <p className="font-medium text-gray-800">
-                                {formatCurrency(booking.totalAmount)} / {formatCurrency(booking.paidAmount)}
+                                {formatCurrency(booking.totalAmount)} /{' '}
+                                {formatCurrency(booking.paidAmount)}
                               </p>
                             </div>
                           </div>
@@ -345,9 +364,9 @@ export default function GuestTimelinePage() {
               </div>
             )}
 
-            {activeTab === "payments" && (
+            {activeTab === 'payments' && (
               <div className="space-y-4">
-                {(!timeline?.payments || timeline.payments.length === 0) ? (
+                {!timeline?.payments || timeline.payments.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">Sin pagos registrados</p>
                 ) : (
                   timeline.payments.map((payment, idx) => (
@@ -355,16 +374,21 @@ export default function GuestTimelinePage() {
                       {idx < timeline.payments.length - 1 && (
                         <div className="absolute left-3 top-8 bottom-0 w-0.5 bg-gray-200" />
                       )}
-                      <div className={`absolute left-1 top-2 h-5 w-5 rounded-full border-2 border-white shadow-sm flex items-center justify-center ${
-                        payment.amount >= 0 ? "bg-green-500" : "bg-red-500"
-                      }`}>
+                      <div
+                        className={`absolute left-1 top-2 h-5 w-5 rounded-full border-2 border-white shadow-sm flex items-center justify-center ${
+                          payment.amount >= 0 ? 'bg-green-500' : 'bg-red-500'
+                        }`}
+                      >
                         <div className="h-2 w-2 rounded-full bg-white" />
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex items-center justify-between">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-sm font-bold ${payment.amount >= 0 ? "text-green-700" : "text-red-700"}`}>
-                              {payment.amount >= 0 ? "+" : ""}{formatCurrency(payment.amount)}
+                            <span
+                              className={`text-sm font-bold ${payment.amount >= 0 ? 'text-green-700' : 'text-red-700'}`}
+                            >
+                              {payment.amount >= 0 ? '+' : ''}
+                              {formatCurrency(payment.amount)}
                             </span>
                             <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
                               {paymentMethodLabels[payment.method] || payment.method}
@@ -374,7 +398,9 @@ export default function GuestTimelinePage() {
                             {payment.bookingCode && `Reserva ${payment.bookingCode}`}
                             {payment.reference && ` - Ref: ${payment.reference}`}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">{formatDate(payment.createdAt)}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            {formatDate(payment.createdAt)}
+                          </p>
                         </div>
                         <CreditCard className="h-5 w-5 text-gray-400" />
                       </div>
@@ -384,9 +410,9 @@ export default function GuestTimelinePage() {
               </div>
             )}
 
-            {activeTab === "charges" && (
+            {activeTab === 'charges' && (
               <div className="space-y-4">
-                {(!timeline?.folioItems || timeline.folioItems.length === 0) ? (
+                {!timeline?.folioItems || timeline.folioItems.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">Sin cargos registrados</p>
                 ) : (
                   timeline.folioItems.map((item, idx) => (
@@ -421,9 +447,9 @@ export default function GuestTimelinePage() {
               </div>
             )}
 
-            {activeTab === "activity" && (
+            {activeTab === 'activity' && (
               <div className="space-y-4">
-                {(!timeline?.auditLogs || timeline.auditLogs.length === 0) ? (
+                {!timeline?.auditLogs || timeline.auditLogs.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">Sin actividad registrada</p>
                 ) : (
                   timeline.auditLogs.map((log, idx) => (

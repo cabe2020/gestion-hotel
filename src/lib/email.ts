@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Resend } from "resend";
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 const getResendClient = () => {
   if (process.env.RESEND_API_KEY) {
@@ -33,7 +33,7 @@ export async function sendEmail({
   subject: string;
   html: string;
 }) {
-  const from = process.env.EMAIL_FROM || "hotel@hosterix.com";
+  const from = process.env.EMAIL_FROM || 'hotel@hosterix.com';
 
   const resend = getResendClient();
   if (resend) {
@@ -44,21 +44,21 @@ export async function sendEmail({
       html,
     });
     if (error) {
-      console.error("[Resend Error]", error);
-      return { success: false, mode: "resend", error: error.message };
+      console.error('[Resend Error]', error);
+      return { success: false, mode: 'resend', error: error.message };
     }
-    return { success: true, mode: "resend" };
+    return { success: true, mode: 'resend' };
   }
 
   const transporter = getSmtpTransporter();
   if (transporter) {
     await transporter.sendMail({ from, to, subject, html });
-    return { success: true, mode: "smtp" };
+    return { success: true, mode: 'smtp' };
   }
 
   console.log(`[DEV EMAIL] To: ${to}, Subject: ${subject}`);
   console.log(html);
-  return { success: true, mode: "dev" };
+  return { success: true, mode: 'dev' };
 }
 
 export function bookingConfirmationHtml(booking: any, hotel: any) {
@@ -70,9 +70,9 @@ export function bookingConfirmationHtml(booking: any, hotel: any) {
   <p>Su reserva ha sido confirmada exitosamente.</p>
   <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
     <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Codigo de Reserva</td><td style="padding: 8px; border: 1px solid #ddd;">${booking.code}</td></tr>
-    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Check-in</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date(booking.checkIn).toLocaleDateString("es")}</td></tr>
-    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Check-out</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date(booking.checkOut).toLocaleDateString("es")}</td></tr>
-    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Habitacion</td><td style="padding: 8px; border: 1px solid #ddd;">${booking.room?.number || "Por asignar"}</td></tr>
+    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Check-in</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date(booking.checkIn).toLocaleDateString('es')}</td></tr>
+    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Check-out</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date(booking.checkOut).toLocaleDateString('es')}</td></tr>
+    <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Habitacion</td><td style="padding: 8px; border: 1px solid #ddd;">${booking.room?.number || 'Por asignar'}</td></tr>
     <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Total</td><td style="padding: 8px; border: 1px solid #ddd;">${hotel.currency} ${booking.totalAmount.toFixed(2)}</td></tr>
   </table>
   <p>Gracias por elegir ${hotel.name}.</p>
@@ -86,7 +86,7 @@ export function checkInReminderHtml(booking: any, hotel: any) {
   <h2 style="color: #1e3a8a;">${hotel.name}</h2>
   <h3>Recordatorio de Check-in</h3>
   <p>Estimado/a ${booking.guest.firstName} ${booking.guest.lastName},</p>
-  <p>Le recordamos que su check-in es manana ${new Date(booking.checkIn).toLocaleDateString("es")}.</p>
+  <p>Le recordamos que su check-in es manana ${new Date(booking.checkIn).toLocaleDateString('es')}.</p>
   <p>Codigo de reserva: <strong>${booking.code}</strong></p>
   <p>Esperamos su llegada!</p>
 </div>

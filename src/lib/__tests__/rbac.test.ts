@@ -27,7 +27,11 @@ function makeRequest(headers: Record<string, string> = {}): Request {
 
 describe('getUserFromHeaders', () => {
   it('extracts user id and role from headers', () => {
-    const request = makeRequest({ 'x-user-id': 'user-1', 'x-user-role': 'admin', 'x-hotel-id': 'hotel-1' });
+    const request = makeRequest({
+      'x-user-id': 'user-1',
+      'x-user-role': 'admin',
+      'x-hotel-id': 'hotel-1',
+    });
     const user = getUserFromHeaders(request);
     expect(user.id).toBe('user-1');
     expect(user.role).toBe('admin');
@@ -57,13 +61,21 @@ describe('getUserFromHeaders', () => {
 
 describe('requireAdmin', () => {
   it('returns null for admin role', () => {
-    const request = makeRequest({ 'x-user-id': 'user-1', 'x-user-role': 'admin', 'x-hotel-id': 'hotel-1' });
+    const request = makeRequest({
+      'x-user-id': 'user-1',
+      'x-user-role': 'admin',
+      'x-hotel-id': 'hotel-1',
+    });
     const result = requireAdmin(request);
     expect(result).toBeNull();
   });
 
   it('returns 403 for non-admin role', () => {
-    const request = makeRequest({ 'x-user-id': 'user-1', 'x-user-role': 'receptionist', 'x-hotel-id': 'hotel-1' });
+    const request = makeRequest({
+      'x-user-id': 'user-1',
+      'x-user-role': 'receptionist',
+      'x-hotel-id': 'hotel-1',
+    });
     const result = requireAdmin(request);
     expect(result).not.toBeNull();
     expect(result!.status).toBe(403);
@@ -77,13 +89,21 @@ describe('requireAdmin', () => {
 
 describe('requireRole', () => {
   it('returns null when role is in allowed list', () => {
-    const request = makeRequest({ 'x-user-id': 'user-1', 'x-user-role': 'receptionist', 'x-hotel-id': 'hotel-1' });
+    const request = makeRequest({
+      'x-user-id': 'user-1',
+      'x-user-role': 'receptionist',
+      'x-hotel-id': 'hotel-1',
+    });
     const result = requireRole(request, ['admin', 'receptionist']);
     expect(result).toBeNull();
   });
 
   it('returns 403 when role is not in allowed list', () => {
-    const request = makeRequest({ 'x-user-id': 'user-1', 'x-user-role': 'receptionist', 'x-hotel-id': 'hotel-1' });
+    const request = makeRequest({
+      'x-user-id': 'user-1',
+      'x-user-role': 'receptionist',
+      'x-hotel-id': 'hotel-1',
+    });
     const result = requireRole(request, ['admin']);
     expect(result).not.toBeNull();
     expect(result!.status).toBe(403);

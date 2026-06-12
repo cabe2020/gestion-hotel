@@ -1,14 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requireAdmin, getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { updateBookingSchema } from "@/lib/validations";
-import { logAction } from "@/lib/audit";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAdmin, getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { updateBookingSchema } from '@/lib/validations';
+import { logAction } from '@/lib/audit';
+import { ZodError } from 'zod';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const booking = await prisma.booking.findUnique({
     where: { id },
@@ -19,15 +16,11 @@ export async function GET(
       invoice: true,
     },
   });
-  if (!booking)
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!booking) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(booking);
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: userId } = getUserFromHeaders(request);
     const { id } = await params;
@@ -36,11 +29,11 @@ export async function PUT(
 
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+      return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     }
     const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+      return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     }
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -48,17 +41,17 @@ export async function PUT(
         SELECT id FROM "Booking" WHERE id = ${id} FOR UPDATE
       `;
       if (locked.length === 0) {
-        throw new Error("Not found");
+        throw new Error('Not found');
       }
 
       const existing = await tx.booking.findUnique({
         where: { id },
         include: { room: { include: { roomType: true } } },
       });
-      if (!existing) throw new Error("Not found");
+      if (!existing) throw new Error('Not found');
 
-      let checkIn = data.checkIn ? new Date(data.checkIn as string | Date) : existing.checkIn;
-      let checkOut = data.checkOut ? new Date(data.checkOut as string | Date) : existing.checkOut;
+      const checkIn = data.checkIn ? new Date(data.checkIn as string | Date) : existing.checkIn;
+      const checkOut = data.checkOut ? new Date(data.checkOut as string | Date) : existing.checkOut;
       let totalNights = data.totalNights;
 
       if ((data.checkIn || data.checkOut) && !data.totalNights) {
@@ -84,13 +77,17 @@ export async function PUT(
           });
           if (newRoom) {
             if (adultsForCalc > newRoom.roomType.capacity) {
-              throw new Error(`Capacidad maxima de la habitacion es ${newRoom.roomType.capacity} personas`);
+              throw new Error(
+                `Capacidad maxima de la habitacion es ${newRoom.roomType.capacity} personas`
+              );
             }
             baseRate = newRoom.roomType.basePrice;
           }
         } else if ((data.roomId === existing.roomId || !data.roomId) && existing.room?.roomType) {
           if (adultsForCalc > existing.room.roomType.capacity) {
-            throw new Error(`Capacidad maxima de la habitacion es ${existing.room.roomType.capacity} personas`);
+            throw new Error(
+              `Capacidad maxima de la habitacion es ${existing.room.roomType.capacity} personas`
+            );
           }
           baseRate = existing.room.roomType.basePrice;
         }
@@ -112,63 +109,62 @@ export async function PUT(
           where: {
             id: { not: id },
             roomId: data.roomId,
-            status: { in: ["confirmed", "checked-in"] },
+            status: { in: ['confirmed', 'checked-in'] },
             checkIn: { lt: checkOut },
             checkOut: { gt: checkIn },
           },
         });
-        if (conflict)
-          throw new Error("La nueva habitación no está disponible en esas fechas");
+        if (conflict) throw new Error('La nueva habitación no está disponible en esas fechas');
 
         if (existing.roomId) {
           const otherBookings = await tx.booking.count({
             where: {
               id: { not: id },
               roomId: existing.roomId,
-              status: { in: ["confirmed", "checked-in"] },
+              status: { in: ['confirmed', 'checked-in'] },
             },
           });
           if (otherBookings === 0) {
             await tx.room.update({
               where: { id: existing.roomId },
-              data: { status: "available" },
+              data: { status: 'available' },
             });
           }
         }
 
         const statusForNewRoom = data.status || existing.status;
-        if (statusForNewRoom === "checked-in") {
+        if (statusForNewRoom === 'checked-in') {
           await tx.room.update({
             where: { id: data.roomId },
-            data: { status: "occupied" },
+            data: { status: 'occupied' },
           });
         }
       }
 
-      if (data.status === "checked-in") {
+      if (data.status === 'checked-in') {
         const roomId = data.roomId || existing.roomId;
         if (roomId) {
           await tx.room.update({
             where: { id: roomId },
-            data: { status: "occupied" },
+            data: { status: 'occupied' },
           });
         }
       }
 
-      if (data.status === "checked-out" || data.status === "cancelled") {
+      if (data.status === 'checked-out' || data.status === 'cancelled') {
         const roomId = data.roomId || existing.roomId;
         if (roomId) {
           const otherBookings = await tx.booking.count({
             where: {
               id: { not: id },
               roomId,
-              status: { in: ["confirmed", "checked-in"] },
+              status: { in: ['confirmed', 'checked-in'] },
             },
           });
           if (otherBookings === 0) {
             await tx.room.update({
               where: { id: roomId },
-              data: { status: "available" },
+              data: { status: 'available' },
             });
           }
         }
@@ -203,8 +199,8 @@ export async function PUT(
 
     await logAction({
       userId,
-      action: "update",
-      entity: "booking",
+      action: 'update',
+      entity: 'booking',
       entityId: id,
       details: `Reserva ${updated.code} actualizada`,
       hotelId: updated.hotelId,
@@ -216,27 +212,24 @@ export async function PUT(
       return NextResponse.json({ error: error.issues }, { status: 400 });
     }
     const message = error instanceof Error ? error.message : String(error);
-    if (message === "Not found") {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (message === 'Not found') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
-    if (message.includes("no está disponible") || message.includes("Capacidad maxima")) {
+    if (message.includes('no está disponible') || message.includes('Capacidad maxima')) {
       return NextResponse.json({ error: message }, { status: 409 });
     }
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: userId } = getUserFromHeaders(request);
     const { id } = await params;
     const body = await request.json();
     const { status } = body;
 
-    if (status !== "no-show" && status !== "cancelled") {
+    if (status !== 'no-show' && status !== 'cancelled') {
       return NextResponse.json(
         { error: "Solo se permite cambiar estado a 'no-show' o 'cancelled'" },
         { status: 400 }
@@ -249,22 +242,22 @@ export async function PATCH(
     });
 
     if (!existing) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    if (existing.status !== "confirmed") {
+    if (existing.status !== 'confirmed') {
       return NextResponse.json(
-        { error: "Solo se puede marcar no-show o cancelar reservas confirmadas" },
+        { error: 'Solo se puede marcar no-show o cancelar reservas confirmadas' },
         { status: 400 }
       );
     }
 
     const updateData: Record<string, unknown> = { status };
 
-    if (status === "cancelled") {
+    if (status === 'cancelled') {
       updateData.notes = existing.notes
-        ? `${existing.notes} | Cancelada el ${new Date().toISOString().split("T")[0]}`
-        : `Cancelada el ${new Date().toISOString().split("T")[0]}`;
+        ? `${existing.notes} | Cancelada el ${new Date().toISOString().split('T')[0]}`
+        : `Cancelada el ${new Date().toISOString().split('T')[0]}`;
     }
 
     const updated = await prisma.booking.update({
@@ -283,23 +276,23 @@ export async function PATCH(
         where: {
           id: { not: id },
           roomId: existing.roomId,
-          status: { in: ["confirmed", "checked-in"] },
+          status: { in: ['confirmed', 'checked-in'] },
         },
       });
       if (otherBookings === 0) {
         await prisma.room.update({
           where: { id: existing.roomId },
-          data: { status: "available" },
+          data: { status: 'available' },
         });
       }
     }
 
     await logAction({
       userId,
-      action: status === "no-show" ? "no-show" : "cancel",
-      entity: "booking",
+      action: status === 'no-show' ? 'no-show' : 'cancel',
+      entity: 'booking',
       entityId: id,
-      details: `Reserva ${updated.code} marcada como ${status === "no-show" ? "no-show" : "cancelada"}`,
+      details: `Reserva ${updated.code} marcada como ${status === 'no-show' ? 'no-show' : 'cancelada'}`,
       hotelId: updated.hotelId,
     }).catch(() => {});
 
@@ -309,10 +302,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
   const { id: userId } = getUserFromHeaders(request);
@@ -322,8 +312,8 @@ export async function DELETE(
   if (booking) {
     await logAction({
       userId,
-      action: "delete",
-      entity: "booking",
+      action: 'delete',
+      entity: 'booking',
       entityId: id,
       details: `Reserva ${booking.code} eliminada`,
       hotelId: booking.hotelId,

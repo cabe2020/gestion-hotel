@@ -1,14 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const items = await prisma.folioItem.findMany({
     where: { bookingId: id },
-    orderBy: { date: "asc" },
+    orderBy: { date: 'asc' },
   });
 
   const mapped = items.map((item) => ({

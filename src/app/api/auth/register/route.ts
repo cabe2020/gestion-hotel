@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
-import { registerSchema, signupSchema } from "@/lib/validations";
-import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
+import { registerSchema, signupSchema } from '@/lib/validations';
+import { getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { ZodError } from 'zod';
 
 export async function POST(request: Request) {
   try {
@@ -16,10 +16,7 @@ export async function POST(request: Request) {
         where: { email: data.user.email },
       });
       if (existingUser) {
-        return NextResponse.json(
-          { error: "Ya existe una cuenta con ese email" },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: 'Ya existe una cuenta con ese email' }, { status: 409 });
       }
 
       const hashedPassword = await bcrypt.hash(data.user.password, 12);
@@ -39,7 +36,7 @@ export async function POST(request: Request) {
           name: data.user.name,
           email: data.user.email,
           password: hashedPassword,
-          role: "admin",
+          role: 'admin',
           hotelId: hotel.id,
         },
       });
@@ -56,42 +53,39 @@ export async function POST(request: Request) {
       );
     }
 
-  const data = registerSchema.parse(body);
+    const data = registerSchema.parse(body);
 
-  const existing = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-  if (existing) {
-    return NextResponse.json(
-      { error: "Ya existe un usuario con ese email" },
-      { status: 409 }
-    );
-  }
+    const existing = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+    if (existing) {
+      return NextResponse.json({ error: 'Ya existe un usuario con ese email' }, { status: 409 });
+    }
 
-  const currentUser = getUserFromHeaders(request);
-  let role = data.role;
-  if (role === "admin" && currentUser.role !== "admin") {
-    return NextResponse.json(
-      { error: "Solo administradores pueden crear usuarios administradores" },
-      { status: 403 }
-    );
-  }
-  if (currentUser.role !== "admin") {
-    role = "receptionist";
-  }
+    const currentUser = getUserFromHeaders(request);
+    let role = data.role;
+    if (role === 'admin' && currentUser.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Solo administradores pueden crear usuarios administradores' },
+        { status: 403 }
+      );
+    }
+    if (currentUser.role !== 'admin') {
+      role = 'receptionist';
+    }
 
-  const hotelId = await resolveHotelId(request.headers);
-  const hashedPassword = await bcrypt.hash(data.password, 12);
+    const hotelId = await resolveHotelId(request.headers);
+    const hashedPassword = await bcrypt.hash(data.password, 12);
 
-  const user = await prisma.user.create({
-    data: {
-      name: data.name,
-      email: data.email,
-      password: hashedPassword,
-      role,
-      hotelId,
-    },
-  });
+    const user = await prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+        role,
+        hotelId,
+      },
+    });
 
     return NextResponse.json(
       { id: user.id, name: user.name, email: user.email, role: user.role },

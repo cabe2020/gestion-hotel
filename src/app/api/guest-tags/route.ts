@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { guestTagSchema } from "@/lib/validations";
-import { requireAdmin, resolveHotelId } from "@/lib/rbac";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { guestTagSchema } from '@/lib/validations';
+import { requireAdmin, resolveHotelId } from '@/lib/rbac';
+import { ZodError } from 'zod';
 
 export async function GET(request: Request) {
   const hotelId = await resolveHotelId(request.headers);
   if (!hotelId) return NextResponse.json([]);
   const tags = await prisma.guestTag.findMany({
     where: { hotelId },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
   return NextResponse.json(tags);
 }
@@ -21,8 +21,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = guestTagSchema.parse(body);
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     const tag = await prisma.guestTag.create({
       data: { name: data.name, color: data.color, hotelId },
     });

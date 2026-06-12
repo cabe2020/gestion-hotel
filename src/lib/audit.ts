@@ -1,11 +1,11 @@
-import { prisma } from "./prisma";
+import { prisma } from './prisma';
 
 export async function logAction({
   userId,
   action,
   entity,
-  entityId = "",
-  details = "",
+  entityId = '',
+  details = '',
   hotelId,
 }: {
   userId?: string;

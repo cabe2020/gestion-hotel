@@ -15,6 +15,8 @@ import { prisma } from '../prisma';
 import { createNotification, notifyRole } from '../notifications';
 
 const mockedPrisma = vi.mocked(prisma);
+const mockNotificationCreate = mockedPrisma.notification.create as ReturnType<typeof vi.fn>;
+const mockUserFindMany = mockedPrisma.user.findMany as ReturnType<typeof vi.fn>;
 
 describe('createNotification', () => {
   beforeEach(() => {
@@ -22,8 +24,17 @@ describe('createNotification', () => {
   });
 
   it('creates a notification with required fields', async () => {
-    const mockResult = { id: 'notif-1', userId: 'user-1', title: 'Test', message: 'Hello', type: 'info', hotelId: null, read: false, createdAt: new Date() };
-    mockedPrisma.notification.create.mockResolvedValue(mockResult as any);
+    const mockResult = {
+      id: 'notif-1',
+      userId: 'user-1',
+      title: 'Test',
+      message: 'Hello',
+      type: 'info',
+      hotelId: null,
+      read: false,
+      createdAt: new Date(),
+    };
+    mockNotificationCreate.mockResolvedValue(mockResult);
 
     const result = await createNotification({
       userId: 'user-1',
@@ -38,7 +49,7 @@ describe('createNotification', () => {
   });
 
   it('creates a notification with custom type and hotelId', async () => {
-    mockedPrisma.notification.create.mockResolvedValue({} as any);
+    mockNotificationCreate.mockResolvedValue({});
 
     await createNotification({
       userId: 'user-1',
@@ -49,7 +60,13 @@ describe('createNotification', () => {
     });
 
     expect(mockedPrisma.notification.create).toHaveBeenCalledWith({
-      data: { userId: 'user-1', title: 'Alert', message: 'Check-in', type: 'warning', hotelId: 'hotel-1' },
+      data: {
+        userId: 'user-1',
+        title: 'Alert',
+        message: 'Check-in',
+        type: 'warning',
+        hotelId: 'hotel-1',
+      },
     });
   });
 });
@@ -64,8 +81,8 @@ describe('notifyRole', () => {
       { id: 'user-1', name: 'Admin 1', role: 'admin', active: true, hotelId: 'hotel-1' },
       { id: 'user-2', name: 'Admin 2', role: 'admin', active: true, hotelId: 'hotel-1' },
     ];
-    mockedPrisma.user.findMany.mockResolvedValue(users as any);
-    mockedPrisma.notification.create.mockResolvedValue({} as any);
+    mockUserFindMany.mockResolvedValue(users);
+    mockNotificationCreate.mockResolvedValue({});
 
     await notifyRole({
       role: 'admin',
@@ -79,15 +96,27 @@ describe('notifyRole', () => {
     });
     expect(mockedPrisma.notification.create).toHaveBeenCalledTimes(2);
     expect(mockedPrisma.notification.create).toHaveBeenCalledWith({
-      data: { userId: 'user-1', title: 'New Booking', message: 'A new booking was created', type: 'info', hotelId: 'hotel-1' },
+      data: {
+        userId: 'user-1',
+        title: 'New Booking',
+        message: 'A new booking was created',
+        type: 'info',
+        hotelId: 'hotel-1',
+      },
     });
     expect(mockedPrisma.notification.create).toHaveBeenCalledWith({
-      data: { userId: 'user-2', title: 'New Booking', message: 'A new booking was created', type: 'info', hotelId: 'hotel-1' },
+      data: {
+        userId: 'user-2',
+        title: 'New Booking',
+        message: 'A new booking was created',
+        type: 'info',
+        hotelId: 'hotel-1',
+      },
     });
   });
 
   it('sends no notifications when no users found', async () => {
-    mockedPrisma.user.findMany.mockResolvedValue([]);
+    mockUserFindMany.mockResolvedValue([]);
 
     await notifyRole({
       role: 'admin',
@@ -100,8 +129,10 @@ describe('notifyRole', () => {
   });
 
   it('passes custom type to notifications', async () => {
-    mockedPrisma.user.findMany.mockResolvedValue([{ id: 'u1', name: 'A', role: 'admin', active: true, hotelId: 'h1' }] as any);
-    mockedPrisma.notification.create.mockResolvedValue({} as any);
+    mockUserFindMany.mockResolvedValue([
+      { id: 'u1', name: 'A', role: 'admin', active: true, hotelId: 'h1' },
+    ]);
+    mockNotificationCreate.mockResolvedValue({});
 
     await notifyRole({
       role: 'admin',

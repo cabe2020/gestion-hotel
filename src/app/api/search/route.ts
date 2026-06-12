@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get("q") || "";
+    const q = searchParams.get('q') || '';
     if (!q.trim()) {
       return NextResponse.json({ huespedes: [], reservas: [], habitaciones: [] });
     }
@@ -21,10 +21,10 @@ export async function GET(request: Request) {
       where: {
         hotelId,
         OR: [
-          { firstName: { contains: search, mode: "insensitive" } },
-          { lastName: { contains: search, mode: "insensitive" } },
-          { email: { contains: search, mode: "insensitive" } },
-          { idNumber: { contains: search, mode: "insensitive" } },
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
+          { idNumber: { contains: search, mode: 'insensitive' } },
         ],
       },
       select: { id: true, firstName: true, lastName: true, email: true, idNumber: true },
@@ -35,9 +35,9 @@ export async function GET(request: Request) {
       where: {
         hotelId,
         OR: [
-          { code: { contains: search, mode: "insensitive" } },
-          { guest: { firstName: { contains: search, mode: "insensitive" } } },
-          { guest: { lastName: { contains: search, mode: "insensitive" } } },
+          { code: { contains: search, mode: 'insensitive' } },
+          { guest: { firstName: { contains: search, mode: 'insensitive' } } },
+          { guest: { lastName: { contains: search, mode: 'insensitive' } } },
         ],
       },
       select: {
@@ -54,7 +54,8 @@ export async function GET(request: Request) {
     const rooms = await prisma.room.findMany({
       where: {
         hotelId,
-        number: { contains: search, mode: "insensitive" } },
+        number: { contains: search, mode: 'insensitive' },
+      },
       select: {
         id: true,
         number: true,
@@ -68,7 +69,7 @@ export async function GET(request: Request) {
       huespedes: guests.map((g) => ({
         id: g.id,
         label: `${g.firstName} ${g.lastName}`,
-        subtitle: g.email || g.idNumber || "Sin datos",
+        subtitle: g.email || g.idNumber || 'Sin datos',
         href: `/guests/${g.id}`,
       })),
       reservas: bookings.map((b) => ({
@@ -85,9 +86,6 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

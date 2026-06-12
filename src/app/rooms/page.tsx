@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Modal from "@/components/Modal";
-import StatusBadge from "@/components/StatusBadge";
-import { Plus, Bed, Edit2, Trash2, Image as ImageIcon } from "lucide-react";
-import { roomStatuses } from "./types";
-import { useToast } from "@/components/Toast";
-import { registerShortcutAction } from "@/components/KeyboardShortcuts";
-import ImageUpload from "@/components/ImageUpload";
+import { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import Modal from '@/components/Modal';
+import StatusBadge from '@/components/StatusBadge';
+import { Plus, Bed, Edit2, Trash2, Image as ImageIcon } from 'lucide-react';
+import { roomStatuses } from './types';
+import { useToast } from '@/components/Toast';
+import { registerShortcutAction } from '@/components/KeyboardShortcuts';
+import ImageUpload from '@/components/ImageUpload';
 
 interface RoomType {
   id: string;
@@ -35,36 +35,39 @@ export default function RoomsPage() {
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState<RoomWithRelations | null>(null);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState('all');
   const [form, setForm] = useState({
-    number: "",
+    number: '',
     floor: 1,
-    status: "available",
-    roomTypeId: "",
+    status: 'available',
+    roomTypeId: '',
   });
   const [imageRoomId, setImageRoomId] = useState<string | null>(null);
   const [roomImages, setRoomImages] = useState<Record<string, string>>({});
 
   const loadRooms = () =>
-    fetch("/api/rooms")
+    fetch('/api/rooms')
       .then((r) => r.json())
       .then(setRooms);
 
   const loadRoomTypes = () =>
-    fetch("/api/room-types")
+    fetch('/api/room-types')
       .then((r) => r.json())
       .then(setRoomTypes);
 
   useEffect(() => {
     loadRooms();
     loadRoomTypes();
-    fetch("/api/rooms/images").then(r => r.json()).then(data => setRoomImages(data || {})).catch(() => {});
-    registerShortcutAction("newRoom", () => {
+    fetch('/api/rooms/images')
+      .then((r) => r.json())
+      .then((data) => setRoomImages(data || {}))
+      .catch(() => {});
+    registerShortcutAction('newRoom', () => {
       setEditingRoom(null);
-      setForm({ number: "", floor: 1, status: "available", roomTypeId: roomTypes[0]?.id || "" });
+      setForm({ number: '', floor: 1, status: 'available', roomTypeId: roomTypes[0]?.id || '' });
       setShowModal(true);
     });
-    return () => registerShortcutAction("newRoom", null);
+    return () => registerShortcutAction('newRoom', null);
   }, [roomTypes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,27 +75,27 @@ export default function RoomsPage() {
     let ok = true;
     if (editingRoom) {
       const res = await fetch(`/api/rooms/${editingRoom.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
       ok = res.ok;
     } else {
-      const res = await fetch("/api/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
       ok = res.ok;
     }
     if (ok) {
-      toast.success(editingRoom ? "Habitacion actualizada" : "Habitacion creada");
+      toast.success(editingRoom ? 'Habitacion actualizada' : 'Habitacion creada');
     } else {
-      toast.error("Error al guardar habitacion");
+      toast.error('Error al guardar habitacion');
     }
     setShowModal(false);
     setEditingRoom(null);
-    setForm({ number: "", floor: 1, status: "available", roomTypeId: "" });
+    setForm({ number: '', floor: 1, status: 'available', roomTypeId: '' });
     loadRooms();
   };
 
@@ -108,30 +111,30 @@ export default function RoomsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toast.confirm("Eliminar esta habitación?"))) return;
-    await fetch(`/api/rooms/${id}`, { method: "DELETE" });
-    toast.success("Habitacion eliminada");
+    if (!(await toast.confirm('Eliminar esta habitación?'))) return;
+    await fetch(`/api/rooms/${id}`, { method: 'DELETE' });
+    toast.success('Habitacion eliminada');
     loadRooms();
   };
 
   const handleImageSave = async (roomId: string, dataUrl: string) => {
-    await fetch("/api/rooms/images", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    await fetch('/api/rooms/images', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ roomId, image: dataUrl }),
     });
-    setRoomImages(prev => ({ ...prev, [roomId]: dataUrl }));
+    setRoomImages((prev) => ({ ...prev, [roomId]: dataUrl }));
     setImageRoomId(null);
   };
 
-  const filtered = filter === "all" ? rooms : rooms.filter((r) => r.status === filter);
+  const filtered = filter === 'all' ? rooms : rooms.filter((r) => r.status === filter);
 
   const statusColors: Record<string, string> = {
-    available: "bg-green-100 text-green-800",
-    occupied: "bg-blue-100 text-blue-800",
-    maintenance: "bg-yellow-100 text-yellow-800",
-    "out-of-order": "bg-red-100 text-red-800",
-    cleaning: "bg-purple-100 text-purple-800",
+    available: 'bg-green-100 text-green-800',
+    occupied: 'bg-blue-100 text-blue-800',
+    maintenance: 'bg-yellow-100 text-yellow-800',
+    'out-of-order': 'bg-red-100 text-red-800',
+    cleaning: 'bg-purple-100 text-purple-800',
   };
 
   return (
@@ -144,10 +147,10 @@ export default function RoomsPage() {
             onClick={() => {
               setEditingRoom(null);
               setForm({
-                number: "",
+                number: '',
                 floor: 1,
-                status: "available",
-                roomTypeId: roomTypes[0]?.id || "",
+                status: 'available',
+                roomTypeId: roomTypes[0]?.id || '',
               });
               setShowModal(true);
             }}
@@ -159,11 +162,11 @@ export default function RoomsPage() {
 
         <div className="flex gap-2 flex-wrap">
           <button
-            onClick={() => setFilter("all")}
+            onClick={() => setFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === "all"
-                ? "bg-slate-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              filter === 'all'
+                ? 'bg-slate-900 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Todas ({rooms.length})
@@ -176,8 +179,8 @@ export default function RoomsPage() {
                 onClick={() => setFilter(s.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filter === s.value
-                    ? "bg-slate-900 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {s.label} ({count})
@@ -187,37 +190,33 @@ export default function RoomsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((room) => (
-          <div key={room.id} className="card hover:shadow-md transition-shadow">
-            {roomImages[room.id] ? (
-              <img src={roomImages[room.id]} alt={`Hab. ${room.number}`} className="w-full h-32 object-cover rounded-t-lg mb-3" />
-            ) : (
-              <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg mb-3 flex items-center justify-center">
-                <Bed className="h-8 w-8 text-gray-300" />
-              </div>
-            )}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Bed className="h-5 w-5 text-gray-400" />
-                <span className="text-lg font-bold text-gray-900">
-                  Hab. {room.number}
-                </span>
-              </div>
-              <StatusBadge
-                  label={
-                    roomStatuses.find((s) => s.value === room.status)?.label ||
-                    room.status
-                  }
-                  color={statusColors[room.status] || "bg-gray-100"}
+          {filtered.map((room) => (
+            <div key={room.id} className="card hover:shadow-md transition-shadow">
+              {roomImages[room.id] ? (
+                <img
+                  src={roomImages[room.id]}
+                  alt={`Hab. ${room.number}`}
+                  className="w-full h-32 object-cover rounded-t-lg mb-3"
+                />
+              ) : (
+                <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg mb-3 flex items-center justify-center">
+                  <Bed className="h-8 w-8 text-gray-300" />
+                </div>
+              )}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Bed className="h-5 w-5 text-gray-400" />
+                  <span className="text-lg font-bold text-gray-900">Hab. {room.number}</span>
+                </div>
+                <StatusBadge
+                  label={roomStatuses.find((s) => s.value === room.status)?.label || room.status}
+                  color={statusColors[room.status] || 'bg-gray-100'}
                 />
               </div>
 
               <div className="space-y-1 text-sm text-gray-600 mb-3">
                 <p>
-                  Tipo:{" "}
-                  <span className="font-medium text-gray-900">
-                    {room.roomType?.name}
-                  </span>
+                  Tipo: <span className="font-medium text-gray-900">{room.roomType?.name}</span>
                 </p>
                 <p>Piso: {room.floor}</p>
                 <p>Capacidad: {room.roomType?.capacity} personas</p>
@@ -226,31 +225,31 @@ export default function RoomsPage() {
 
               {room.bookings?.length > 0 && (
                 <div className="text-xs text-blue-600 mb-3">
-                  Reserva activa: {room.bookings[0].guest?.firstName}{" "}
+                  Reserva activa: {room.bookings[0].guest?.firstName}{' '}
                   {room.bookings[0].guest?.lastName}
                 </div>
               )}
 
-            <div className="flex gap-2 pt-3 border-t border-gray-100">
-              <button
-                onClick={() => handleEdit(room)}
-                className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-blue-600 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                <Edit2 className="h-3.5 w-3.5" /> Editar
-              </button>
-              <button
-                onClick={() => setImageRoomId(room.id)}
-                className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-amber-600 py-1.5 rounded-lg hover:bg-amber-50 transition-colors"
-              >
-                <ImageIcon className="h-3.5 w-3.5" /> Imagen
-              </button>
-              <button
-                onClick={() => handleDelete(room.id)}
-                className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-red-600 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Eliminar
-              </button>
-            </div>
+              <div className="flex gap-2 pt-3 border-t border-gray-100">
+                <button
+                  onClick={() => handleEdit(room)}
+                  className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-blue-600 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  <Edit2 className="h-3.5 w-3.5" /> Editar
+                </button>
+                <button
+                  onClick={() => setImageRoomId(room.id)}
+                  className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-amber-600 py-1.5 rounded-lg hover:bg-amber-50 transition-colors"
+                >
+                  <ImageIcon className="h-3.5 w-3.5" /> Imagen
+                </button>
+                <button
+                  onClick={() => handleDelete(room.id)}
+                  className="flex-1 flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-red-600 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Eliminar
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -261,7 +260,7 @@ export default function RoomsPage() {
             setShowModal(false);
             setEditingRoom(null);
           }}
-          title={editingRoom ? "Editar Habitación" : "Nueva Habitación"}
+          title={editingRoom ? 'Editar Habitación' : 'Nueva Habitación'}
         >
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -269,9 +268,7 @@ export default function RoomsPage() {
               <input
                 type="text"
                 value={form.number}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, number: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, number: e.target.value }))}
                 className="input-field"
                 required
               />
@@ -295,9 +292,7 @@ export default function RoomsPage() {
               <label className="label-field">Tipo de Habitación</label>
               <select
                 value={form.roomTypeId}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, roomTypeId: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, roomTypeId: e.target.value }))}
                 className="input-field"
                 required
               >
@@ -314,9 +309,7 @@ export default function RoomsPage() {
                 <label className="label-field">Estado</label>
                 <select
                   value={form.status}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, status: e.target.value }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
                   className="input-field"
                 >
                   {roomStatuses.map((s) => (
@@ -329,7 +322,7 @@ export default function RoomsPage() {
             )}
             <div className="flex gap-3 pt-2">
               <button type="submit" className="btn-primary flex-1">
-                {editingRoom ? "Guardar" : "Crear"}
+                {editingRoom ? 'Guardar' : 'Crear'}
               </button>
               <button
                 type="button"
@@ -340,23 +333,29 @@ export default function RoomsPage() {
               </button>
             </div>
           </form>
-      </Modal>
+        </Modal>
 
-      <Modal isOpen={!!imageRoomId} onClose={() => setImageRoomId(null)} title="Imagen de Habitacion">
-        {imageRoomId && (
-          <div className="space-y-4">
-            <ImageUpload
-              value={roomImages[imageRoomId] || ""}
-              onChange={(dataUrl) => handleImageSave(imageRoomId, dataUrl)}
-              label="Arrastra una imagen o haz clic para seleccionar"
-            />
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => setImageRoomId(null)} className="btn-secondary flex-1">Cerrar</button>
+        <Modal
+          isOpen={!!imageRoomId}
+          onClose={() => setImageRoomId(null)}
+          title="Imagen de Habitacion"
+        >
+          {imageRoomId && (
+            <div className="space-y-4">
+              <ImageUpload
+                value={roomImages[imageRoomId] || ''}
+                onChange={(dataUrl) => handleImageSave(imageRoomId, dataUrl)}
+                label="Arrastra una imagen o haz clic para seleccionar"
+              />
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setImageRoomId(null)} className="btn-secondary flex-1">
+                  Cerrar
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
+          )}
+        </Modal>
+      </div>
     </div>
-  </div>
   );
 }

@@ -1,25 +1,25 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+import { getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { prisma } from '@/lib/prisma';
 
 interface RoomImages {
   [roomId: string]: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "room-images.json");
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'room-images.json');
 
 function readImages(): RoomImages {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, "{}");
+    fs.writeFileSync(DATA_FILE, '{}');
     return {};
   }
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
 }
 
 function saveImages(data: RoomImages) {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   try {
     const user = getUserFromHeaders(request);
     if (!user.id) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
     const hotelId = await resolveHotelId(request.headers);
     const images = readImages();
@@ -54,28 +54,28 @@ export async function POST(request: Request) {
   try {
     const user = getUserFromHeaders(request);
     if (!user.id) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json({ error: "Hotel no encontrado" }, { status: 403 });
+      return NextResponse.json({ error: 'Hotel no encontrado' }, { status: 403 });
     }
     const body = await request.json();
     const { roomId, dataUrl } = body;
 
     if (!roomId) {
-      return NextResponse.json({ error: "roomId requerido" }, { status: 400 });
+      return NextResponse.json({ error: 'roomId requerido' }, { status: 400 });
     }
 
     const room = await prisma.room.findFirst({
       where: { id: roomId, hotelId },
     });
     if (!room) {
-      return NextResponse.json({ error: "Habitacion no encontrada" }, { status: 404 });
+      return NextResponse.json({ error: 'Habitacion no encontrada' }, { status: 404 });
     }
 
     const images = readImages();
-    images[roomId] = dataUrl || "";
+    images[roomId] = dataUrl || '';
     saveImages(images);
 
     return NextResponse.json({ roomId, dataUrl: images[roomId] });

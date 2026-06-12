@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Modal from "@/components/Modal";
+import { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import Modal from '@/components/Modal';
 import {
   Globe,
   RefreshCw,
@@ -12,7 +12,7 @@ import {
   Clock,
   Info,
   AlertTriangle,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface ChannelInfo {
   channel: string;
@@ -33,10 +33,10 @@ interface SyncResult {
 }
 
 const SUPPORTED_CHANNELS = [
-  { key: "booking", name: "Booking.com", color: "#003580" },
-  { key: "expedia", name: "Expedia", color: "#FBAF17" },
-  { key: "airbnb", name: "Airbnb", color: "#FF5A5F" },
-  { key: "despegar", name: "Despegar", color: "#4300D2" },
+  { key: 'booking', name: 'Booking.com', color: '#003580' },
+  { key: 'expedia', name: 'Expedia', color: '#FBAF17' },
+  { key: 'airbnb', name: 'Airbnb', color: '#FF5A5F' },
+  { key: 'despegar', name: 'Despegar', color: '#4300D2' },
 ];
 
 export default function ChannelManagerPage() {
@@ -45,16 +45,16 @@ export default function ChannelManagerPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncingChannel, setSyncingChannel] = useState<string | null>(null);
   const [showConfigModal, setShowConfigModal] = useState(false);
-  const [editingChannel, setEditingChannel] = useState("");
+  const [editingChannel, setEditingChannel] = useState('');
   const [form, setForm] = useState({
-    hotelCode: "",
-    apiKey: "",
+    hotelCode: '',
+    apiKey: '',
     active: true,
   });
 
   const load = async () => {
     try {
-      const res = await fetch("/api/channel-manager");
+      const res = await fetch('/api/channel-manager');
       if (res.ok) {
         const data = await res.json();
         setChannels(data.channels || []);
@@ -70,9 +70,9 @@ export default function ChannelManagerPage() {
     setSyncing(true);
     setSyncResults([]);
     try {
-      const res = await fetch("/api/channel-manager/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/channel-manager/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       });
       if (res.ok) {
@@ -87,9 +87,9 @@ export default function ChannelManagerPage() {
   const handleSyncChannel = async (channelKey: string) => {
     setSyncingChannel(channelKey);
     try {
-      const res = await fetch("/api/channel-manager/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/channel-manager/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channel: channelKey }),
       });
       if (res.ok) {
@@ -105,8 +105,8 @@ export default function ChannelManagerPage() {
     const existing = channels.find((c) => c.channel === channelKey);
     setEditingChannel(channelKey);
     setForm({
-      hotelCode: existing?.hotelCode || "",
-      apiKey: "",
+      hotelCode: existing?.hotelCode || '',
+      apiKey: '',
       active: existing?.active ?? false,
     });
     setShowConfigModal(true);
@@ -114,9 +114,9 @@ export default function ChannelManagerPage() {
 
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch("/api/channel-manager", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    await fetch('/api/channel-manager', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         channel: editingChannel,
         hotelCode: form.hotelCode,
@@ -141,67 +141,60 @@ export default function ChannelManagerPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Globe className="h-7 w-7 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              Channel Manager / Canales de Venta
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Channel Manager / Canales de Venta</h1>
           </div>
           <button
             onClick={handleSyncAll}
             disabled={syncing}
             className="btn-primary flex items-center gap-2"
           >
-            <RefreshCw
-              className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`}
-            />
-            {syncing ? "Sincronizando..." : "Sincronizar Todo"}
+            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? 'Sincronizando...' : 'Sincronizar Todo'}
           </button>
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
           <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
           <p className="text-sm text-blue-800">
-            Conecta tu hotel con los principales canales de venta online. La
-            sincronizacion mantiene disponibilidad y tarifas actualizadas en
-            todos los canales.
+            Conecta tu hotel con los principales canales de venta online. La sincronizacion mantiene
+            disponibilidad y tarifas actualizadas en todos los canales.
           </p>
         </div>
 
         {syncResults.length > 0 && (
           <div
             className={`rounded-lg p-4 border ${
-              syncResults.some((r) => r.status === "error")
-                ? "bg-yellow-50 border-yellow-200"
-                : "bg-green-50 border-green-200"
+              syncResults.some((r) => r.status === 'error')
+                ? 'bg-yellow-50 border-yellow-200'
+                : 'bg-green-50 border-green-200'
             }`}
           >
-            <p className="text-sm font-semibold mb-2 text-gray-900">
-              Resultados de sincronizacion
-            </p>
+            <p className="text-sm font-semibold mb-2 text-gray-900">Resultados de sincronizacion</p>
             <div className="space-y-1">
               {syncResults.map((r, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  {r.status === "success" ? (
+                  {r.status === 'success' ? (
                     <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
-                  ) : r.status === "error" ? (
+                  ) : r.status === 'error' ? (
                     <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
                   ) : (
                     <Clock className="h-4 w-4 text-gray-400 shrink-0" />
                   )}
                   <span
                     className={`text-sm ${
-                      r.status === "error"
-                        ? "text-red-700"
-                        : r.status === "success"
-                        ? "text-green-700"
-                        : "text-gray-500"
+                      r.status === 'error'
+                        ? 'text-red-700'
+                        : r.status === 'success'
+                          ? 'text-green-700'
+                          : 'text-gray-500'
                     }`}
                   >
-                    {r.name}:{" "}
-                    {r.status === "skipped"
-                      ? "Inactivo"
-                      : r.status === "error"
-                      ? r.reason
-                      : `${r.availabilitySynced} disponibilidades, ${r.bookingsFetched} reservas`}
+                    {r.name}:{' '}
+                    {r.status === 'skipped'
+                      ? 'Inactivo'
+                      : r.status === 'error'
+                        ? r.reason
+                        : `${r.availabilitySynced} disponibilidades, ${r.bookingsFetched} reservas`}
                   </span>
                 </div>
               ))}
@@ -221,9 +214,7 @@ export default function ChannelManagerPage() {
                   className="px-4 py-3 flex items-center justify-between"
                   style={{ backgroundColor: ch.color }}
                 >
-                  <span className="text-white text-sm font-bold">
-                    {ch.name}
-                  </span>
+                  <span className="text-white text-sm font-bold">{ch.name}</span>
                   {isActive ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-medium">
                       <CheckCircle className="h-3 w-3" />
@@ -248,15 +239,13 @@ export default function ChannelManagerPage() {
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3 text-gray-400" />
                       <span className="text-xs text-gray-500">
-                        {new Date(info.lastSync).toLocaleString("es-ES")}
+                        {new Date(info.lastSync).toLocaleString('es-ES')}
                       </span>
                     </div>
                   )}
 
                   {!info?.lastSync && (
-                    <p className="text-xs text-gray-400 italic">
-                      Sin sincronizacion previa
-                    </p>
+                    <p className="text-xs text-gray-400 italic">Sin sincronizacion previa</p>
                   )}
 
                   <div className="flex gap-2">
@@ -273,11 +262,9 @@ export default function ChannelManagerPage() {
                       className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-blue-200 text-sm font-medium text-blue-700 hover:bg-blue-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       <RefreshCw
-                        className={`h-3.5 w-3.5 ${
-                          isChannelSyncing ? "animate-spin" : ""
-                        }`}
+                        className={`h-3.5 w-3.5 ${isChannelSyncing ? 'animate-spin' : ''}`}
                       />
-                      {isChannelSyncing ? "Sync..." : "Sincronizar"}
+                      {isChannelSyncing ? 'Sync...' : 'Sincronizar'}
                     </button>
                   </div>
                 </div>
@@ -291,8 +278,7 @@ export default function ChannelManagerPage() {
         isOpen={showConfigModal}
         onClose={() => setShowConfigModal(false)}
         title={`Configurar ${
-          SUPPORTED_CHANNELS.find((c) => c.key === editingChannel)?.name ||
-          editingChannel
+          SUPPORTED_CHANNELS.find((c) => c.key === editingChannel)?.name || editingChannel
         }`}
       >
         <form onSubmit={handleSaveConfig} className="space-y-4">
@@ -301,9 +287,7 @@ export default function ChannelManagerPage() {
             <input
               type="text"
               value={form.hotelCode}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, hotelCode: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, hotelCode: e.target.value }))}
               className="input-field"
               placeholder="Ej: HOTEL-12345"
               required
@@ -314,9 +298,7 @@ export default function ChannelManagerPage() {
             <input
               type="password"
               value={form.apiKey}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, apiKey: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, apiKey: e.target.value }))}
               className="input-field"
               placeholder="Ingrese su API key"
             />
@@ -326,9 +308,7 @@ export default function ChannelManagerPage() {
               type="checkbox"
               id="active-check"
               checked={form.active}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, active: e.target.checked }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
               className="h-4 w-4 text-blue-600 rounded"
             />
             <label htmlFor="active-check" className="text-sm text-gray-700">

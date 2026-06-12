@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useEffect } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 export default function Error({
   error,

@@ -1,23 +1,23 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { sendEmail, checkInReminderHtml } from "@/lib/email";
-import { logAction } from "@/lib/audit";
-import { verifyCronSecret, resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { sendEmail, checkInReminderHtml } from '@/lib/email';
+import { logAction } from '@/lib/audit';
+import { verifyCronSecret, resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   if (!verifyCronSecret(request)) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
   try {
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json({ sent: 0, message: "No hotel found" });
+      return NextResponse.json({ sent: 0, message: 'No hotel found' });
     }
 
     const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
-      return NextResponse.json({ sent: 0, message: "No hotel found" });
+      return NextResponse.json({ sent: 0, message: 'No hotel found' });
     }
 
     const tomorrow = new Date();
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     const bookings = await prisma.booking.findMany({
       where: {
         hotelId,
-        status: "confirmed",
+        status: 'confirmed',
         checkIn: {
           gte: tomorrow,
           lt: dayAfterTomorrow,
@@ -57,20 +57,20 @@ export async function GET(request: Request) {
       }
     }
 
-  if (sent > 0) {
-    await logAction({
-      hotelId: hotel.id,
-      action: "CRON_REMINDERS",
-      entity: "booking",
-      details: JSON.stringify({ count: sent }),
-    }).catch(() => {});
-  }
+    if (sent > 0) {
+      await logAction({
+        hotelId: hotel.id,
+        action: 'CRON_REMINDERS',
+        entity: 'booking',
+        details: JSON.stringify({ count: sent }),
+      }).catch(() => {});
+    }
 
-  return NextResponse.json({
-    sent,
-    total: bookings.length,
-    message: `${sent} recordatorios enviados de ${bookings.length} reservas`,
-  });
+    return NextResponse.json({
+      sent,
+      total: bookings.length,
+      message: `${sent} recordatorios enviados de ${bookings.length} reservas`,
+    });
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 interface StatusBadgeProps {
   label: string;
@@ -7,13 +7,6 @@ interface StatusBadgeProps {
 
 export default function StatusBadge({ label, color }: StatusBadgeProps) {
   return (
-    <span
-      className={cn(
-        "px-2.5 py-0.5 rounded-full text-xs font-medium",
-        color
-      )}
-    >
-      {label}
-    </span>
+    <span className={cn('px-2.5 py-0.5 rounded-full text-xs font-medium', color)}>{label}</span>
   );
 }

@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getUserFromHeaders } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getUserFromHeaders } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   const { id: userId, role } = getUserFromHeaders(request);
 
-  if (role === "admin") {
+  if (role === 'admin') {
     const hotels = await prisma.hotel.findMany({
       select: { id: true, name: true, logo: true },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     });
     return NextResponse.json(hotels);
   }
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   if (!user?.hotelId) {
     const hotels = await prisma.hotel.findMany({
       select: { id: true, name: true, logo: true },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     });
     return NextResponse.json(hotels);
   }

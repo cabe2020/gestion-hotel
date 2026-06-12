@@ -1,10 +1,10 @@
-import { prisma } from "./prisma";
+import { prisma } from './prisma';
 
 export async function createNotification({
   userId,
   title,
   message,
-  type = "info",
+  type = 'info',
   hotelId,
 }: {
   userId: string;
@@ -23,7 +23,7 @@ export async function notifyRole({
   hotelId,
   title,
   message,
-  type = "info",
+  type = 'info',
 }: {
   role: string;
   hotelId: string;

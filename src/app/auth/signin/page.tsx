@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import {
   Hotel,
   Mail,
@@ -15,17 +15,17 @@ import {
   CalendarDays,
   BarChart3,
   Bed,
-} from "lucide-react";
-import Link from "next/link";
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotResult, setForgotResult] = useState<{
     tempPassword?: string;
@@ -35,19 +35,19 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError('');
 
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       email,
       password,
       redirect: false,
     });
 
     if (result?.error) {
-      setError("Email o contraseña incorrectos");
+      setError('Email o contraseña incorrectos');
       setLoading(false);
     } else {
-      window.location.href = "/dashboard";
+      window.location.href = '/dashboard';
     }
   };
 
@@ -55,9 +55,9 @@ export default function SignInPage() {
     e.preventDefault();
     setForgotLoading(true);
     setForgotResult(null);
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: forgotEmail }),
     });
     const data = await res.json();
@@ -65,7 +65,7 @@ export default function SignInPage() {
       setForgotResult({ tempPassword: data.tempPassword });
     } else {
       setForgotResult({
-        error: data.error?.[0]?.message || data.error || "Error",
+        error: data.error?.[0]?.message || data.error || 'Error',
       });
     }
     setForgotLoading(false);
@@ -74,23 +74,23 @@ export default function SignInPage() {
   const features = [
     {
       icon: CalendarDays,
-      title: "Calendario visual",
-      desc: "Gestiona reservas con vista tipo timeline",
+      title: 'Calendario visual',
+      desc: 'Gestiona reservas con vista tipo timeline',
     },
     {
       icon: Bed,
-      title: "Control de habitaciones",
-      desc: "Estados, tipos y disponibilidad en tiempo real",
+      title: 'Control de habitaciones',
+      desc: 'Estados, tipos y disponibilidad en tiempo real',
     },
     {
       icon: BarChart3,
-      title: "Reportes y caja",
-      desc: "Ingresos, gastos y ocupación al instante",
+      title: 'Reportes y caja',
+      desc: 'Ingresos, gastos y ocupación al instante',
     },
     {
       icon: Shield,
-      title: "Multi-rol y seguro",
-      desc: "Admin y recepcionistas con permisos diferenciados",
+      title: 'Multi-rol y seguro',
+      desc: 'Admin y recepcionistas con permisos diferenciados',
     },
   ];
 
@@ -106,11 +106,10 @@ export default function SignInPage() {
             <div className="flex items-center gap-3 mb-8">
               <img src="/logos/logo-final.svg" alt="Hosterix" className="h-12 w-auto" />
             </div>
-            <h2 className="text-3xl font-bold mb-4">
-              Recupera tu acceso
-            </h2>
+            <h2 className="text-3xl font-bold mb-4">Recupera tu acceso</h2>
             <p className="text-blue-200 text-lg leading-relaxed max-w-md">
-              Genera una contraseña temporal para volver a entrar. Luego podrás cambiarla desde tu perfil.
+              Genera una contraseña temporal para volver a entrar. Luego podrás cambiarla desde tu
+              perfil.
             </p>
           </div>
         </div>
@@ -121,7 +120,7 @@ export default function SignInPage() {
               onClick={() => {
                 setShowForgot(false);
                 setForgotResult(null);
-                setForgotEmail("");
+                setForgotEmail('');
               }}
               className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-8 transition-colors"
             >
@@ -133,9 +132,7 @@ export default function SignInPage() {
               <div className="inline-flex items-center justify-center h-14 w-14 bg-amber-100 rounded-2xl mb-4">
                 <KeyRound className="h-7 w-7 text-amber-600" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Recuperar Contraseña
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Recuperar Contraseña</h1>
               <p className="text-gray-500 mt-2">
                 Ingresa tu email y te generaremos una contraseña temporal
               </p>
@@ -143,9 +140,7 @@ export default function SignInPage() {
 
             {forgotResult?.tempPassword && (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 mb-6 space-y-2">
-                <p className="text-sm font-medium">
-                  Contraseña temporal generada:
-                </p>
+                <p className="text-sm font-medium">Contraseña temporal generada:</p>
                 <p className="font-mono text-2xl tracking-widest font-bold bg-emerald-100 rounded-lg px-4 py-2 text-center select-all">
                   {forgotResult.tempPassword}
                 </p>
@@ -163,9 +158,7 @@ export default function SignInPage() {
 
             <form onSubmit={handleForgotPassword} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <input
@@ -207,9 +200,12 @@ export default function SignInPage() {
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-400 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-cyan-400 rounded-full blur-3xl" />
         </div>
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
         <div className="relative z-10 flex flex-col justify-between px-16 py-12 w-full">
           <div className="flex items-center gap-3">
             <img src="/logos/logo-final.svg" alt="Hosterix" className="h-12 w-auto" />
@@ -223,8 +219,8 @@ export default function SignInPage() {
                 de forma inteligente
               </h2>
               <p className="text-blue-200 text-lg leading-relaxed max-w-lg">
-                Reservas, habitaciones, huéspedes, caja y reportes.
-                Todo en un solo lugar, accesible desde cualquier dispositivo.
+                Reservas, habitaciones, huéspedes, caja y reportes. Todo en un solo lugar, accesible
+                desde cualquier dispositivo.
               </p>
             </div>
 
@@ -235,9 +231,7 @@ export default function SignInPage() {
                   className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
                 >
                   <f.icon className="h-5 w-5 text-blue-300 mb-2" />
-                  <p className="text-sm font-semibold text-white">
-                    {f.title}
-                  </p>
+                  <p className="text-sm font-semibold text-white">{f.title}</p>
                   <p className="text-xs text-blue-300 mt-1">{f.desc}</p>
                 </div>
               ))}
@@ -245,8 +239,7 @@ export default function SignInPage() {
           </div>
 
           <p className="text-xs text-blue-300/60">
-            &copy; {new Date().getFullYear()} Hosterix &middot; Sistema de
-            Gestión Hotelera
+            &copy; {new Date().getFullYear()} Hosterix &middot; Sistema de Gestión Hotelera
           </p>
         </div>
       </div>
@@ -258,12 +251,8 @@ export default function SignInPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Bienvenido de nuevo
-            </h1>
-            <p className="text-gray-500 mt-2">
-              Ingresa tus credenciales para acceder al sistema
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">Bienvenido de nuevo</h1>
+            <p className="text-gray-500 mt-2">Ingresa tus credenciales para acceder al sistema</p>
           </div>
 
           {error && (
@@ -277,9 +266,7 @@ export default function SignInPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -294,13 +281,11 @@ export default function SignInPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Contraseña
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-11 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-shadow"
@@ -312,11 +297,7 @@ export default function SignInPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
@@ -356,7 +337,7 @@ export default function SignInPage() {
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-500">
-              ¿No tienes una cuenta?{" "}
+              ¿No tienes una cuenta?{' '}
               <Link
                 href="/auth/signup"
                 className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"

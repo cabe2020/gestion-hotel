@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { generateReceiptPDF } from "@/lib/pdf";
-import { resolveHotelId } from "@/lib/rbac";
-import { z, ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { generateReceiptPDF } from '@/lib/pdf';
+import { resolveHotelId } from '@/lib/rbac';
+import { z, ZodError } from 'zod';
 
 const schema = z.object({ paymentId: z.string().min(1) });
 
@@ -23,26 +23,17 @@ export async function POST(request: Request) {
     });
 
     if (!payment) {
-      return NextResponse.json(
-        { error: "Pago no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Pago no encontrado' }, { status: 404 });
     }
 
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json(
-        { error: "Hotel no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Hotel no encontrado' }, { status: 404 });
     }
 
     const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
-      return NextResponse.json(
-        { error: "Hotel no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Hotel no encontrado' }, { status: 404 });
     }
 
     const doc = generateReceiptPDF({
@@ -62,12 +53,12 @@ export async function POST(request: Request) {
       },
     });
 
-    const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
+    const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
     return new Response(pdfBuffer, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="recibo-${payment.id}.pdf"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="recibo-${payment.id}.pdf"`,
       },
     });
   } catch (error: unknown) {

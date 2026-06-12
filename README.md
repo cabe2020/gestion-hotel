@@ -27,23 +27,27 @@ Sistema completo de gestion hotelera construido con Next.js, Prisma y SQLite.
 ## Primeros Pasos
 
 1. Instalar dependencias:
+
 ```bash
 npm install
 ```
 
 2. Configurar variables de entorno (archivo `.env`):
+
 ```
 DATABASE_URL="file:./dev.db"
 NEXTAUTH_SECRET="tu-clave-secreta-aqui"
 ```
 
 3. Ejecutar migraciones y crear datos iniciales:
+
 ```bash
 npx prisma migrate dev
 npx prisma db seed
 ```
 
 4. Iniciar el servidor de desarrollo:
+
 ```bash
 npm run dev
 ```

@@ -1,9 +1,9 @@
-import NextAuth, { type NextAuthOptions, type DefaultSession } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import NextAuth, { type NextAuthOptions, type DefaultSession } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface User {
     role?: string;
     hotelId?: string | null;
@@ -13,11 +13,11 @@ declare module "next-auth" {
       role?: string;
       id?: string;
       hotelId?: string | null;
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT {
     role?: string;
     id?: string;
@@ -28,10 +28,10 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  session: { strategy: "jwt" },
+  session: { strategy: 'jwt' },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: '/auth/signin',
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

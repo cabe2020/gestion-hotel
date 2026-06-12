@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { useEffect, useState } from 'react';
+import { formatCurrency, formatDate } from '@/lib/utils';
 
 interface FolioItem {
   id: string;
@@ -29,7 +29,14 @@ interface InvoicePrintProps {
       roomRate: number;
       totalAmount: number;
       paidAmount: number;
-      guest: { firstName: string; lastName: string; idNumber: string; address: string; email: string; phone: string };
+      guest: {
+        firstName: string;
+        lastName: string;
+        idNumber: string;
+        address: string;
+        email: string;
+        phone: string;
+      };
       room: { number: string; roomType: { name: string } };
       folioItems: FolioItem[];
     };
@@ -38,13 +45,13 @@ interface InvoicePrintProps {
 }
 
 const categoryLabels: Record<string, string> = {
-  room: "Habitacion",
-  minibar: "Minibar",
-  restaurant: "Restaurante",
-  spa: "Spa",
-  laundry: "Lavanderia",
-  parking: "Estacionamiento",
-  other: "Otro",
+  room: 'Habitacion',
+  minibar: 'Minibar',
+  restaurant: 'Restaurante',
+  spa: 'Spa',
+  laundry: 'Lavanderia',
+  parking: 'Estacionamiento',
+  other: 'Otro',
 };
 
 export default function InvoicePrint({ invoice, hotel }: InvoicePrintProps) {
@@ -56,7 +63,7 @@ export default function InvoicePrint({ invoice, hotel }: InvoicePrintProps) {
       <div className="flex justify-between items-start border-b-2 border-gray-900 pb-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
-            {invoice.cancelled ? "FACTURA ANULADA" : "FACTURA"}
+            {invoice.cancelled ? 'FACTURA ANULADA' : 'FACTURA'}
           </h2>
           <p className="text-sm text-gray-600">N° {invoice.number}</p>
           <p className="text-sm text-gray-600">Fecha: {formatDate(invoice.date)}</p>
@@ -74,9 +81,11 @@ export default function InvoicePrint({ invoice, hotel }: InvoicePrintProps) {
 
       <div className="bg-gray-50 rounded-lg p-4 mb-6">
         <h3 className="text-sm font-semibold text-gray-700 mb-2">Datos del Huesped</h3>
-        <p className="text-sm">{b.guest.firstName} {b.guest.lastName}</p>
-        <p className="text-sm text-gray-600">Doc: {b.guest.idNumber || "-"}</p>
-        <p className="text-sm text-gray-600">{b.guest.address || "-"}</p>
+        <p className="text-sm">
+          {b.guest.firstName} {b.guest.lastName}
+        </p>
+        <p className="text-sm text-gray-600">Doc: {b.guest.idNumber || '-'}</p>
+        <p className="text-sm text-gray-600">{b.guest.address || '-'}</p>
       </div>
 
       <table className="w-full text-sm mb-6">
@@ -92,13 +101,17 @@ export default function InvoicePrint({ invoice, hotel }: InvoicePrintProps) {
             folioItems.map((fi) => (
               <tr key={fi.id} className="border-b border-gray-100">
                 <td className="py-2">{fi.concept}</td>
-                <td className="text-center py-2 text-gray-600">{categoryLabels[fi.category] || fi.category}</td>
+                <td className="text-center py-2 text-gray-600">
+                  {categoryLabels[fi.category] || fi.category}
+                </td>
                 <td className="text-right py-2 font-medium">{formatCurrency(fi.amount)}</td>
               </tr>
             ))
           ) : (
             <tr className="border-b border-gray-100">
-              <td className="py-2">Hab. {b.room.number} ({b.room.roomType.name}) - {b.totalNights} noches</td>
+              <td className="py-2">
+                Hab. {b.room.number} ({b.room.roomType.name}) - {b.totalNights} noches
+              </td>
               <td className="text-center py-2 text-gray-600">Habitacion</td>
               <td className="text-right py-2 font-medium">{formatCurrency(b.totalAmount)}</td>
             </tr>
@@ -106,23 +119,33 @@ export default function InvoicePrint({ invoice, hotel }: InvoicePrintProps) {
         </tbody>
         <tfoot>
           <tr className="border-t border-gray-300">
-            <td colSpan={2} className="text-right py-2 text-gray-600">Subtotal</td>
+            <td colSpan={2} className="text-right py-2 text-gray-600">
+              Subtotal
+            </td>
             <td className="text-right py-2">{formatCurrency(invoice.total - invoice.taxAmount)}</td>
           </tr>
           <tr>
-            <td colSpan={2} className="text-right py-2 text-gray-600">Impuestos</td>
+            <td colSpan={2} className="text-right py-2 text-gray-600">
+              Impuestos
+            </td>
             <td className="text-right py-2">{formatCurrency(invoice.taxAmount)}</td>
           </tr>
           <tr className="border-t-2 border-gray-900">
-            <td colSpan={2} className="text-right py-2 font-bold text-lg">TOTAL</td>
+            <td colSpan={2} className="text-right py-2 font-bold text-lg">
+              TOTAL
+            </td>
             <td className="text-right py-2 font-bold text-lg">{formatCurrency(invoice.total)}</td>
           </tr>
           <tr>
-            <td colSpan={2} className="text-right py-2 text-gray-600">Pagado</td>
+            <td colSpan={2} className="text-right py-2 text-gray-600">
+              Pagado
+            </td>
             <td className="text-right py-2">{formatCurrency(b.paidAmount)}</td>
           </tr>
           <tr>
-            <td colSpan={2} className="text-right py-2 text-gray-600">Pendiente</td>
+            <td colSpan={2} className="text-right py-2 text-gray-600">
+              Pendiente
+            </td>
             <td className="text-right py-2">{formatCurrency(invoice.total - b.paidAmount)}</td>
           </tr>
         </tfoot>

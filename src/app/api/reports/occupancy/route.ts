@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
 
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId) return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
 
     const startDate = from ? new Date(from) : new Date(Date.now() - 30 * 86400000);
     const endDate = to ? new Date(to) : new Date();
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 
     const current = new Date(startDate);
     while (current <= endDate) {
-      const dayStr = current.toISOString().split("T")[0];
+      const dayStr = current.toISOString().split('T')[0];
       const dayStart = new Date(current);
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(current);
@@ -65,7 +65,14 @@ export async function GET(request: Request) {
       const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
       const avgRate = rateCount > 0 ? Math.round((rateSum / rateCount) * 100) / 100 : 0;
 
-      days.push({ date: dayStr, totalRooms, occupiedRooms, occupancyRate, avgRate, revenue: Math.round(totalRevenue * 100) / 100 });
+      days.push({
+        date: dayStr,
+        totalRooms,
+        occupiedRooms,
+        occupancyRate,
+        avgRate,
+        revenue: Math.round(totalRevenue * 100) / 100,
+      });
       current.setDate(current.getDate() + 1);
     }
 

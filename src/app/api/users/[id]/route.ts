@@ -1,14 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requireAdmin, getUserFromHeaders } from "@/lib/rbac";
-import { updateUserSchema } from "@/lib/validations";
-import { logAction } from "@/lib/audit";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAdmin, getUserFromHeaders } from '@/lib/rbac';
+import { updateUserSchema } from '@/lib/validations';
+import { logAction } from '@/lib/audit';
+import { ZodError } from 'zod';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await prisma.user.findUnique({
     where: { id },
@@ -21,15 +18,11 @@ export async function GET(
       createdAt: true,
     },
   });
-  if (!user)
-    return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+  if (!user) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
   return NextResponse.json(user);
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -43,10 +36,7 @@ export async function PUT(
         where: { email: data.email },
       });
       if (existing && existing.id !== id) {
-        return NextResponse.json(
-          { error: "Ya existe un usuario con ese email" },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: 'Ya existe un usuario con ese email' }, { status: 409 });
       }
     }
 
@@ -65,8 +55,8 @@ export async function PUT(
 
     await logAction({
       userId: getUserFromHeaders(request).id,
-      action: "update",
-      entity: "user",
+      action: 'update',
+      entity: 'user',
       entityId: id,
       details: `Usuario ${user.name} actualizado`,
     }).catch(() => {});
@@ -79,10 +69,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
 
@@ -102,8 +89,8 @@ export async function DELETE(
 
   await logAction({
     userId: getUserFromHeaders(request).id,
-    action: "deactivate",
-    entity: "user",
+    action: 'deactivate',
+    entity: 'user',
     entityId: id,
     details: `Usuario ${user.name} desactivado`,
   }).catch(() => {});

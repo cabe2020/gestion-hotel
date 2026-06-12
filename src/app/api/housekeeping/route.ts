@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { housekeepingSchema } from "@/lib/validations";
-import { notifyRole } from "@/lib/notifications";
-import { logAction } from "@/lib/audit";
-import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { housekeepingSchema } from '@/lib/validations';
+import { notifyRole } from '@/lib/notifications';
+import { logAction } from '@/lib/audit';
+import { getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { ZodError } from 'zod';
 
 const priorityOrder: Record<string, number> = {
   urgent: 0,
@@ -24,12 +24,11 @@ export async function GET(request: Request) {
         room: { include: { roomType: true } },
         assignedUser: { select: { id: true, name: true, email: true } },
       },
-      orderBy: [{ createdAt: "desc" }],
+      orderBy: [{ createdAt: 'desc' }],
     });
 
     const sorted = tasks.sort(
-      (a, b) =>
-        (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2)
+      (a, b) => (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2)
     );
 
     return NextResponse.json(sorted);
@@ -44,12 +43,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = housekeepingSchema.parse(body);
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
 
-    const assignedTo = data.assignedTo && data.assignedTo.trim() !== ""
-      ? data.assignedTo
-      : null;
+    const assignedTo = data.assignedTo && data.assignedTo.trim() !== '' ? data.assignedTo : null;
 
     const task = await prisma.housekeepingTask.create({
       data: {
@@ -66,25 +62,25 @@ export async function POST(request: Request) {
       },
     });
 
-    if (data.type === "cleaning") {
+    if (data.type === 'cleaning') {
       await prisma.room.update({
         where: { id: data.roomId },
-        data: { cleaningStatus: "dirty" },
+        data: { cleaningStatus: 'dirty' },
       });
     }
 
     await notifyRole({
-      role: "admin",
+      role: 'admin',
       hotelId,
       title: `Nueva tarea de limpieza: Hab ${task.room?.number || data.roomId}`,
       message: `Tarea ${data.type} - Prioridad: ${data.priority}`,
-      type: "info",
+      type: 'info',
     }).catch(() => {});
 
     await logAction({
       userId,
-      action: "create",
-      entity: "housekeeping-task",
+      action: 'create',
+      entity: 'housekeeping-task',
       entityId: task.id,
       details: `Tarea de limpieza Hab ${task.room?.number || data.roomId} creada`,
       hotelId,

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Globe } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { useTranslations } from "./I18nProvider";
-import { type Locale } from "@/lib/i18n";
+import { Globe } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from './I18nProvider';
+import { type Locale } from '@/lib/i18n';
 
 const languages: { code: Locale; flag: string; label: string }[] = [
-  { code: "es", flag: "\u{1F1EA}\u{1F1F8}", label: "Español" },
-  { code: "en", flag: "\u{1F1EC}\u{1F1E7}", label: "English" },
-  { code: "pt", flag: "\u{1F1E7}\u{1F1F7}", label: "Português" },
+  { code: 'es', flag: '\u{1F1EA}\u{1F1F8}', label: 'Español' },
+  { code: 'en', flag: '\u{1F1EC}\u{1F1E7}', label: 'English' },
+  { code: 'pt', flag: '\u{1F1E7}\u{1F1F7}', label: 'Português' },
 ];
 
 export default function LanguageSwitcher() {
@@ -22,8 +22,8 @@ export default function LanguageSwitcher() {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   const current = languages.find((l) => l.code === locale) || languages[0];
@@ -52,7 +52,9 @@ export default function LanguageSwitcher() {
               key={l.code}
               onClick={() => handleSelect(l.code)}
               className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                locale === l.code ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-200"
+                locale === l.code
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium'
+                  : 'text-gray-700 dark:text-gray-200'
               }`}
             >
               <span>{l.flag}</span>

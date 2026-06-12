@@ -1,10 +1,7 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const guest = await prisma.guest.findUnique({
@@ -12,28 +9,27 @@ export async function GET(
     select: { id: true },
   });
 
-  if (!guest)
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!guest) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const [bookings, auditLogs] = await Promise.all([
     prisma.booking.findMany({
       where: { guestId: id },
       include: {
         room: { include: { roomType: true } },
-        payments: { orderBy: { createdAt: "desc" } },
-        folioItems: { orderBy: { date: "desc" } },
+        payments: { orderBy: { createdAt: 'desc' } },
+        folioItems: { orderBy: { date: 'desc' } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.auditLog.findMany({
       where: {
-        entity: "guest",
+        entity: 'guest',
         entityId: id,
       },
       include: {
         user: { select: { id: true, name: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       take: 20,
     }),
   ]);
@@ -54,12 +50,8 @@ export async function GET(
     }))
   );
 
-  allPayments.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  allFolioItems.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  allPayments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  allFolioItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return NextResponse.json({
     bookings,

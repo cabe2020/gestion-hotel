@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import Header from "@/components/Header";
-import { formatDate } from "@/lib/utils";
-import { Shield, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState, useCallback } from 'react';
+import Header from '@/components/Header';
+import { formatDate } from '@/lib/utils';
+import { Shield, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface AuditLog {
   id: string;
@@ -17,31 +17,31 @@ interface AuditLog {
 }
 
 const entityOptions = [
-  { value: "", label: "Todas" },
-  { value: "booking", label: "Reservas" },
-  { value: "guest", label: "Huespedes" },
-  { value: "payment", label: "Pagos" },
-  { value: "invoice", label: "Facturas" },
-  { value: "room", label: "Habitaciones" },
-  { value: "user", label: "Usuarios" },
-  { value: "cash-register", label: "Caja" },
-  { value: "housekeeping-task", label: "Housekeeping" },
-  { value: "channel-config", label: "Canales" },
-  { value: "channel-manager", label: "Channel Manager" },
+  { value: '', label: 'Todas' },
+  { value: 'booking', label: 'Reservas' },
+  { value: 'guest', label: 'Huespedes' },
+  { value: 'payment', label: 'Pagos' },
+  { value: 'invoice', label: 'Facturas' },
+  { value: 'room', label: 'Habitaciones' },
+  { value: 'user', label: 'Usuarios' },
+  { value: 'cash-register', label: 'Caja' },
+  { value: 'housekeeping-task', label: 'Housekeeping' },
+  { value: 'channel-config', label: 'Canales' },
+  { value: 'channel-manager', label: 'Channel Manager' },
 ];
 
 const actionLabels: Record<string, string> = {
-  create: "Crear",
-  update: "Actualizar",
-  delete: "Eliminar",
-  cancel: "Anular",
-  deactivate: "Desactivar",
-  open: "Abrir",
-  close: "Cerrar",
-  refund: "Reembolso",
-  "status-change": "Cambio estado",
-  sync: "Sincronizar",
-  complete: "Completar",
+  create: 'Crear',
+  update: 'Actualizar',
+  delete: 'Eliminar',
+  cancel: 'Anular',
+  deactivate: 'Desactivar',
+  open: 'Abrir',
+  close: 'Cerrar',
+  refund: 'Reembolso',
+  'status-change': 'Cambio estado',
+  sync: 'Sincronizar',
+  complete: 'Completar',
 };
 
 const PAGE_SIZE = 25;
@@ -50,20 +50,20 @@ export default function AuditLogsPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [entity, setEntity] = useState("");
-  const [userId, setUserId] = useState("");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [entity, setEntity] = useState('');
+  const [userId, setUserId] = useState('');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
 
   const load = useCallback(() => {
     const params = new URLSearchParams();
-    params.set("page", String(page));
-    params.set("pageSize", String(PAGE_SIZE));
-    if (entity) params.set("entity", entity);
-    if (userId) params.set("userId", userId);
-    if (from) params.set("from", from);
-    if (to) params.set("to", to);
+    params.set('page', String(page));
+    params.set('pageSize', String(PAGE_SIZE));
+    if (entity) params.set('entity', entity);
+    if (userId) params.set('userId', userId);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
 
     fetch(`/api/audit-logs?${params}`)
       .then((r) => r.json())
@@ -74,7 +74,7 @@ export default function AuditLogsPage() {
   }, [page, entity, userId, from, to]);
 
   useEffect(() => {
-    fetch("/api/users")
+    fetch('/api/users')
       .then((r) => r.json())
       .then((data) => setUsers(Array.isArray(data) ? data : []))
       .catch(() => {});
@@ -105,11 +105,16 @@ export default function AuditLogsPage() {
               <label className="label-field">Entidad</label>
               <select
                 value={entity}
-                onChange={(e) => { setEntity(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setEntity(e.target.value);
+                  setPage(1);
+                }}
                 className="input-field"
               >
                 {entityOptions.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -117,12 +122,17 @@ export default function AuditLogsPage() {
               <label className="label-field">Usuario</label>
               <select
                 value={userId}
-                onChange={(e) => { setUserId(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setUserId(e.target.value);
+                  setPage(1);
+                }}
                 className="input-field"
               >
                 <option value="">Todos</option>
                 {users.map((u) => (
-                  <option key={u.id} value={u.id}>{u.name}</option>
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -131,7 +141,10 @@ export default function AuditLogsPage() {
               <input
                 type="date"
                 value={from}
-                onChange={(e) => { setFrom(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setFrom(e.target.value);
+                  setPage(1);
+                }}
                 className="input-field"
               />
             </div>
@@ -140,7 +153,10 @@ export default function AuditLogsPage() {
               <input
                 type="date"
                 value={to}
-                onChange={(e) => { setTo(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setTo(e.target.value);
+                  setPage(1);
+                }}
                 className="input-field"
               />
             </div>
@@ -151,12 +167,24 @@ export default function AuditLogsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Fecha</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Usuario</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Accion</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Entidad</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">ID</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Detalles</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Fecha
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Usuario
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Accion
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Entidad
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  ID
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Detalles
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -165,22 +193,18 @@ export default function AuditLogsPage() {
                   <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
                     {formatDate(log.createdAt)}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">
-                    {log.user?.name || "Sistema"}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{log.user?.name || 'Sistema'}</td>
                   <td className="px-4 py-3">
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {actionLabels[log.action] || log.action}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 capitalize">
-                    {log.entity}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700 capitalize">{log.entity}</td>
                   <td className="px-4 py-3 text-sm text-gray-500 font-mono text-xs max-w-[120px] truncate">
-                    {log.entityId || "-"}
+                    {log.entityId || '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700 max-w-[300px] truncate">
-                    {log.details || "-"}
+                    {log.details || '-'}
                   </td>
                 </tr>
               ))}

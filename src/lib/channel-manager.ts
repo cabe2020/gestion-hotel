@@ -28,10 +28,10 @@ export interface ChannelBooking {
 }
 
 const CHANNELS = [
-  { id: "booking", name: "Booking.com", color: "#003580" },
-  { id: "expedia", name: "Expedia", color: "#FBAF17" },
-  { id: "airbnb", name: "Airbnb", color: "#FF5A5F" },
-  { id: "despegar", name: "Despegar", color: "#4300D2" },
+  { id: 'booking', name: 'Booking.com', color: '#003580' },
+  { id: 'expedia', name: 'Expedia', color: '#FBAF17' },
+  { id: 'airbnb', name: 'Airbnb', color: '#FF5A5F' },
+  { id: 'despegar', name: 'Despegar', color: '#4300D2' },
 ];
 
 export function getChannels() {
@@ -101,9 +101,7 @@ export async function syncAvailabilityToChannel(
   config: ChannelConfig,
   availability: ChannelAvailability[]
 ) {
-  console.log(
-    `[ChannelManager] Syncing ${availability.length} records to ${config.channel}`
-  );
+  console.log(`[ChannelManager] Syncing ${availability.length} records to ${config.channel}`);
   // TODO: Replace with real API call:
   // const response = await fetch(`https://api.${config.channel}.com/availability`, {
   //   method: "PUT",
@@ -120,12 +118,8 @@ export async function syncAvailabilityToChannel(
   };
 }
 
-export async function fetchBookingsFromChannel(
-  config: ChannelConfig
-): Promise<ChannelBooking[]> {
-  console.log(
-    `[ChannelManager] Fetching bookings from ${config.channel}`
-  );
+export async function fetchBookingsFromChannel(config: ChannelConfig): Promise<ChannelBooking[]> {
+  console.log(`[ChannelManager] Fetching bookings from ${config.channel}`);
   // TODO: Replace with real API call:
   // const response = await fetch(`https://api.${config.channel}.com/reservations?hotelCode=${config.hotelCode}`, {
   //   headers: { "Authorization": `Bearer ${config.apiKey}` },
@@ -135,13 +129,8 @@ export async function fetchBookingsFromChannel(
   return [];
 }
 
-export async function pushRatePlans(
-  config: ChannelConfig,
-  ratePlans: Record<string, unknown>[]
-) {
-  console.log(
-    `[ChannelManager] Pushing ${ratePlans.length} rate plans to ${config.channel}`
-  );
+export async function pushRatePlans(config: ChannelConfig, ratePlans: Record<string, unknown>[]) {
+  console.log(`[ChannelManager] Pushing ${ratePlans.length} rate plans to ${config.channel}`);
   // TODO: Replace with real API call:
   // const response = await fetch(`https://api.${config.channel}.com/rate-plans`, {
   //   method: "PUT",

@@ -1,21 +1,18 @@
-import { NextResponse } from "next/server";
-import { requireAdmin, resolveHotelId } from "@/lib/rbac";
-import { prisma } from "@/lib/prisma";
-import { getChannels } from "@/lib/channel-manager";
-import {
-  syncAvailabilityToChannel,
-  fetchBookingsFromChannel,
-} from "@/lib/channel-manager";
-import type { ChannelConfig } from "@/lib/channel-manager";
-import fs from "fs";
-import path from "path";
+import { NextResponse } from 'next/server';
+import { requireAdmin, resolveHotelId } from '@/lib/rbac';
+import { prisma } from '@/lib/prisma';
+import { getChannels } from '@/lib/channel-manager';
+import { syncAvailabilityToChannel, fetchBookingsFromChannel } from '@/lib/channel-manager';
+import type { ChannelConfig } from '@/lib/channel-manager';
+import fs from 'fs';
+import path from 'path';
 
-const CONFIG_PATH = path.join(process.cwd(), "data", "channel-config.json");
+const CONFIG_PATH = path.join(process.cwd(), 'data', 'channel-config.json');
 
 function readConfig(): Record<string, any> {
   try {
     if (fs.existsSync(CONFIG_PATH)) {
-      const raw = fs.readFileSync(CONFIG_PATH, "utf-8");
+      const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
       return JSON.parse(raw);
     }
   } catch {}
@@ -25,7 +22,7 @@ function readConfig(): Record<string, any> {
 function writeConfig(config: Record<string, any>) {
   const dir = path.dirname(CONFIG_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
 }
 
 export async function POST(request: Request) {
@@ -35,7 +32,7 @@ export async function POST(request: Request) {
   try {
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+      return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     }
 
     const config = readConfig();
@@ -55,8 +52,8 @@ export async function POST(request: Request) {
         results.push({
           channel: ch.id,
           name: ch.name,
-          status: "skipped",
-          reason: "inactive",
+          status: 'skipped',
+          reason: 'inactive',
           availabilitySynced: 0,
           bookingsFetched: 0,
         });
@@ -70,24 +67,21 @@ export async function POST(request: Request) {
 
       const availability = roomTypes.map((rt) => ({
         roomTypeId: rt.id,
-        date: new Date().toISOString().split("T")[0],
-        available: rt.rooms.filter((r) => r.status === "available").length,
+        date: new Date().toISOString().split('T')[0],
+        available: rt.rooms.filter((r) => r.status === 'available').length,
         price: rt.basePrice,
       }));
 
       const channelConfig: ChannelConfig = {
         channel: ch.id,
-        hotelCode: stored.hotelCode || "",
-        apiKey: stored.apiKey || "",
+        hotelCode: stored.hotelCode || '',
+        apiKey: stored.apiKey || '',
         active: true,
         lastSync: stored.lastSync,
       };
 
       try {
-        const syncResult = await syncAvailabilityToChannel(
-          channelConfig,
-          availability
-        );
+        const syncResult = await syncAvailabilityToChannel(channelConfig, availability);
         const bookings = await fetchBookingsFromChannel(channelConfig);
 
         config[ch.id] = {
@@ -98,7 +92,7 @@ export async function POST(request: Request) {
         results.push({
           channel: ch.id,
           name: ch.name,
-          status: "success",
+          status: 'success',
           availabilitySynced: syncResult.synced,
           bookingsFetched: bookings.length,
         });
@@ -106,7 +100,7 @@ export async function POST(request: Request) {
         results.push({
           channel: ch.id,
           name: ch.name,
-          status: "error",
+          status: 'error',
           reason: String(err),
           availabilitySynced: 0,
           bookingsFetched: 0,

@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { ZodError } from 'zod';
 
 const bookingUpsellSchema = z.object({
-  bookingId: z.string().min(1, "Reserva requerida"),
-  upsellName: z.string().min(1, "Nombre requerido"),
-  price: z.number().min(0, "Precio debe ser positivo"),
-  category: z.string().optional().default("other"),
+  bookingId: z.string().min(1, 'Reserva requerida'),
+  upsellName: z.string().min(1, 'Nombre requerido'),
+  price: z.number().min(0, 'Precio debe ser positivo'),
+  category: z.string().optional().default('other'),
 });
 
 export async function POST(request: Request) {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     });
 
     if (!booking) {
-      return NextResponse.json({ error: "Reserva no encontrada" }, { status: 404 });
+      return NextResponse.json({ error: 'Reserva no encontrada' }, { status: 404 });
     }
 
     const folioItem = await prisma.folioItem.create({

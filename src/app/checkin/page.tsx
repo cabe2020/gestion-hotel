@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import StatusBadge from "@/components/StatusBadge";
-import { LogIn, Check } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import StatusBadge from '@/components/StatusBadge';
+import { LogIn, Check } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
 
 interface Booking {
   id: string;
@@ -22,21 +22,26 @@ interface Booking {
 
 export default function CheckInPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const load = () => fetch("/api/bookings").then(r => r.json()).then(res => setBookings(Array.isArray(res) ? res : res.data));
+  const load = () =>
+    fetch('/api/bookings')
+      .then((r) => r.json())
+      .then((res) => setBookings(Array.isArray(res) ? res : res.data));
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
-  const today = new Date().toISOString().split("T")[0];
-  const todayCheckins = bookings.filter(b => {
-    const ci = new Date(b.checkIn).toISOString().split("T")[0];
-    return ci === today && b.status === "confirmed";
+  const today = new Date().toISOString().split('T')[0];
+  const todayCheckins = bookings.filter((b) => {
+    const ci = new Date(b.checkIn).toISOString().split('T')[0];
+    return ci === today && b.status === 'confirmed';
   });
 
   const handleCheckIn = async (id: string) => {
     await fetch(`/api/bookings/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "checked-in" })
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'checked-in' }),
     });
     load();
   };
@@ -60,17 +65,25 @@ export default function CheckInPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {todayCheckins.map(booking => (
+            {todayCheckins.map((booking) => (
               <div key={booking.id} className="card">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-mono font-medium text-blue-600">{booking.code}</span>
+                  <span className="text-sm font-mono font-medium text-blue-600">
+                    {booking.code}
+                  </span>
                   <StatusBadge label="Confirmada" color="bg-blue-100 text-blue-800" />
                 </div>
                 <div className="space-y-1 mb-4">
-                  <p className="text-lg font-semibold text-gray-900">{booking.guest?.firstName} {booking.guest?.lastName}</p>
-                  <p className="text-sm text-gray-500">Doc: {booking.guest?.idNumber || "-"}</p>
-                  <p className="text-sm text-gray-700">Hab. {booking.room?.number} - {booking.room?.roomType?.name}</p>
-                  <p className="text-sm text-gray-500">{booking.adults} adultos, {booking.children} niños</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {booking.guest?.firstName} {booking.guest?.lastName}
+                  </p>
+                  <p className="text-sm text-gray-500">Doc: {booking.guest?.idNumber || '-'}</p>
+                  <p className="text-sm text-gray-700">
+                    Hab. {booking.room?.number} - {booking.room?.roomType?.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {booking.adults} adultos, {booking.children} niños
+                  </p>
                   <p className="text-sm text-gray-500">Check-out: {formatDate(booking.checkOut)}</p>
                   <p className="text-sm font-medium text-gray-900">Total: ${booking.totalAmount}</p>
                 </div>
@@ -89,16 +102,25 @@ export default function CheckInPage() {
         <div className="card">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Ya con Check-in hoy</h2>
           <div className="space-y-2">
-            {bookings.filter(b => b.status === "checked-in").map(booking => (
-              <div key={booking.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{booking.guest?.firstName} {booking.guest?.lastName}</p>
-                  <p className="text-xs text-gray-500">Hab. {booking.room?.number} - {booking.code}</p>
+            {bookings
+              .filter((b) => b.status === 'checked-in')
+              .map((booking) => (
+                <div
+                  key={booking.id}
+                  className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {booking.guest?.firstName} {booking.guest?.lastName}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Hab. {booking.room?.number} - {booking.code}
+                    </p>
+                  </div>
+                  <StatusBadge label="Check-in realizado" color="bg-green-100 text-green-800" />
                 </div>
-                <StatusBadge label="Check-in realizado" color="bg-green-100 text-green-800" />
-              </div>
-            ))}
-            {bookings.filter(b => b.status === "checked-in").length === 0 && (
+              ))}
+            {bookings.filter((b) => b.status === 'checked-in').length === 0 && (
               <p className="text-sm text-gray-500">Ningún huésped ha hecho check-in aún</p>
             )}
           </div>

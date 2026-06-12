@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const checkIn = searchParams.get("checkIn");
-    const checkOut = searchParams.get("checkOut");
+    const checkIn = searchParams.get('checkIn');
+    const checkOut = searchParams.get('checkOut');
 
     if (!checkIn || !checkOut) {
       return NextResponse.json(
-        { error: "checkIn y checkOut son requeridos (YYYY-MM-DD)" },
+        { error: 'checkIn y checkOut son requeridos (YYYY-MM-DD)' },
         { status: 400 }
       );
     }
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
     if (checkInDate >= checkOutDate) {
       return NextResponse.json(
-        { error: "La fecha de check-out debe ser posterior a la de check-in" },
+        { error: 'La fecha de check-out debe ser posterior a la de check-in' },
         { status: 400 }
       );
     }
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       return NextResponse.json([], { status: 200 });
     }
 
-    const adults = parseInt(searchParams.get("adults") || "1", 10);
+    const adults = parseInt(searchParams.get('adults') || '1', 10);
 
     const roomTypes = await prisma.roomType.findMany({
       where: { hotelId },
@@ -41,10 +41,10 @@ export async function GET(request: Request) {
             startDate: { lte: checkOutDate },
             endDate: { gte: checkInDate },
           },
-          orderBy: { price: "asc" },
+          orderBy: { price: 'asc' },
         },
       },
-      orderBy: { basePrice: "asc" },
+      orderBy: { basePrice: 'asc' },
     });
 
     const availability = await Promise.all(
@@ -53,25 +53,23 @@ export async function GET(request: Request) {
         const bookedRoomIds = await prisma.booking.findMany({
           where: {
             roomId: { in: roomsOfThisType.map((r) => r.id) },
-            status: { in: ["confirmed", "checked-in"] },
+            status: { in: ['confirmed', 'checked-in'] },
             checkIn: { lt: checkOutDate },
             checkOut: { gt: checkInDate },
           },
           select: { roomId: true },
-          distinct: ["roomId"],
+          distinct: ['roomId'],
         });
 
         const bookedCount = bookedRoomIds.length;
         const availableCount = roomsOfThisType.length - bookedCount;
 
-        const applicableRate = rt.ratePlans.find(
-          (rp) => {
-            const nights = Math.ceil(
-              (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            return nights >= rp.minStay;
-          }
-        );
+        const applicableRate = rt.ratePlans.find((rp) => {
+          const nights = Math.ceil(
+            (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          return nights >= rp.minStay;
+        });
 
         const pricePerNight = applicableRate ? applicableRate.price : rt.basePrice;
 

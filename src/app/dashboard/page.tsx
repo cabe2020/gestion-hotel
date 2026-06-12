@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import Header from "@/components/Header";
-import StatusBadge from "@/components/StatusBadge";
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import Header from '@/components/Header';
+import StatusBadge from '@/components/StatusBadge';
 import {
   BedDouble,
   CalendarCheck,
@@ -22,10 +22,10 @@ import {
   CheckCircle2,
   AlertCircle,
   X,
-} from "lucide-react";
-import { formatCurrency, formatDate, bookingStatuses } from "@/lib/utils";
-import Link from "next/link";
-import { useTranslations } from "@/components/I18nProvider";
+} from 'lucide-react';
+import { formatCurrency, formatDate, bookingStatuses } from '@/lib/utils';
+import Link from 'next/link';
+import { useTranslations } from '@/components/I18nProvider';
 
 interface TodayBooking {
   id: string;
@@ -92,10 +92,10 @@ function TrendIndicator({ value, label }: { value: number; label: string }) {
   const positive = value > 0;
   return (
     <span
-      className={`text-xs flex items-center gap-0.5 ${positive ? "text-emerald-600" : "text-red-500"}`}
+      className={`text-xs flex items-center gap-0.5 ${positive ? 'text-emerald-600' : 'text-red-500'}`}
     >
       {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-      {positive ? "+" : ""}
+      {positive ? '+' : ''}
       {value}% vs. {label}
     </span>
   );
@@ -127,11 +127,11 @@ function OccupancyDonut({
   const totalSegments = ringSegments.reduce((s, r) => s + r._count.status, 0);
 
   const segmentColors: Record<string, string> = {
-    available: "#22c55e",
-    occupied: "#3b82f6",
-    maintenance: "#eab308",
-    "out-of-order": "#ef4444",
-    cleaning: "#a855f7",
+    available: '#22c55e',
+    occupied: '#3b82f6',
+    maintenance: '#eab308',
+    'out-of-order': '#ef4444',
+    cleaning: '#a855f7',
   };
 
   let accumulatedAngle = 0;
@@ -151,10 +151,10 @@ function OccupancyDonut({
         cx={center}
         cy={center}
         fill="transparent"
-        stroke={segmentColors[seg.status] || "#9ca3af"}
+        stroke={segmentColors[seg.status] || '#9ca3af'}
         strokeWidth={stroke}
         strokeDasharray={strokeDashArray}
-        strokeDashoffset={-(startAngle)}
+        strokeDashoffset={-startAngle}
         transform={`rotate(-90 ${center} ${center})`}
         className="transition-all duration-700"
       />
@@ -177,9 +177,7 @@ function OccupancyDonut({
           {arcs}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            {occupancyRate}%
-          </span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-white">{occupancyRate}%</span>
           <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Ocupación
           </span>
@@ -191,7 +189,7 @@ function OccupancyDonut({
             <div className="flex items-center gap-2 min-w-0">
               <span
                 className="h-2.5 w-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: segmentColors[s.status] || "#9ca3af" }}
+                style={{ backgroundColor: segmentColors[s.status] || '#9ca3af' }}
               />
               <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
                 {statusLabels[s.status] || s.status}
@@ -234,7 +232,7 @@ function RevenueAreaChart({
         const y = py + chartH - (v / max) * chartH;
         return `${x},${y}`;
       })
-      .join(" ");
+      .join(' ');
   };
 
   const areaPoints = (values: number[]) => {
@@ -244,7 +242,7 @@ function RevenueAreaChart({
       const y = py + chartH - (v / max) * chartH;
       return { x, y };
     });
-    const line = pts.map((p) => `${p.x},${p.y}`).join(" ");
+    const line = pts.map((p) => `${p.x},${p.y}`).join(' ');
     return `${px},${py + chartH} ${line} ${px + chartW},${py + chartH}`;
   };
 
@@ -258,7 +256,13 @@ function RevenueAreaChart({
           const x = px + (i / (values.length - 1 || 1)) * chartW;
           const y = py + chartH - (v / max) * chartH;
           return (
-            <circle key={i} cx={x} cy={y} r={3} className="fill-current opacity-0 group-hover:opacity-100 transition-opacity" />
+            <circle
+              key={i}
+              cx={x}
+              cy={y}
+              r={3}
+              className="fill-current opacity-0 group-hover:opacity-100 transition-opacity"
+            />
           );
         })}
       </>
@@ -362,7 +366,11 @@ function RevenueAreaChart({
         </div>
         <div className="ml-auto">
           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-            Total 7d: {formatCurrency(data.reduce((s, d) => s + d.income, 0), currency)}
+            Total 7d:{' '}
+            {formatCurrency(
+              data.reduce((s, d) => s + d.income, 0),
+              currency
+            )}
           </span>
         </div>
       </div>
@@ -370,7 +378,7 @@ function RevenueAreaChart({
   );
 }
 
-function MiniSparkline({ values, color = "#3b82f6" }: { values: number[]; color?: string }) {
+function MiniSparkline({ values, color = '#3b82f6' }: { values: number[]; color?: string }) {
   if (values.length < 2) return null;
   const w = 60;
   const h = 20;
@@ -383,7 +391,7 @@ function MiniSparkline({ values, color = "#3b82f6" }: { values: number[]; color?
       const y = h - ((v - min) / range) * h;
       return `${x},${y}`;
     })
-    .join(" ");
+    .join(' ');
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-14 h-4 shrink-0">
       <polyline
@@ -401,19 +409,26 @@ function MiniSparkline({ values, color = "#3b82f6" }: { values: number[]; color?
 function ActivityTimeline({
   bookings,
 }: {
-  bookings: { id: string; status: string; checkIn: string; createdAt?: string; guest?: { firstName: string; lastName: string }; room?: { number: string } }[];
+  bookings: {
+    id: string;
+    status: string;
+    checkIn: string;
+    createdAt?: string;
+    guest?: { firstName: string; lastName: string };
+    room?: { number: string };
+  }[];
 }) {
   const statusIcon = (status: string) => {
     switch (status) {
-      case "confirmed":
+      case 'confirmed':
         return <CalendarCheck className="h-3.5 w-3.5 text-blue-500" />;
-      case "checked-in":
+      case 'checked-in':
         return <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />;
-      case "checked-out":
+      case 'checked-out':
         return <LogOut className="h-3.5 w-3.5 text-gray-400" />;
-      case "cancelled":
+      case 'cancelled':
         return <X className="h-3.5 w-3.5 text-red-400" />;
-      case "no-show":
+      case 'no-show':
         return <AlertCircle className="h-3.5 w-3.5 text-yellow-500" />;
       default:
         return <Clock className="h-3.5 w-3.5 text-gray-400" />;
@@ -421,11 +436,11 @@ function ActivityTimeline({
   };
 
   const statusLabel: Record<string, string> = {
-    confirmed: "Confirmada",
-    "checked-in": "Check-in",
-    "checked-out": "Check-out",
-    cancelled: "Cancelada",
-    "no-show": "No Show",
+    confirmed: 'Confirmada',
+    'checked-in': 'Check-in',
+    'checked-out': 'Check-out',
+    cancelled: 'Cancelada',
+    'no-show': 'No Show',
   };
 
   return (
@@ -444,9 +459,7 @@ function ActivityTimeline({
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {booking.guest?.firstName} {booking.guest?.lastName}
                   </p>
-                  {status && (
-                    <StatusBadge label={status.label} color={status.color} />
-                  )}
+                  {status && <StatusBadge label={status.label} color={status.color} />}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Hab. {booking.room?.number} &middot; {formatDate(booking.checkIn)}
@@ -474,7 +487,7 @@ export default function DashboardPage() {
   const { t } = useTranslations();
 
   const fetchData = useCallback(() => {
-    fetch("/api/dashboard")
+    fetch('/api/dashboard')
       .then((r) => r.json())
       .then((d) => {
         setData(d);
@@ -491,7 +504,7 @@ export default function DashboardPage() {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
-      const es = new EventSource("/api/dashboard/stream");
+      const es = new EventSource('/api/dashboard/stream');
       eventSourceRef.current = es;
 
       es.onopen = () => setIsLive(true);
@@ -532,19 +545,19 @@ export default function DashboardPage() {
   }, [fetchData]);
 
   const statusColors: Record<string, string> = {
-    available: "bg-green-100 text-green-800",
-    occupied: "bg-blue-100 text-blue-800",
-    maintenance: "bg-yellow-100 text-yellow-800",
-    "out-of-order": "bg-red-100 text-red-800",
-    cleaning: "bg-purple-100 text-purple-800",
+    available: 'bg-green-100 text-green-800',
+    occupied: 'bg-blue-100 text-blue-800',
+    maintenance: 'bg-yellow-100 text-yellow-800',
+    'out-of-order': 'bg-red-100 text-red-800',
+    cleaning: 'bg-purple-100 text-purple-800',
   };
 
   const statusLabels: Record<string, string> = {
-    available: t("status.available"),
-    occupied: t("status.occupied"),
-    maintenance: t("status.maintenance"),
-    "out-of-order": t("status.outOfOrder"),
-    cleaning: t("status.cleaning"),
+    available: t('status.available'),
+    occupied: t('status.occupied'),
+    maintenance: t('status.maintenance'),
+    'out-of-order': t('status.outOfOrder'),
+    cleaning: t('status.cleaning'),
   };
 
   const incomeSparkline = useMemo(
@@ -569,17 +582,17 @@ export default function DashboardPage() {
       <div className="p-4 md:p-8">
         <div className="card text-center py-12">
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            {t("dash.noData")}
+            {t('dash.noData')}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">{t("dash.noDataDesc")}</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">{t('dash.noDataDesc')}</p>
           <button
             onClick={async () => {
-              await fetch("/api/seed", { method: "POST" });
+              await fetch('/api/seed', { method: 'POST' });
               window.location.reload();
             }}
             className="btn-primary"
           >
-            {t("dash.createSample")}
+            {t('dash.createSample')}
           </button>
         </div>
       </div>
@@ -596,7 +609,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t("page.dashboard")}
+              {t('page.dashboard')}
             </h1>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
               <span>{formatDate(new Date())}</span>
@@ -607,15 +620,15 @@ export default function DashboardPage() {
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span className="text-xs">
-                  {t("common.updated")} {lastRefresh.toLocaleTimeString("es-ES")}
+                  {t('common.updated')} {lastRefresh.toLocaleTimeString('es-ES')}
                 </span>
               </button>
               <span className="text-gray-300 dark:text-gray-600">|</span>
               <span
-                className={`flex items-center gap-1 text-xs ${isLive ? "text-green-600" : "text-gray-400 dark:text-gray-500"}`}
+                className={`flex items-center gap-1 text-xs ${isLive ? 'text-green-600' : 'text-gray-400 dark:text-gray-500'}`}
               >
                 <span
-                  className={`inline-block h-2 w-2 rounded-full ${isLive ? "bg-green-500 animate-pulse" : "bg-gray-300 dark:bg-gray-600"}`}
+                  className={`inline-block h-2 w-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-300 dark:bg-gray-600'}`}
                 />
                 En vivo
               </span>
@@ -627,21 +640,21 @@ export default function DashboardPage() {
               className="btn-primary text-sm flex items-center gap-1.5"
             >
               <Plus className="h-4 w-4" />
-              {t("btn.newBooking")}
+              {t('btn.newBooking')}
             </Link>
             <Link
               href="/checkin"
               className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-1.5"
             >
               <LogIn className="h-4 w-4" />
-              {t("nav.checkin")}
+              {t('nav.checkin')}
             </Link>
             <Link
               href="/checkout"
               className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors flex items-center gap-1.5"
             >
               <LogOut className="h-4 w-4" />
-              {t("nav.checkout")}
+              {t('nav.checkout')}
             </Link>
           </div>
         </div>
@@ -652,12 +665,12 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  {t("dash.occupancy")}
+                  {t('dash.occupancy')}
                 </p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                   {data.occupancyRate}%
                 </p>
-                <TrendIndicator value={comp.occupancyDiff} label={t("common.vsLastWeek")} />
+                <TrendIndicator value={comp.occupancyDiff} label={t('common.vsLastWeek')} />
               </div>
               <div className="flex flex-col items-end gap-1">
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-2.5 rounded-lg">
@@ -677,17 +690,17 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  {t("dash.todayRevenue")}
+                  {t('dash.todayRevenue')}
                 </p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                   {formatCurrency(data.todayRevenue, data.currency)}
                 </p>
-                <TrendIndicator value={comp.revenueDiff} label={t("common.vsLastWeek")} />
+                <TrendIndicator value={comp.revenueDiff} label={t('common.vsLastWeek')} />
                 {comp.revenueAmountDiff !== 0 && (
                   <p
-                    className={`text-xs mt-0.5 ${comp.revenueAmountDiff > 0 ? "text-emerald-600" : "text-red-500"}`}
+                    className={`text-xs mt-0.5 ${comp.revenueAmountDiff > 0 ? 'text-emerald-600' : 'text-red-500'}`}
                   >
-                    {comp.revenueAmountDiff > 0 ? "+" : ""}
+                    {comp.revenueAmountDiff > 0 ? '+' : ''}
                     {formatCurrency(comp.revenueAmountDiff, data.currency)}
                   </p>
                 )}
@@ -713,7 +726,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  {t("dash.activeBookings")}
+                  {t('dash.activeBookings')}
                 </p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                   {data.activeBookings}
@@ -741,7 +754,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  {t("dash.guests")}
+                  {t('dash.guests')}
                 </p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                   {data.totalGuests}
@@ -778,7 +791,7 @@ export default function DashboardPage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                {t("dash.revenue7days")}
+                {t('dash.revenue7days')}
               </h2>
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-500" />
@@ -790,7 +803,7 @@ export default function DashboardPage() {
 
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
             <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-              {t("dash.roomStatus")}
+              {t('dash.roomStatus')}
             </h2>
             <OccupancyDonut
               occupancyRate={data.occupancyRate}
@@ -809,7 +822,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <LogIn className="h-4 w-4 text-green-500" />
-                {t("dash.arrivalsToday")}
+                {t('dash.arrivalsToday')}
               </h2>
               <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-xs font-bold">
                 {data.todayArrivals.length}
@@ -817,7 +830,7 @@ export default function DashboardPage() {
             </div>
             {data.todayArrivals.length === 0 ? (
               <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
-                {t("dash.noArrivals")}
+                {t('dash.noArrivals')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -843,7 +856,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {status && <StatusBadge label={status.label} color={status.color} />}
-                        {b.status === "confirmed" && (
+                        {b.status === 'confirmed' && (
                           <Link
                             href="/checkin"
                             className="p-1.5 rounded-md bg-green-50 dark:bg-green-900/30 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
@@ -864,7 +877,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <LogOut className="h-4 w-4 text-orange-500" />
-                {t("dash.departuresToday")}
+                {t('dash.departuresToday')}
               </h2>
               <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 text-xs font-bold">
                 {data.todayDepartures.length}
@@ -872,7 +885,7 @@ export default function DashboardPage() {
             </div>
             {data.todayDepartures.length === 0 ? (
               <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
-                {t("dash.noDepartures")}
+                {t('dash.noDepartures')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -898,7 +911,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {status && <StatusBadge label={status.label} color={status.color} />}
-                        {b.status === "checked-in" && (
+                        {b.status === 'checked-in' && (
                           <Link
                             href="/checkout"
                             className="p-1.5 rounded-md bg-orange-50 dark:bg-orange-900/30 text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors"
@@ -919,7 +932,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Clock className="h-4 w-4 text-blue-500" />
-                {t("dash.recentBookings")}
+                {t('dash.recentBookings')}
               </h2>
               <Link
                 href="/bookings"
@@ -937,7 +950,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <Bell className="h-4 w-4 text-gray-500" />
-              {t("dash.notifications")}
+              {t('dash.notifications')}
             </h2>
             {data.notifications.filter((n) => !n.read).length > 0 && (
               <span className="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 text-[10px] font-bold">
@@ -947,28 +960,30 @@ export default function DashboardPage() {
           </div>
           {data.notifications.length === 0 ? (
             <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
-              {t("dash.noNotifications")}
+              {t('dash.noNotifications')}
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {data.notifications.map((n) => {
                 const typeStyles: Record<string, string> = {
-                  info: "border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/20",
-                  warning: "border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20",
-                  error: "border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20",
-                  success: "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/20",
+                  info: 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/20',
+                  warning:
+                    'border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20',
+                  error: 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20',
+                  success:
+                    'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/20',
                 };
                 return (
                   <div
                     key={n.id}
-                    className={`p-3 rounded-lg border ${typeStyles[n.type] || "border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20"} ${n.read ? "opacity-50" : ""}`}
+                    className={`p-3 rounded-lg border ${typeStyles[n.type] || 'border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20'} ${n.read ? 'opacity-50' : ''}`}
                   >
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{n.title}</p>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2">
                       {n.message}
                     </p>
                     <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-                      {new Date(n.createdAt).toLocaleString("es-ES")}
+                      {new Date(n.createdAt).toLocaleString('es-ES')}
                     </p>
                   </div>
                 );

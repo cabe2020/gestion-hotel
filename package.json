@@ -6,9 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -43,7 +49,9 @@
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "husky": "^9.0.11",
     "jsdom": "^29.1.1",
+    "prettier": "^3.2.5",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",

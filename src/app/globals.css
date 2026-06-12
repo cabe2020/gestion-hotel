@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -22,7 +22,11 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 }
 

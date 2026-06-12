@@ -1,22 +1,21 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { folioItemSchema } from "@/lib/validations";
-import { getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { folioItemSchema } from '@/lib/validations';
+import { getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { ZodError } from 'zod';
 
 export async function GET(request: Request) {
   try {
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     const { searchParams } = new URL(request.url);
-    const bookingId = searchParams.get("bookingId");
+    const bookingId = searchParams.get('bookingId');
     const where: Record<string, unknown> = bookingId
       ? { bookingId, booking: { hotelId } }
       : { booking: { hotelId } };
     const items = await prisma.folioItem.findMany({
       where,
-      orderBy: { date: "asc" },
+      orderBy: { date: 'asc' },
     });
     return NextResponse.json(items);
   } catch (error: unknown) {
@@ -28,8 +27,7 @@ export async function POST(request: Request) {
   try {
     getUserFromHeaders(request);
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     const body = await request.json();
     const data = folioItemSchema.parse(body);
     const booking = await prisma.booking.findUnique({
@@ -37,10 +35,7 @@ export async function POST(request: Request) {
       select: { hotelId: true },
     });
     if (!booking || booking.hotelId !== hotelId) {
-      return NextResponse.json(
-        { error: "La reserva no pertenece a tu hotel" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'La reserva no pertenece a tu hotel' }, { status: 403 });
     }
     const folioItem = await prisma.folioItem.create({
       data: {

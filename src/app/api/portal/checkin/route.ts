@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { ZodError } from 'zod';
 
 const checkInSchema = z.object({
-  code: z.string().min(1, "Codigo requerido"),
-  idNumber: z.string().min(1, "Numero de identidad requerido"),
-  emergencyContact: z.string().min(1, "Contacto de emergencia requerido"),
-  emergencyPhone: z.string().min(1, "Telefono de emergencia requerido"),
-  specialRequests: z.string().optional().default(""),
-  signature: z.string().min(1, "Firma digital requerida"),
+  code: z.string().min(1, 'Codigo requerido'),
+  idNumber: z.string().min(1, 'Numero de identidad requerido'),
+  emergencyContact: z.string().min(1, 'Contacto de emergencia requerido'),
+  emergencyPhone: z.string().min(1, 'Telefono de emergencia requerido'),
+  specialRequests: z.string().optional().default(''),
+  signature: z.string().min(1, 'Firma digital requerida'),
 });
 
 export async function POST(request: Request) {
@@ -23,15 +23,12 @@ export async function POST(request: Request) {
     });
 
     if (!booking) {
-      return NextResponse.json(
-        { error: "Reserva no encontrada" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Reserva no encontrada' }, { status: 404 });
     }
 
-    if (booking.status !== "confirmed") {
+    if (booking.status !== 'confirmed') {
       return NextResponse.json(
-        { error: "La reserva no esta en estado confirmada" },
+        { error: 'La reserva no esta en estado confirmada' },
         { status: 400 }
       );
     }
@@ -41,22 +38,22 @@ export async function POST(request: Request) {
       data: { idNumber: data.idNumber },
     });
 
-    const existingNotes = booking.notes || "";
+    const existingNotes = booking.notes || '';
     const checkInNotes = [
       `[CHECK-IN-DIGITAL-COMPLETADO]`,
       `Contacto emergencia: ${data.emergencyContact} - ${data.emergencyPhone}`,
       `ID: ${data.idNumber}`,
       `Firma: [REGISTRADA]`,
-    ].join(" | ");
+    ].join(' | ');
 
-    const newNotes = existingNotes
-      ? `${existingNotes} | ${checkInNotes}`
-      : checkInNotes;
+    const newNotes = existingNotes ? `${existingNotes} | ${checkInNotes}` : checkInNotes;
 
     const newSpecialRequests = [
-      booking.specialRequests || "",
-      data.specialRequests ? `Check-in digital: ${data.specialRequests}` : "",
-    ].filter(Boolean).join(" | ");
+      booking.specialRequests || '',
+      data.specialRequests ? `Check-in digital: ${data.specialRequests}` : '',
+    ]
+      .filter(Boolean)
+      .join(' | ');
 
     await prisma.booking.update({
       where: { id: booking.id },
@@ -68,7 +65,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Check-in digital completado exitosamente",
+      message: 'Check-in digital completado exitosamente',
       code: booking.code,
     });
   } catch (error: unknown) {

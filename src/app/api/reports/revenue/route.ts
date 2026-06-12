@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const period = searchParams.get("period") || "daily";
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
+    const period = searchParams.get('period') || 'daily';
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
 
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId) return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
 
     const startDate = from ? new Date(from) : new Date(Date.now() - 30 * 86400000);
     const endDate = to ? new Date(to) : new Date();
@@ -30,24 +30,32 @@ export async function GET(request: Request) {
       }),
     ]);
 
-    const resultMap = new Map<string, { roomRevenue: number; folioRevenue: number; totalRevenue: number; payments: number }>();
+    const resultMap = new Map<
+      string,
+      { roomRevenue: number; folioRevenue: number; totalRevenue: number; payments: number }
+    >();
 
     cashMoves.forEach((m) => {
       const d = new Date(m.createdAt);
       let key: string;
-      if (period === "weekly") {
+      if (period === 'weekly') {
         const weekStart = new Date(d);
         weekStart.setDate(d.getDate() - d.getDay());
-        key = weekStart.toISOString().split("T")[0];
-      } else if (period === "monthly") {
-        key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        key = weekStart.toISOString().split('T')[0];
+      } else if (period === 'monthly') {
+        key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       } else {
-        key = d.toISOString().split("T")[0];
+        key = d.toISOString().split('T')[0];
       }
 
-      const existing = resultMap.get(key) || { roomRevenue: 0, folioRevenue: 0, totalRevenue: 0, payments: 0 };
-      if (m.type === "income") {
-        if (m.category === "room-revenue") {
+      const existing = resultMap.get(key) || {
+        roomRevenue: 0,
+        folioRevenue: 0,
+        totalRevenue: 0,
+        payments: 0,
+      };
+      if (m.type === 'income') {
+        if (m.category === 'room-revenue') {
           existing.roomRevenue += m.amount;
         } else {
           existing.folioRevenue += m.amount;
@@ -60,16 +68,21 @@ export async function GET(request: Request) {
     payments.forEach((p) => {
       const d = new Date(p.createdAt);
       let key: string;
-      if (period === "weekly") {
+      if (period === 'weekly') {
         const weekStart = new Date(d);
         weekStart.setDate(d.getDate() - d.getDay());
-        key = weekStart.toISOString().split("T")[0];
-      } else if (period === "monthly") {
-        key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        key = weekStart.toISOString().split('T')[0];
+      } else if (period === 'monthly') {
+        key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       } else {
-        key = d.toISOString().split("T")[0];
+        key = d.toISOString().split('T')[0];
       }
-      const existing = resultMap.get(key) || { roomRevenue: 0, folioRevenue: 0, totalRevenue: 0, payments: 0 };
+      const existing = resultMap.get(key) || {
+        roomRevenue: 0,
+        folioRevenue: 0,
+        totalRevenue: 0,
+        payments: 0,
+      };
       existing.payments += p.amount;
       resultMap.set(key, existing);
     });

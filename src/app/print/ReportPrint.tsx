@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from '@/lib/utils';
 
 interface ReportPrintProps {
   title: string;
   data: Record<string, unknown>[];
-  columns: { key: string; label: string; align?: "left" | "right" | "center" }[];
+  columns: { key: string; label: string; align?: 'left' | 'right' | 'center' }[];
   hotel: { name: string };
   summary?: { label: string; value: string }[];
 }
@@ -16,7 +16,7 @@ export default function ReportPrint({ title, data, columns, hotel, summary }: Re
       <div className="border-b-2 border-gray-900 pb-4 mb-6">
         <h2 className="text-2xl font-bold text-gray-900">{hotel.name}</h2>
         <h3 className="text-lg font-semibold text-gray-700 mt-1">{title}</h3>
-        <p className="text-sm text-gray-600">Generado: {new Date().toLocaleDateString("es")}</p>
+        <p className="text-sm text-gray-600">Generado: {new Date().toLocaleDateString('es')}</p>
       </div>
 
       {summary && summary.length > 0 && (
@@ -37,7 +37,11 @@ export default function ReportPrint({ title, data, columns, hotel, summary }: Re
               <th
                 key={col.key}
                 className={`py-2 px-3 font-semibold text-gray-700 ${
-                  col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left"
+                  col.align === 'right'
+                    ? 'text-right'
+                    : col.align === 'center'
+                      ? 'text-center'
+                      : 'text-left'
                 }`}
               >
                 {col.label}
@@ -52,10 +56,14 @@ export default function ReportPrint({ title, data, columns, hotel, summary }: Re
                 <td
                   key={col.key}
                   className={`py-2 px-3 ${
-                    col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left"
+                    col.align === 'right'
+                      ? 'text-right'
+                      : col.align === 'center'
+                        ? 'text-center'
+                        : 'text-left'
                   }`}
                 >
-                  {String(row[col.key] ?? "")}
+                  {String(row[col.key] ?? '')}
                 </td>
               ))}
             </tr>

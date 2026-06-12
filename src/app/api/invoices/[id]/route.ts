@@ -1,22 +1,19 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requireAdmin, getUserFromHeaders } from "@/lib/rbac";
-import { notifyRole } from "@/lib/notifications";
-import { logAction } from "@/lib/audit";
-import { z, ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAdmin, getUserFromHeaders } from '@/lib/rbac';
+import { notifyRole } from '@/lib/notifications';
+import { logAction } from '@/lib/audit';
+import { z, ZodError } from 'zod';
 
 const invoiceUpdateSchema = z.object({
-  status: z.enum(["pending", "paid"]).optional(),
+  status: z.enum(['pending', 'paid']).optional(),
   taxAmount: z.number().min(0).optional(),
   total: z.number().min(0).optional(),
   cancelled: z.boolean().optional(),
   cancelReason: z.string().optional(),
 });
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
   try {
@@ -30,8 +27,8 @@ export async function PUT(
         where: { id },
         data: {
           cancelled: true,
-          cancelReason: data.cancelReason || "",
-          status: "pending",
+          cancelReason: data.cancelReason || '',
+          status: 'pending',
         },
         include: {
           booking: {
@@ -45,18 +42,18 @@ export async function PUT(
 
       if (invoice.hotelId) {
         await notifyRole({
-          role: "admin",
+          role: 'admin',
           hotelId: invoice.hotelId,
           title: `Factura ${invoice.number} anulada`,
-          message: `Factura anulada - Motivo: ${data.cancelReason || "No especificado"}`,
-          type: "error",
+          message: `Factura anulada - Motivo: ${data.cancelReason || 'No especificado'}`,
+          type: 'error',
         }).catch(() => {});
       }
 
       await logAction({
         userId,
-        action: "cancel",
-        entity: "invoice",
+        action: 'cancel',
+        entity: 'invoice',
         entityId: id,
         details: `Factura ${invoice.number} anulada`,
         hotelId: invoice.hotelId,

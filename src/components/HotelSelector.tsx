@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useSession } from "next-auth/react";
-import { Building2, ChevronDown, Check } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { Building2, ChevronDown, Check } from 'lucide-react';
 
 interface Hotel {
   id: string;
@@ -17,9 +17,9 @@ function setCookie(name: string, value: string) {
 
 function getCookie(name: string): string | undefined {
   return document.cookie
-    .split("; ")
+    .split('; ')
     .find((row) => row.startsWith(`${name}=`))
-    ?.split("=")[1];
+    ?.split('=')[1];
 }
 
 export default function HotelSelector() {
@@ -32,7 +32,7 @@ export default function HotelSelector() {
 
   const fetchHotels = useCallback(async () => {
     try {
-      const res = await fetch("/api/users/me/hotels");
+      const res = await fetch('/api/users/me/hotels');
       if (res.ok) {
         const data = await res.json();
         setHotels(data);
@@ -46,7 +46,7 @@ export default function HotelSelector() {
 
   useEffect(() => {
     if (hotels.length === 0) return;
-    const cookieValue = getCookie("selectedHotelId");
+    const cookieValue = getCookie('selectedHotelId');
     if (cookieValue && hotels.some((h) => h.id === cookieValue)) {
       setSelectedHotelId(cookieValue);
     } else {
@@ -57,7 +57,7 @@ export default function HotelSelector() {
 
   useEffect(() => {
     if (!switching) return;
-    setCookie("selectedHotelId", switching);
+    setCookie('selectedHotelId', switching);
     window.location.reload();
   }, [switching]);
 
@@ -67,8 +67,8 @@ export default function HotelSelector() {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const currentHotel = hotels.find((h) => h.id === selectedHotelId);
@@ -98,14 +98,20 @@ export default function HotelSelector() {
         className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
       >
         {currentHotel?.logo ? (
-          <img src={currentHotel.logo} alt={currentHotel.name} className="h-5 w-5 rounded object-cover" />
+          <img
+            src={currentHotel.logo}
+            alt={currentHotel.name}
+            className="h-5 w-5 rounded object-cover"
+          />
         ) : (
           <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
         )}
         <span className="text-sm font-semibold text-blue-800 truncate max-w-[160px]">
-          {currentHotel?.name || "Seleccionar"}
+          {currentHotel?.name || 'Seleccionar'}
         </span>
-        <ChevronDown className={`h-4 w-4 text-blue-600 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`h-4 w-4 text-blue-600 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {open && (
@@ -117,15 +123,24 @@ export default function HotelSelector() {
             {hotels.map((hotel) => (
               <button
                 key={hotel.id}
-                onClick={() => { setOpen(false); setSwitching(hotel.id); }}
+                onClick={() => {
+                  setOpen(false);
+                  setSwitching(hotel.id);
+                }}
                 className="w-full text-left px-3 py-2.5 flex items-center gap-2 hover:bg-blue-50 transition-colors"
               >
                 {hotel.logo ? (
-                  <img src={hotel.logo} alt={hotel.name} className="h-5 w-5 rounded object-cover shrink-0" />
+                  <img
+                    src={hotel.logo}
+                    alt={hotel.name}
+                    className="h-5 w-5 rounded object-cover shrink-0"
+                  />
                 ) : (
                   <Building2 className="h-4 w-4 text-gray-500 shrink-0" />
                 )}
-                <span className="text-sm font-medium text-gray-800 flex-1 truncate">{hotel.name}</span>
+                <span className="text-sm font-medium text-gray-800 flex-1 truncate">
+                  {hotel.name}
+                </span>
                 {hotel.id === selectedHotelId && (
                   <Check className="h-4 w-4 text-blue-600 shrink-0" />
                 )}

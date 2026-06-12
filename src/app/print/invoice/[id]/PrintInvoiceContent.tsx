@@ -1,21 +1,26 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import InvoicePrint from "@/app/print/InvoicePrint";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import InvoicePrint from '@/app/print/InvoicePrint';
 
 export default function PrintInvoiceContent() {
   const params = useParams();
   const id = params?.id as string;
   const [invoice, setInvoice] = useState<any>(null);
-  const [hotel, setHotel] = useState<{ name: string; address: string; email: string; phone: string } | null>(null);
+  const [hotel, setHotel] = useState<{
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
     Promise.all([
       fetch(`/api/invoices/${id}`).then((r) => r.json()),
-      fetch("/api/hotels").then((r) => r.json()),
+      fetch('/api/hotels').then((r) => r.json()),
     ])
       .then(([inv, h]) => {
         setInvoice(inv);
@@ -54,8 +59,12 @@ export default function PrintInvoiceContent() {
         }
       `}</style>
       <div className="no-print mb-4 flex gap-2">
-        <button onClick={() => window.print()} className="btn-primary">Imprimir</button>
-        <button onClick={() => window.close()} className="btn-secondary">Cerrar</button>
+        <button onClick={() => window.print()} className="btn-primary">
+          Imprimir
+        </button>
+        <button onClick={() => window.close()} className="btn-secondary">
+          Cerrar
+        </button>
       </div>
       <InvoicePrint invoice={invoice} hotel={hotel} />
     </div>

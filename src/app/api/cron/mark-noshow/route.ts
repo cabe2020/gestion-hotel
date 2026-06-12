@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyCronSecret, resolveHotelId } from "@/lib/rbac";
-import { logAction } from "@/lib/audit";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { verifyCronSecret, resolveHotelId } from '@/lib/rbac';
+import { logAction } from '@/lib/audit';
 
 export async function GET(request: Request) {
   if (!verifyCronSecret(request)) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
   try {
     const hotelId = await resolveHotelId(request.headers);
     if (!hotelId) {
-      return NextResponse.json({ error: "No hotel found" }, { status: 404 });
+      return NextResponse.json({ error: 'No hotel found' }, { status: 404 });
     }
 
     const today = new Date();
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const noShowBookings = await prisma.booking.findMany({
       where: {
         hotelId,
-        status: "confirmed",
+        status: 'confirmed',
         checkIn: { lt: today },
       },
       include: { room: true },
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     for (const booking of noShowBookings) {
       await prisma.booking.update({
         where: { id: booking.id },
-        data: { status: "no-show" },
+        data: { status: 'no-show' },
       });
 
       if (booking.roomId) {
@@ -37,13 +37,13 @@ export async function GET(request: Request) {
           where: {
             id: { not: booking.id },
             roomId: booking.roomId,
-            status: { in: ["confirmed", "checked-in"] },
+            status: { in: ['confirmed', 'checked-in'] },
           },
         });
         if (otherBookings === 0) {
           await prisma.room.update({
             where: { id: booking.roomId },
-            data: { status: "available" },
+            data: { status: 'available' },
           });
         }
       }
@@ -52,8 +52,8 @@ export async function GET(request: Request) {
     if (noShowBookings.length > 0) {
       await logAction({
         hotelId,
-        action: "CRON_NOSHOW",
-        entity: "booking",
+        action: 'CRON_NOSHOW',
+        entity: 'booking',
         details: JSON.stringify({ count: noShowBookings.length }),
       }).catch(() => {});
     }

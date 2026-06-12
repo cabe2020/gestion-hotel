@@ -1,24 +1,21 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import { prisma } from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
-import { z, ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import { prisma } from '@/lib/prisma';
+import { sendEmail } from '@/lib/email';
+import { z, ZodError } from 'zod';
 
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
-const resetTokens = new Map<
-  string,
-  { userId: string; expiresAt: number }
->();
+const resetTokens = new Map<string, { userId: string; expiresAt: number }>();
 
 const requestSchema = z.object({
-  email: z.string().email("Email invalido"),
+  email: z.string().email('Email invalido'),
 });
 
 const resetBodySchema = z.object({
-  token: z.string().min(1, "Token requerido"),
-  newPassword: z.string().min(6, "Minimo 6 caracteres"),
+  token: z.string().min(1, 'Token requerido'),
+  newPassword: z.string().min(6, 'Minimo 6 caracteres'),
 });
 
 function cleanExpiredTokens() {
@@ -52,7 +49,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { message: "Si existe una cuenta con ese email, se enviará un enlace de restablecimiento" },
+        { message: 'Si existe una cuenta con ese email, se enviará un enlace de restablecimiento' },
         { status: 200 }
       );
     }
@@ -63,7 +60,7 @@ export async function POST(request: Request) {
     cleanExpiredTokens();
     resetTokens.set(token, { userId: user.id, expiresAt });
 
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 
     const hasEmailService = !!(process.env.RESEND_API_KEY || process.env.SMTP_HOST);
@@ -71,7 +68,7 @@ export async function POST(request: Request) {
     if (hasEmailService) {
       await sendEmail({
         to: user.email,
-        subject: "Restablecer Contraseña",
+        subject: 'Restablecer Contraseña',
         html: resetPasswordHtml(resetUrl),
       });
     } else {
@@ -79,7 +76,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      message: "Si existe una cuenta con ese email, se enviará un enlace de restablecimiento",
+      message: 'Si existe una cuenta con ese email, se enviará un enlace de restablecimiento',
     });
   } catch (error: unknown) {
     if (error instanceof ZodError) {
@@ -92,13 +89,10 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const token = searchParams.get("token");
+    const token = searchParams.get('token');
 
     if (!token) {
-      return NextResponse.json(
-        { error: "Token requerido" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token requerido' }, { status: 400 });
     }
 
     cleanExpiredTokens();
@@ -106,10 +100,7 @@ export async function GET(request: Request) {
 
     if (!entry || entry.expiresAt < Date.now()) {
       if (entry) resetTokens.delete(token);
-      return NextResponse.json(
-        { error: "Token invalido o expirado" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token invalido o expirado' }, { status: 400 });
     }
 
     return NextResponse.json({ valid: true, token });
@@ -128,19 +119,13 @@ export async function PUT(request: Request) {
 
     if (!entry || entry.expiresAt < Date.now()) {
       if (entry) resetTokens.delete(token);
-      return NextResponse.json(
-        { error: "Token invalido o expirado" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token invalido o expirado' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { id: entry.userId } });
     if (!user) {
       resetTokens.delete(token);
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -151,7 +136,7 @@ export async function PUT(request: Request) {
 
     resetTokens.delete(token);
 
-    return NextResponse.json({ message: "Contraseña actualizada correctamente" });
+    return NextResponse.json({ message: 'Contraseña actualizada correctamente' });
   } catch (error: unknown) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });

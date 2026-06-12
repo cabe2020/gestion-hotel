@@ -1,31 +1,36 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import ReportPrint from "../ReportPrint";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import ReportPrint from '../ReportPrint';
 
 export default function PrintReportContent() {
   const searchParams = useSearchParams();
-  const type = searchParams.get("type") || "occupancy";
-  const from = searchParams.get("from") || "";
-  const to = searchParams.get("to") || "";
+  const type = searchParams.get('type') || 'occupancy';
+  const from = searchParams.get('from') || '';
+  const to = searchParams.get('to') || '';
 
   const [data, setData] = useState<any[]>([]);
-  const [hotel, setHotel] = useState<{ name: string }>({ name: "" });
+  const [hotel, setHotel] = useState<{ name: string }>({ name: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/hotels").then((r) => r.json()).then((h) => { if (h) setHotel({ name: h.name }); });
+    fetch('/api/hotels')
+      .then((r) => r.json())
+      .then((h) => {
+        if (h) setHotel({ name: h.name });
+      });
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (from) params.set("from", from);
-    if (to) params.set("to", to);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
 
-    const endpoint = type === "revenue"
-      ? `/api/reports/revenue?period=daily&${params.toString()}`
-      : `/api/reports/occupancy?${params.toString()}`;
+    const endpoint =
+      type === 'revenue'
+        ? `/api/reports/revenue?period=daily&${params.toString()}`
+        : `/api/reports/occupancy?${params.toString()}`;
 
     fetch(endpoint)
       .then((r) => r.json())
@@ -50,24 +55,24 @@ export default function PrintReportContent() {
   }
 
   const occupancyColumns = [
-    { key: "date", label: "Fecha" },
-    { key: "totalRooms", label: "Total Hab.", align: "center" as const },
-    { key: "occupiedRooms", label: "Ocupadas", align: "center" as const },
-    { key: "occupancyRate", label: "Ocupacion", align: "center" as const },
-    { key: "avgRate", label: "Tarifa Media", align: "right" as const },
-    { key: "revenue", label: "Ingresos", align: "right" as const },
+    { key: 'date', label: 'Fecha' },
+    { key: 'totalRooms', label: 'Total Hab.', align: 'center' as const },
+    { key: 'occupiedRooms', label: 'Ocupadas', align: 'center' as const },
+    { key: 'occupancyRate', label: 'Ocupacion', align: 'center' as const },
+    { key: 'avgRate', label: 'Tarifa Media', align: 'right' as const },
+    { key: 'revenue', label: 'Ingresos', align: 'right' as const },
   ];
 
   const revenueColumns = [
-    { key: "date", label: "Fecha" },
-    { key: "roomRevenue", label: "Hab.", align: "right" as const },
-    { key: "folioRevenue", label: "Folio", align: "right" as const },
-    { key: "totalRevenue", label: "Total", align: "right" as const },
-    { key: "payments", label: "Pagos", align: "right" as const },
+    { key: 'date', label: 'Fecha' },
+    { key: 'roomRevenue', label: 'Hab.', align: 'right' as const },
+    { key: 'folioRevenue', label: 'Folio', align: 'right' as const },
+    { key: 'totalRevenue', label: 'Total', align: 'right' as const },
+    { key: 'payments', label: 'Pagos', align: 'right' as const },
   ];
 
   const formatData = (raw: any[]) => {
-    if (type === "occupancy") {
+    if (type === 'occupancy') {
       return raw.map((d) => ({
         ...d,
         occupancyRate: `${d.occupancyRate}%`,
@@ -94,13 +99,17 @@ export default function PrintReportContent() {
         }
       `}</style>
       <div className="no-print mb-4 flex gap-2">
-        <button onClick={() => window.print()} className="btn-primary">Imprimir</button>
-        <button onClick={() => window.close()} className="btn-secondary">Cerrar</button>
+        <button onClick={() => window.print()} className="btn-primary">
+          Imprimir
+        </button>
+        <button onClick={() => window.close()} className="btn-secondary">
+          Cerrar
+        </button>
       </div>
       <ReportPrint
-        title={type === "revenue" ? "Reporte de Ingresos" : "Reporte de Ocupacion"}
+        title={type === 'revenue' ? 'Reporte de Ingresos' : 'Reporte de Ocupacion'}
         data={formatData(data)}
-        columns={type === "revenue" ? revenueColumns : occupancyColumns}
+        columns={type === 'revenue' ? revenueColumns : occupancyColumns}
         hotel={hotel}
       />
     </div>

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { generateInvoicePDF } from "@/lib/pdf";
-import { z, ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { generateInvoicePDF } from '@/lib/pdf';
+import { z, ZodError } from 'zod';
 
 const schema = z.object({ invoiceId: z.string().min(1) });
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
           include: {
             guest: true,
             room: { include: { roomType: true } },
-            folioItems: { orderBy: { date: "asc" } },
+            folioItems: { orderBy: { date: 'asc' } },
           },
         },
         hotel: true,
@@ -25,10 +25,7 @@ export async function POST(request: Request) {
     });
 
     if (!invoice) {
-      return NextResponse.json(
-        { error: "Factura no encontrada" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Factura no encontrada' }, { status: 404 });
     }
 
     const hotel = invoice.hotel;
@@ -46,7 +43,7 @@ export async function POST(request: Request) {
       },
       invoice: {
         number: invoice.number,
-        date: new Date(invoice.date).toLocaleDateString("es"),
+        date: new Date(invoice.date).toLocaleDateString('es'),
         status: invoice.status,
         taxAmount: invoice.taxAmount,
         total: invoice.total,
@@ -72,23 +69,23 @@ export async function POST(request: Request) {
         address: booking.guest.address,
       },
       room: {
-        number: booking.room?.number || "",
-        roomType: { name: booking.room?.roomType?.name || "" },
+        number: booking.room?.number || '',
+        roomType: { name: booking.room?.roomType?.name || '' },
       },
       folioItems: booking.folioItems.map((fi) => ({
         concept: fi.concept,
         amount: fi.amount,
         category: fi.category,
-        date: new Date(fi.date).toLocaleDateString("es"),
+        date: new Date(fi.date).toLocaleDateString('es'),
       })),
     });
 
-    const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
+    const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
     return new Response(pdfBuffer, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="factura-${invoice.number}.pdf"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="factura-${invoice.number}.pdf"`,
       },
     });
   } catch (error: unknown) {

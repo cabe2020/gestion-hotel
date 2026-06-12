@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Download, X } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Download, X } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
 export default function PWARegister() {
@@ -13,8 +13,8 @@ export default function PWARegister() {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
     const handler = (e: Event) => {
@@ -23,15 +23,15 @@ export default function PWARegister() {
       setShowBanner(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleInstall = async () => {
     if (!installPrompt) return;
     await installPrompt.prompt();
     const { outcome } = await installPrompt.userChoice;
-    if (outcome === "accepted") {
+    if (outcome === 'accepted') {
       setShowBanner(false);
       setInstallPrompt(null);
     }

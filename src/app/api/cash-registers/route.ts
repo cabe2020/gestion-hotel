@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { cashRegisterSchema } from "@/lib/validations";
-import { requireAdmin, getUserFromHeaders, resolveHotelId } from "@/lib/rbac";
-import { notifyRole } from "@/lib/notifications";
-import { logAction } from "@/lib/audit";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { cashRegisterSchema } from '@/lib/validations';
+import { requireAdmin, getUserFromHeaders, resolveHotelId } from '@/lib/rbac';
+import { notifyRole } from '@/lib/notifications';
+import { logAction } from '@/lib/audit';
+import { ZodError } from 'zod';
 
 export async function GET(request: Request) {
   const hotelId = await resolveHotelId(request.headers);
   if (!hotelId) return NextResponse.json([]);
   const registers = await prisma.cashRegister.findMany({
     where: { hotelId },
-    orderBy: { openedAt: "desc" },
+    orderBy: { openedAt: 'desc' },
   });
   return NextResponse.json(registers);
 }
@@ -24,24 +24,23 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = cashRegisterSchema.parse(body);
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel' }, { status: 404 });
     const register = await prisma.cashRegister.create({
-      data: { ...data, hotelId, status: "open", openedBy: userId },
+      data: { ...data, hotelId, status: 'open', openedBy: userId },
     });
 
     await notifyRole({
-      role: "admin",
+      role: 'admin',
       hotelId,
-      title: "Caja abierta",
+      title: 'Caja abierta',
       message: `Se abrió caja con fondo de $${data.openingCash}`,
-      type: "info",
+      type: 'info',
     }).catch(() => {});
 
     await logAction({
       userId,
-      action: "open",
-      entity: "cash-register",
+      action: 'open',
+      entity: 'cash-register',
       entityId: register.id,
       details: `Caja abierta con fondo $${data.openingCash}`,
       hotelId,

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   const adminCheck = requireAdmin(request);
@@ -8,12 +8,12 @@ export async function GET(request: Request) {
 
   try {
     const url = new URL(request.url);
-    const entity = url.searchParams.get("entity");
-    const userId = url.searchParams.get("userId");
-    const from = url.searchParams.get("from");
-    const to = url.searchParams.get("to");
-    const page = parseInt(url.searchParams.get("page") || "1");
-    const pageSize = parseInt(url.searchParams.get("pageSize") || "50");
+    const entity = url.searchParams.get('entity');
+    const userId = url.searchParams.get('userId');
+    const from = url.searchParams.get('from');
+    const to = url.searchParams.get('to');
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '50');
 
     const where: Record<string, unknown> = {};
     if (entity) where.entity = entity;
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
       prisma.auditLog.findMany({
         where,
         include: { user: { select: { name: true } } },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),

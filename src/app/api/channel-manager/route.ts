@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/rbac";
-import { getChannels } from "@/lib/channel-manager";
-import { encrypt, decrypt } from "@/lib/crypto";
-import fs from "fs";
-import path from "path";
+import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/rbac';
+import { getChannels } from '@/lib/channel-manager';
+import { encrypt, decrypt } from '@/lib/crypto';
+import fs from 'fs';
+import path from 'path';
 
-const CONFIG_PATH = path.join(process.cwd(), "data", "channel-config.json");
+const CONFIG_PATH = path.join(process.cwd(), 'data', 'channel-config.json');
 
 function readConfig(): Record<string, any> {
   try {
     if (fs.existsSync(CONFIG_PATH)) {
-      const raw = fs.readFileSync(CONFIG_PATH, "utf-8");
+      const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
       return JSON.parse(raw);
     }
   } catch {}
@@ -20,7 +20,7 @@ function readConfig(): Record<string, any> {
 function writeConfig(config: Record<string, any>) {
   const dir = path.dirname(CONFIG_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
 }
 
 export async function GET(request: Request) {
@@ -36,8 +36,8 @@ export async function GET(request: Request) {
       channel: ch.id,
       name: ch.name,
       color: ch.color,
-      hotelCode: stored.hotelCode || "",
-      apiKey: stored.apiKey ? decrypt(stored.apiKey) : "",
+      hotelCode: stored.hotelCode || '',
+      apiKey: stored.apiKey ? decrypt(stored.apiKey) : '',
       active: stored.active ?? false,
       lastSync: stored.lastSync || null,
     };
@@ -55,18 +55,15 @@ export async function POST(request: Request) {
     const { channel, hotelCode, apiKey, active } = body;
 
     if (!channel) {
-      return NextResponse.json(
-        { error: "Channel is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Channel is required' }, { status: 400 });
     }
 
     const config = readConfig();
     const existing = config[channel] || {};
 
     config[channel] = {
-      hotelCode: hotelCode || existing.hotelCode || "",
-      apiKey: apiKey ? encrypt(apiKey) : existing.apiKey || "",
+      hotelCode: hotelCode || existing.hotelCode || '',
+      apiKey: apiKey ? encrypt(apiKey) : existing.apiKey || '',
       active: active ?? existing.active ?? false,
       lastSync: existing.lastSync || null,
     };

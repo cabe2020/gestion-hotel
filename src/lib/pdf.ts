@@ -1,5 +1,5 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export function generateInvoicePDF(data: {
   hotel: {
@@ -51,29 +51,29 @@ export function generateInvoicePDF(data: {
 }): jsPDF {
   const doc = new jsPDF();
   const { hotel, invoice, booking, guest, room, folioItems } = data;
-  const currency = hotel.currency || "USD";
+  const currency = hotel.currency || 'USD';
 
   doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
+  doc.setFont('helvetica', 'bold');
   doc.text(hotel.name, 14, 20);
 
   doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
+  doc.setFont('helvetica', 'normal');
   doc.text(hotel.address, 14, 26);
   doc.text(`Tel: ${hotel.phone} | Email: ${hotel.email}`, 14, 31);
   if (hotel.taxId) doc.text(`NIF/RFC: ${hotel.taxId}`, 14, 36);
 
   doc.setFontSize(16);
-  doc.setFont("helvetica", "bold");
+  doc.setFont('helvetica', 'bold');
   const titleY = 45;
-  doc.text(invoice.cancelled ? "FACTURA ANULADA" : "FACTURA", 14, titleY);
+  doc.text(invoice.cancelled ? 'FACTURA ANULADA' : 'FACTURA', 14, titleY);
 
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
+  doc.setFont('helvetica', 'normal');
   doc.text(`No: ${invoice.number}`, 140, titleY);
   doc.text(`Fecha: ${invoice.date}`, 140, titleY + 5);
   doc.text(
-    `Estado: ${invoice.cancelled ? "ANULADA" : invoice.status === "paid" ? "PAGADA" : "PENDIENTE"}`,
+    `Estado: ${invoice.cancelled ? 'ANULADA' : invoice.status === 'paid' ? 'PAGADA' : 'PENDIENTE'}`,
     140,
     titleY + 10
   );
@@ -81,17 +81,17 @@ export function generateInvoicePDF(data: {
   if (invoice.cancelled) {
     doc.saveGraphicsState();
     doc.setFontSize(72);
-    doc.setFont("helvetica", "bold");
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 0, 0);
     doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
-    doc.text("ANULADA", 105, 150, { align: "center", angle: 35 });
+    doc.text('ANULADA', 105, 150, { align: 'center', angle: 35 });
     doc.restoreGraphicsState();
     doc.setTextColor(255, 0, 0);
     doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("FACTURA ANULADA", 14, titleY + 2);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FACTURA ANULADA', 14, titleY + 2);
     doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
+    doc.setFont('helvetica', 'normal');
     if (invoice.cancelReason) {
       doc.text(`Motivo: ${invoice.cancelReason}`, 14, titleY + 8);
     }
@@ -100,9 +100,9 @@ export function generateInvoicePDF(data: {
 
   const guestY = titleY + (invoice.cancelled ? 20 : 10);
   doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("DATOS DEL HUESPED", 14, guestY);
-  doc.setFont("helvetica", "normal");
+  doc.setFont('helvetica', 'bold');
+  doc.text('DATOS DEL HUESPED', 14, guestY);
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.text(`${guest.firstName} ${guest.lastName}`, 14, guestY + 5);
   if (guest.idNumber) doc.text(`ID: ${guest.idNumber}`, 14, guestY + 10);
@@ -121,16 +121,16 @@ export function generateInvoicePDF(data: {
       : [
           [
             `Hab. ${room.number} - ${room.roomType.name} (${booking.totalNights} noches)`,
-            "Habitacion",
+            'Habitacion',
             `${currency} ${roomTotal}`,
           ],
         ];
 
   autoTable(doc, {
     startY: tableY,
-    head: [["Concepto", "Categoria", "Monto"]],
+    head: [['Concepto', 'Categoria', 'Monto']],
     body: tableItems,
-    theme: "striped",
+    theme: 'striped',
     headStyles: { fillColor: [30, 58, 138], textColor: 255 },
     styles: { fontSize: 9 },
   });
@@ -139,22 +139,14 @@ export function generateInvoicePDF(data: {
   const subtotal = invoice.total / (1 + hotel.taxRate / 100);
   doc.setFontSize(10);
   doc.text(`Subtotal: ${currency} ${subtotal.toFixed(2)}`, 140, finalY);
-  doc.text(
-    `IVA (${hotel.taxRate}%): ${currency} ${invoice.taxAmount.toFixed(2)}`,
-    140,
-    finalY + 6
-  );
-  doc.setFont("helvetica", "bold");
+  doc.text(`IVA (${hotel.taxRate}%): ${currency} ${invoice.taxAmount.toFixed(2)}`, 140, finalY + 6);
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(`TOTAL: ${currency} ${invoice.total.toFixed(2)}`, 140, finalY + 14);
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text(
-    `Pagado: ${currency} ${booking.paidAmount.toFixed(2)}`,
-    140,
-    finalY + 22
-  );
+  doc.text(`Pagado: ${currency} ${booking.paidAmount.toFixed(2)}`, 140, finalY + 22);
   doc.text(
     `Pendiente: ${currency} ${(invoice.total - booking.paidAmount).toFixed(2)}`,
     140,
@@ -162,7 +154,7 @@ export function generateInvoicePDF(data: {
   );
 
   doc.setFontSize(8);
-  doc.text("Generado por Hosterix", 14, 285);
+  doc.text('Generado por Hosterix', 14, 285);
 
   return doc;
 }
@@ -179,47 +171,34 @@ export function generateReceiptPDF(data: {
 }): jsPDF {
   const doc = new jsPDF();
   const { hotel, payment, booking } = data;
-  const currency = hotel.currency || "USD";
+  const currency = hotel.currency || 'USD';
 
   const methods: Record<string, string> = {
-    cash: "Efectivo",
-    card: "Tarjeta",
-    transfer: "Transferencia",
-    other: "Otro",
-    refund: "Reembolso",
+    cash: 'Efectivo',
+    card: 'Tarjeta',
+    transfer: 'Transferencia',
+    other: 'Otro',
+    refund: 'Reembolso',
   };
 
   doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
+  doc.setFont('helvetica', 'bold');
   doc.text(hotel.name, 14, 20);
 
   doc.setFontSize(14);
-  doc.text("RECIBO DE PAGO", 14, 30);
+  doc.text('RECIBO DE PAGO', 14, 30);
 
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
+  doc.setFont('helvetica', 'normal');
   doc.text(`Reserva: ${booking.code}`, 14, 40);
-  doc.text(
-    `Huesped: ${booking.guest.firstName} ${booking.guest.lastName}`,
-    14,
-    46
-  );
+  doc.text(`Huesped: ${booking.guest.firstName} ${booking.guest.lastName}`, 14, 46);
   doc.text(`Monto: ${currency} ${payment.amount.toFixed(2)}`, 14, 54);
-  doc.text(
-    `Metodo: ${methods[payment.method] || payment.method}`,
-    14,
-    60
-  );
-  if (payment.reference)
-    doc.text(`Referencia: ${payment.reference}`, 14, 66);
-  doc.text(
-    `Fecha: ${new Date(payment.createdAt).toLocaleDateString("es")}`,
-    14,
-    72
-  );
+  doc.text(`Metodo: ${methods[payment.method] || payment.method}`, 14, 60);
+  if (payment.reference) doc.text(`Referencia: ${payment.reference}`, 14, 66);
+  doc.text(`Fecha: ${new Date(payment.createdAt).toLocaleDateString('es')}`, 14, 72);
 
   doc.setFontSize(8);
-  doc.text("Generado por Hosterix", 14, 285);
+  doc.text('Generado por Hosterix', 14, 285);
 
   return doc;
 }

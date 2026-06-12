@@ -1,54 +1,54 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import AuthProvider from "@/components/AuthProvider";
-import ThemeProvider from "@/components/ThemeProvider";
-import I18nProvider from "@/components/I18nProvider";
-import PWARegister from "@/components/PWARegister";
-import ToastProvider from "@/components/Toast";
-import SearchCommand from "@/components/SearchCommand";
-import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import Sidebar from '@/components/Sidebar';
+import AuthProvider from '@/components/AuthProvider';
+import ThemeProvider from '@/components/ThemeProvider';
+import I18nProvider from '@/components/I18nProvider';
+import PWARegister from '@/components/PWARegister';
+import ToastProvider from '@/components/Toast';
+import SearchCommand from '@/components/SearchCommand';
+import KeyboardShortcuts from '@/components/KeyboardShortcuts';
 
 export const metadata: Metadata = {
-  title: "Hosterix - Sistema de Gestion Hotelera",
-  description: "Sistema completo de gestion hotelera: reservas, habitaciones, caja y mas",
-  manifest: "/manifest.json",
+  title: 'Hosterix - Sistema de Gestion Hotelera',
+  description: 'Sistema completo de gestion hotelera: reservas, habitaciones, caja y mas',
+  manifest: '/manifest.json',
   icons: {
-    icon: "/icon.svg",
+    icon: '/icon.svg',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#7c3aed",
+  themeColor: '#7c3aed',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();` }} />
-      <link rel="manifest" href="/manifest.json" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+          }}
+        />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
         <ThemeProvider>
           <I18nProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <SearchCommand />
-            <KeyboardShortcuts />
-            <div className="flex min-h-screen">
-              <Sidebar />
-              <main className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-auto md:w-auto w-full pt-14 md:pt-0">
-                {children}
-              </main>
-            </div>
-            <PWARegister />
-          </ToastProvider>
-        </AuthProvider>
+            <AuthProvider>
+              <ToastProvider>
+                <SearchCommand />
+                <KeyboardShortcuts />
+                <div className="flex min-h-screen">
+                  <Sidebar />
+                  <main className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-auto md:w-auto w-full pt-14 md:pt-0">
+                    {children}
+                  </main>
+                </div>
+                <PWARegister />
+              </ToastProvider>
+            </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>

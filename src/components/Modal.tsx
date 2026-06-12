@@ -1,40 +1,34 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
-import { useEffect } from "react";
+import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
 }
 
-export default function Modal({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = "md",
-}: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
+    sm: 'max-w-md',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
   };
 
   return (
@@ -45,10 +39,7 @@ export default function Modal({
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-          >
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>

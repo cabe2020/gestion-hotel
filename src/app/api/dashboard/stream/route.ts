@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 const clients: Set<WritableStreamDefaultWriter> = new Set();
 
@@ -12,20 +12,30 @@ async function getDashboardSummary(hotelId: string) {
   const [totalRooms, occupiedRooms, todayCheckins, todayCheckouts, cashMoves, todayNewBookings] =
     await Promise.all([
       prisma.room.count({ where: { hotelId } }),
-      prisma.room.count({ where: { hotelId, status: "occupied" } }),
+      prisma.room.count({ where: { hotelId, status: 'occupied' } }),
       prisma.booking.count({
-        where: { hotelId, checkIn: { gte: today, lt: tomorrow }, status: { in: ["confirmed", "checked-in"] } },
+        where: {
+          hotelId,
+          checkIn: { gte: today, lt: tomorrow },
+          status: { in: ['confirmed', 'checked-in'] },
+        },
       }),
       prisma.booking.count({
-        where: { hotelId, checkOut: { gte: today, lt: tomorrow }, status: "checked-in" },
+        where: { hotelId, checkOut: { gte: today, lt: tomorrow }, status: 'checked-in' },
       }),
       prisma.cashMove.findMany({ where: { hotelId, createdAt: { gte: today } } }),
       prisma.booking.count({
-        where: { hotelId, createdAt: { gte: today, lt: tomorrow }, status: { in: ["confirmed", "checked-in"] } },
+        where: {
+          hotelId,
+          createdAt: { gte: today, lt: tomorrow },
+          status: { in: ['confirmed', 'checked-in'] },
+        },
       }),
     ]);
 
-  const todayRevenue = cashMoves.filter((m) => m.type === "income").reduce((s, m) => s + m.amount, 0);
+  const todayRevenue = cashMoves
+    .filter((m) => m.type === 'income')
+    .reduce((s, m) => s + m.amount, 0);
   const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 
   return {
@@ -48,7 +58,7 @@ function sendToAll(data: string) {
 
 export async function GET(request: Request) {
   const hotelId = await resolveHotelId(request.headers);
-  if (!hotelId) return new Response("No hotel", { status: 404 });
+  if (!hotelId) return new Response('No hotel', { status: 404 });
 
   const encoder = new TextEncoder();
   const stream = new TransformStream();
@@ -66,7 +76,7 @@ export async function GET(request: Request) {
 
   const keepAlive = setInterval(() => {
     const w = writer as WritableStreamDefaultWriter<Uint8Array>;
-    w.write(encoder.encode(": keepalive\n\n")).catch(() => {
+    w.write(encoder.encode(': keepalive\n\n')).catch(() => {
       clients.delete(writer);
       clearInterval(keepAlive);
       clearInterval(interval);
@@ -74,7 +84,7 @@ export async function GET(request: Request) {
     });
   }, 15000);
 
-  signal.signal.addEventListener("abort", () => {
+  signal.signal.addEventListener('abort', () => {
     clearInterval(interval);
     clearInterval(keepAlive);
     clients.delete(writer);
@@ -87,21 +97,21 @@ export async function GET(request: Request) {
 
   return new Response(stream.readable, {
     headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
     },
   });
 }
 
 export async function POST(request: Request) {
   const hotelId = await resolveHotelId(request.headers);
-  if (!hotelId) return new Response("No hotel", { status: 404 });
+  if (!hotelId) return new Response('No hotel', { status: 404 });
   const summary = await getDashboardSummary(hotelId);
   if (summary) {
     sendToAll(`data: ${JSON.stringify(summary)}\n\n`);
   }
   return new Response(JSON.stringify({ ok: true }), {
-    headers: { "Content-Type": "application/json" },
+    headers: { 'Content-Type': 'application/json' },
   });
 }

@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { hotelSchema } from "@/lib/validations";
-import { requireAdmin } from "@/lib/rbac";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { hotelSchema } from '@/lib/validations';
+import { requireAdmin } from '@/lib/rbac';
+import { ZodError } from 'zod';
 
 export async function GET() {
-  const hotels = await prisma.hotel.findMany({ orderBy: { name: "asc" } });
+  const hotels = await prisma.hotel.findMany({ orderBy: { name: 'asc' } });
   return NextResponse.json(hotels);
 }
 

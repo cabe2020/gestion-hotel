@@ -1,13 +1,10 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requireAdmin, getUserFromHeaders } from "@/lib/rbac";
-import { notifyRole } from "@/lib/notifications";
-import { logAction } from "@/lib/audit";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAdmin, getUserFromHeaders } from '@/lib/rbac';
+import { notifyRole } from '@/lib/notifications';
+import { logAction } from '@/lib/audit';
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const adminCheck = requireAdmin(request);
   if (adminCheck) return adminCheck;
   const { id: userId } = getUserFromHeaders(request);
@@ -16,7 +13,7 @@ export async function PUT(
 
   const existing = await prisma.cashRegister.findUnique({ where: { id } });
   if (!existing) {
-    return NextResponse.json({ error: "Caja no encontrada" }, { status: 404 });
+    return NextResponse.json({ error: 'Caja no encontrada' }, { status: 404 });
   }
 
   const openingCash = existing.openingCash;
@@ -29,7 +26,7 @@ export async function PUT(
   const register = await prisma.cashRegister.update({
     where: { id },
     data: {
-      status: "closed",
+      status: 'closed',
       closedAt: new Date(),
       closingCash,
       totalIncome,
@@ -41,17 +38,17 @@ export async function PUT(
 
   if (register.hotelId) {
     await notifyRole({
-      role: "admin",
+      role: 'admin',
       hotelId: register.hotelId,
-      title: "Caja cerrada",
+      title: 'Caja cerrada',
       message: `Cierre de caja - Efectivo: $${closingCash}`,
-      type: "warning",
+      type: 'warning',
     }).catch(() => {});
 
     await logAction({
       userId,
-      action: "close",
-      entity: "cash-register",
+      action: 'close',
+      entity: 'cash-register',
       entityId: id,
       details: `Caja cerrada con $${closingCash}`,
       hotelId: register.hotelId,

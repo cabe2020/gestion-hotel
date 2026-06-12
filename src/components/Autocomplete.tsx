@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronDown, X } from "lucide-react";
-import { useTranslations } from "./I18nProvider";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronDown, X } from 'lucide-react';
+import { useTranslations } from './I18nProvider';
 
 interface AutocompleteOption {
   [key: string]: unknown;
@@ -25,7 +25,7 @@ export default function Autocomplete({
   endpoint,
   labelKey,
   valueKey,
-  placeholder = "Buscar...",
+  placeholder = 'Buscar...',
   onSelect,
   value,
   displayValue,
@@ -33,7 +33,7 @@ export default function Autocomplete({
   onClear,
   createNewLabel,
 }: AutocompleteProps) {
-  const [query, setQuery] = useState(displayValue || "");
+  const [query, setQuery] = useState(displayValue || '');
   const [results, setResults] = useState<AutocompleteOption[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
@@ -41,7 +41,7 @@ export default function Autocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const { t } = useTranslations();
-  const resolvedCreateNewLabel = createNewLabel ?? t("autocomplete.createNew");
+  const resolvedCreateNewLabel = createNewLabel ?? t('autocomplete.createNew');
 
   useEffect(() => {
     if (displayValue !== undefined) {
@@ -85,7 +85,7 @@ export default function Autocomplete({
   };
 
   const handleSelect = (item: AutocompleteOption) => {
-    const label = String(item[labelKey] || "");
+    const label = String(item[labelKey] || '');
     setQuery(label);
     setShowDropdown(false);
     onSelect(item);
@@ -93,20 +93,20 @@ export default function Autocomplete({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showDropdown || results.length === 0) {
-      if (e.key === "ArrowDown" && query.length >= 1) {
+      if (e.key === 'ArrowDown' && query.length >= 1) {
         setShowDropdown(true);
         fetchResults(query);
       }
       return;
     }
 
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       setHighlightIndex((prev) => Math.min(prev + 1, results.length - 1 + (onCreateNew ? 1 : 0)));
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setHighlightIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === "Enter" && highlightIndex >= 0) {
+    } else if (e.key === 'Enter' && highlightIndex >= 0) {
       e.preventDefault();
       if (highlightIndex < results.length) {
         handleSelect(results[highlightIndex]);
@@ -114,7 +114,7 @@ export default function Autocomplete({
         onCreateNew();
         setShowDropdown(false);
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       setShowDropdown(false);
     }
   };
@@ -125,12 +125,12 @@ export default function Autocomplete({
         setShowDropdown(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const clearValue = () => {
-    setQuery("");
+    setQuery('');
     setResults([]);
     setShowDropdown(false);
     if (onClear) {
@@ -173,42 +173,42 @@ export default function Autocomplete({
 
       {showDropdown && (results.length > 0 || loading || onCreateNew) && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-        {loading && (
-          <div className="px-4 py-3 text-sm text-gray-500">{t("search.searching")}</div>
-        )}
+          {loading && (
+            <div className="px-4 py-3 text-sm text-gray-500">{t('search.searching')}</div>
+          )}
 
-        {!loading &&
-        results.map((item, idx) => (
-          <button
-            key={String(item[valueKey] || idx)}
-            onClick={() => handleSelect(item)}
-            className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${
-              idx === highlightIndex ? "bg-blue-50" : ""
-            }`}
-            type="button"
-          >
-            {String(item[labelKey] || "")}
-          </button>
-        ))}
+          {!loading &&
+            results.map((item, idx) => (
+              <button
+                key={String(item[valueKey] || idx)}
+                onClick={() => handleSelect(item)}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors ${
+                  idx === highlightIndex ? 'bg-blue-50' : ''
+                }`}
+                type="button"
+              >
+                {String(item[labelKey] || '')}
+              </button>
+            ))}
 
-        {!loading && results.length === 0 && query.length >= 1 && !onCreateNew && (
-          <div className="px-4 py-3 text-sm text-gray-500">{t("search.noResults")}</div>
-        )}
+          {!loading && results.length === 0 && query.length >= 1 && !onCreateNew && (
+            <div className="px-4 py-3 text-sm text-gray-500">{t('search.noResults')}</div>
+          )}
 
-        {!loading && onCreateNew && query.length >= 1 && (
-          <button
-            onClick={() => {
-              onCreateNew();
-              setShowDropdown(false);
-            }}
-            className={`w-full text-left px-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 border-t border-gray-100 ${
-              highlightIndex === results.length ? "bg-blue-50" : ""
-            }`}
-            type="button"
-          >
-            + {resolvedCreateNewLabel}
-          </button>
-        )}
+          {!loading && onCreateNew && query.length >= 1 && (
+            <button
+              onClick={() => {
+                onCreateNew();
+                setShowDropdown(false);
+              }}
+              className={`w-full text-left px-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 border-t border-gray-100 ${
+                highlightIndex === results.length ? 'bg-blue-50' : ''
+              }`}
+              type="button"
+            >
+              + {resolvedCreateNewLabel}
+            </button>
+          )}
         </div>
       )}
     </div>

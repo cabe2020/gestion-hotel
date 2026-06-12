@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { formatDate, formatCurrency } from '@/lib/utils';
 
 interface BookingInfo {
   id: string;
@@ -32,11 +32,17 @@ interface BookingInfo {
   } | null;
 }
 
-const STEPS = ["Buscar Reserva", "Detalles", "Check-in Digital", "Firma", "Confirmacion"];
+const STEPS = ['Buscar Reserva', 'Detalles', 'Check-in Digital', 'Firma', 'Confirmacion'];
 
 export default function PortalPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-400">Cargando...</p></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-gray-400">Cargando...</p>
+        </div>
+      }
+    >
       <PortalContent />
     </Suspense>
   );
@@ -45,17 +51,17 @@ export default function PortalPage() {
 function PortalContent() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
-  const [code, setCode] = useState(searchParams.get("code") || "");
+  const [code, setCode] = useState(searchParams.get('code') || '');
   const [booking, setBooking] = useState<BookingInfo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const [form, setForm] = useState({
-    idNumber: "",
-    emergencyContact: "",
-    emergencyPhone: "",
-    specialRequests: "",
+    idNumber: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+    specialRequests: '',
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -70,22 +76,22 @@ function PortalContent() {
 
   const handleSearch = useCallback(async () => {
     if (!code.trim()) {
-      setError("Ingrese un codigo de reserva");
+      setError('Ingrese un codigo de reserva');
       return;
     }
     setLoading(true);
-    setError("");
+    setError('');
     try {
       const res = await fetch(`/api/portal?code=${encodeURIComponent(code.trim())}`);
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "Reserva no encontrada");
+        throw new Error(err.error || 'Reserva no encontrada');
       }
       const data = await res.json();
       setBooking(data);
-      setForm(f => ({
+      setForm((f) => ({
         ...f,
-        idNumber: data.guest.idNumber || "",
+        idNumber: data.guest.idNumber || '',
       }));
       if (data.digitalCheckInDone) {
         setStep(4);
@@ -94,7 +100,7 @@ function PortalContent() {
         setStep(1);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Error al buscar reserva";
+      const message = err instanceof Error ? err.message : 'Error al buscar reserva';
       setError(message);
     } finally {
       setLoading(false);
@@ -107,15 +113,15 @@ function PortalContent() {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * 2;
     canvas.height = rect.height * 2;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.scale(2, 2);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#1e40af";
+    ctx.strokeStyle = '#1e40af';
     ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     setHasSignature(false);
   };
 
@@ -129,7 +135,7 @@ function PortalContent() {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    if ("touches" in e) {
+    if ('touches' in e) {
       const touch = e.touches[0];
       return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
     }
@@ -140,7 +146,7 @@ function PortalContent() {
     e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const pos = getCanvasPos(e);
     ctx.beginPath();
@@ -153,7 +159,7 @@ function PortalContent() {
     if (!isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const pos = getCanvasPos(e);
     ctx.lineTo(pos.x, pos.y);
@@ -172,14 +178,14 @@ function PortalContent() {
   const handleSubmit = async () => {
     if (!booking || !hasSignature) return;
     setLoading(true);
-    setError("");
+    setError('');
     try {
       const canvas = canvasRef.current;
-      const signatureData = canvas?.toDataURL("image/png") || "";
+      const signatureData = canvas?.toDataURL('image/png') || '';
 
-      const res = await fetch("/api/portal/checkin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/portal/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: booking.code,
           idNumber: form.idNumber,
@@ -192,13 +198,13 @@ function PortalContent() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "Error al procesar check-in");
+        throw new Error(err.error || 'Error al procesar check-in');
       }
 
       setSuccess(true);
       setStep(4);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Error al procesar check-in";
+      const message = err instanceof Error ? err.message : 'Error al procesar check-in';
       setError(message);
     } finally {
       setLoading(false);
@@ -225,26 +231,36 @@ function PortalContent() {
                   <div
                     className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-semibold transition-colors ${
                       i < step
-                        ? "border-green-500 bg-green-500 text-white"
+                        ? 'border-green-500 bg-green-500 text-white'
                         : i === step
-                        ? "border-blue-600 bg-blue-600 text-white"
-                        : "border-gray-300 bg-white text-gray-400"
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-gray-300 bg-white text-gray-400'
                     }`}
                   >
                     {i < step ? (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (
                       i + 1
                     )}
                   </div>
-                  <span className={`text-[10px] mt-1 font-medium max-w-[60px] text-center ${i <= step ? "text-gray-700" : "text-gray-400"}`}>
+                  <span
+                    className={`text-[10px] mt-1 font-medium max-w-[60px] text-center ${i <= step ? 'text-gray-700' : 'text-gray-400'}`}
+                  >
                     {label}
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`w-6 sm:w-10 h-0.5 mx-1 mb-5 transition-colors ${i < step ? "bg-green-500" : "bg-gray-200"}`} />
+                  <div
+                    className={`w-6 sm:w-10 h-0.5 mx-1 mb-5 transition-colors ${i < step ? 'bg-green-500' : 'bg-gray-200'}`}
+                  />
                 )}
               </div>
             ))}
@@ -279,7 +295,7 @@ function PortalContent() {
                 disabled={loading || !code.trim()}
                 className="portal-btn-primary"
               >
-                {loading ? "Buscando..." : "Buscar Reserva"}
+                {loading ? 'Buscando...' : 'Buscar Reserva'}
               </button>
             </div>
           )}
@@ -287,9 +303,7 @@ function PortalContent() {
           {step === 1 && booking && (
             <div className="portal-card">
               <h2 className="text-xl font-bold text-gray-900 mb-1">Detalles de su Reserva</h2>
-              <p className="text-gray-500 text-sm mb-4">
-                Verifique que los datos sean correctos
-              </p>
+              <p className="text-gray-500 text-sm mb-4">Verifique que los datos sean correctos</p>
 
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
                 <p className="text-sm text-blue-600 font-medium">Codigo de Reserva</p>
@@ -305,11 +319,15 @@ function PortalContent() {
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500 text-sm">Check-in</span>
-                  <span className="font-medium text-gray-900 text-sm">{formatDate(booking.checkIn)}</span>
+                  <span className="font-medium text-gray-900 text-sm">
+                    {formatDate(booking.checkIn)}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500 text-sm">Check-out</span>
-                  <span className="font-medium text-gray-900 text-sm">{formatDate(booking.checkOut)}</span>
+                  <span className="font-medium text-gray-900 text-sm">
+                    {formatDate(booking.checkOut)}
+                  </span>
                 </div>
                 {booking.room && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
@@ -322,8 +340,10 @@ function PortalContent() {
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500 text-sm">Huespedes</span>
                   <span className="font-medium text-gray-900 text-sm">
-                    {booking.adults} adulto{booking.adults > 1 ? "s" : ""}
-                    {booking.children > 0 ? `, ${booking.children} niño${booking.children > 1 ? "s" : ""}` : ""}
+                    {booking.adults} adulto{booking.adults > 1 ? 's' : ''}
+                    {booking.children > 0
+                      ? `, ${booking.children} niño${booking.children > 1 ? 's' : ''}`
+                      : ''}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
@@ -332,14 +352,13 @@ function PortalContent() {
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-gray-500 text-sm font-semibold">Total</span>
-                  <span className="font-bold text-gray-900 text-sm">{formatCurrency(booking.totalAmount)}</span>
+                  <span className="font-bold text-gray-900 text-sm">
+                    {formatCurrency(booking.totalAmount)}
+                  </span>
                 </div>
               </div>
 
-              <button
-                onClick={() => setStep(2)}
-                className="portal-btn-primary"
-              >
+              <button onClick={() => setStep(2)} className="portal-btn-primary">
                 Continuar con Check-in Digital
               </button>
             </div>
@@ -348,9 +367,7 @@ function PortalContent() {
           {step === 2 && booking && (
             <div className="portal-card">
               <h2 className="text-xl font-bold text-gray-900 mb-1">Check-in Digital</h2>
-              <p className="text-gray-500 text-sm mb-4">
-                Complete sus datos para el check-in
-              </p>
+              <p className="text-gray-500 text-sm mb-4">Complete sus datos para el check-in</p>
 
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-xl p-4">
@@ -367,7 +384,7 @@ function PortalContent() {
                   <input
                     type="text"
                     value={form.idNumber}
-                    onChange={(e) => setForm(f => ({ ...f, idNumber: e.target.value }))}
+                    onChange={(e) => setForm((f) => ({ ...f, idNumber: e.target.value }))}
                     className="portal-input"
                     placeholder="Documento de identidad"
                   />
@@ -381,7 +398,7 @@ function PortalContent() {
                     <input
                       type="text"
                       value={form.emergencyContact}
-                      onChange={(e) => setForm(f => ({ ...f, emergencyContact: e.target.value }))}
+                      onChange={(e) => setForm((f) => ({ ...f, emergencyContact: e.target.value }))}
                       className="portal-input"
                       placeholder="Nombre completo"
                     />
@@ -393,7 +410,7 @@ function PortalContent() {
                     <input
                       type="tel"
                       value={form.emergencyPhone}
-                      onChange={(e) => setForm(f => ({ ...f, emergencyPhone: e.target.value }))}
+                      onChange={(e) => setForm((f) => ({ ...f, emergencyPhone: e.target.value }))}
                       className="portal-input"
                       placeholder="+00 000 000 0000"
                     />
@@ -406,7 +423,7 @@ function PortalContent() {
                   </label>
                   <textarea
                     value={form.specialRequests}
-                    onChange={(e) => setForm(f => ({ ...f, specialRequests: e.target.value }))}
+                    onChange={(e) => setForm((f) => ({ ...f, specialRequests: e.target.value }))}
                     className="portal-input min-h-[80px] resize-y"
                     placeholder="Habitacion en piso alto, cuna para bebe, etc."
                     rows={3}
@@ -421,10 +438,10 @@ function PortalContent() {
                 <button
                   onClick={() => {
                     if (!form.idNumber || !form.emergencyContact || !form.emergencyPhone) {
-                      setError("Complete todos los campos obligatorios (*)");
+                      setError('Complete todos los campos obligatorios (*)');
                       return;
                     }
-                    setError("");
+                    setError('');
                     setStep(3);
                   }}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors"
@@ -443,19 +460,30 @@ function PortalContent() {
               </p>
 
               <div className="bg-gray-50 rounded-xl p-4 mb-4 space-y-2 text-sm">
-                <p><span className="text-gray-500">Huesped:</span> <span className="font-medium">{booking.guest.firstName} {booking.guest.lastName}</span></p>
-                <p><span className="text-gray-500">Documento:</span> <span className="font-medium">{form.idNumber}</span></p>
-                <p><span className="text-gray-500">Contacto emergencia:</span> <span className="font-medium">{form.emergencyContact} - {form.emergencyPhone}</span></p>
+                <p>
+                  <span className="text-gray-500">Huesped:</span>{' '}
+                  <span className="font-medium">
+                    {booking.guest.firstName} {booking.guest.lastName}
+                  </span>
+                </p>
+                <p>
+                  <span className="text-gray-500">Documento:</span>{' '}
+                  <span className="font-medium">{form.idNumber}</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">Contacto emergencia:</span>{' '}
+                  <span className="font-medium">
+                    {form.emergencyContact} - {form.emergencyPhone}
+                  </span>
+                </p>
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Firme aqui *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Firme aqui *</label>
                 <canvas
                   ref={canvasRef}
                   className="signature-canvas"
-                  style={{ height: "160px" }}
+                  style={{ height: '160px' }}
                   onMouseDown={startDrawing}
                   onMouseMove={draw}
                   onMouseUp={stopDrawing}
@@ -484,7 +512,7 @@ function PortalContent() {
                   disabled={loading || !hasSignature}
                   className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors"
                 >
-                  {loading ? "Procesando..." : "Confirmar Check-in"}
+                  {loading ? 'Procesando...' : 'Confirmar Check-in'}
                 </button>
               </div>
             </div>
@@ -493,24 +521,29 @@ function PortalContent() {
           {step === 4 && booking && (
             <div className="portal-card text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-				<h2 className="text-2xl font-bold text-gray-900 mb-2">
-					{success ? "Check-in Digital Completado" : "Check-in Digital Ya Realizado"}
-				</h2>
-				<p className="text-gray-500 mb-6">
-					{success
-						? "Su check-in digital ha sido procesado exitosamente."
-						: "Ya ha completado el check-in digital para esta reserva."
-					}
-				</p>
-				<div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-center">
-					<p className="text-sm font-semibold text-amber-800">
-						Presentar este codigo en recepcion
-					</p>
-				</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {success ? 'Check-in Digital Completado' : 'Check-in Digital Ya Realizado'}
+              </h2>
+              <p className="text-gray-500 mb-6">
+                {success
+                  ? 'Su check-in digital ha sido procesado exitosamente.'
+                  : 'Ya ha completado el check-in digital para esta reserva.'}
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-center">
+                <p className="text-sm font-semibold text-amber-800">
+                  Presentar este codigo en recepcion
+                </p>
+              </div>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
                 <p className="text-sm text-blue-600 font-medium mb-1">Codigo de Reserva</p>
                 <p className="text-3xl font-bold text-blue-900 tracking-wider">{booking.code}</p>
@@ -518,7 +551,9 @@ function PortalContent() {
               <div className="space-y-2 text-left text-sm mb-6">
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500">Huesped</span>
-                  <span className="font-medium">{booking.guest.firstName} {booking.guest.lastName}</span>
+                  <span className="font-medium">
+                    {booking.guest.firstName} {booking.guest.lastName}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500">Check-in</span>

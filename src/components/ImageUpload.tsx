@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useRef, useCallback } from "react";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { useState, useRef, useCallback } from 'react';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
   value?: string;
@@ -14,23 +14,23 @@ interface ImageUploadProps {
 export default function ImageUpload({
   value,
   onChange,
-  accept = "image/png,image/jpeg,image/jpg,image/webp",
+  accept = 'image/png,image/jpeg,image/jpg,image/webp',
   maxSizeMB = 5,
-  label = "Arrastra una imagen o haz clic para seleccionar",
+  label = 'Arrastra una imagen o haz clic para seleccionar',
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(value || null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const processFile = useCallback(
     (file: File) => {
-      setError("");
+      setError('');
 
-      const validTypes = accept.split(",").map((t) => t.trim());
+      const validTypes = accept.split(',').map((t) => t.trim());
       if (!validTypes.includes(file.type)) {
-        setError("Tipo de archivo no permitido. Use PNG, JPG o WebP.");
+        setError('Tipo de archivo no permitido. Use PNG, JPG o WebP.');
         return;
       }
 
@@ -55,7 +55,7 @@ export default function ImageUpload({
         onChange(dataUrl);
       };
       reader.onerror = () => {
-        setError("Error al leer el archivo.");
+        setError('Error al leer el archivo.');
         setUploading(false);
       };
       reader.readAsDataURL(file);
@@ -87,8 +87,8 @@ export default function ImageUpload({
 
   const handleRemove = () => {
     setPreview(null);
-    onChange("");
-    if (inputRef.current) inputRef.current.value = "";
+    onChange('');
+    if (inputRef.current) inputRef.current.value = '';
   };
 
   return (
@@ -116,8 +116,8 @@ export default function ImageUpload({
           onClick={() => inputRef.current?.click()}
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
             dragging
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
           }`}
         >
           <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
@@ -128,7 +128,7 @@ export default function ImageUpload({
 
       {uploading && (
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: "60%" }} />
+          <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
         </div>
       )}
 

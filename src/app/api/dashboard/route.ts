@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { resolveHotelId } from "@/lib/rbac";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { resolveHotelId } from '@/lib/rbac';
 
 export async function GET(request: Request) {
   try {
     const hotelId = await resolveHotelId(request.headers);
-    if (!hotelId)
-      return NextResponse.json({ error: "No hotel found" }, { status: 404 });
+    if (!hotelId) return NextResponse.json({ error: 'No hotel found' }, { status: 404 });
 
-    const hotel = await prisma.hotel.findUnique({ where: { id: hotelId }, select: { currency: true } });
+    const hotel = await prisma.hotel.findUnique({
+      where: { id: hotelId },
+      select: { currency: true },
+    });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -18,7 +20,7 @@ export async function GET(request: Request) {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-  const sameDayLastWeek = new Date(today);
+    const sameDayLastWeek = new Date(today);
     sameDayLastWeek.setDate(sameDayLastWeek.getDate() - 7);
     const sameDayNextWeek = new Date(sameDayLastWeek);
     sameDayNextWeek.setDate(sameDayNextWeek.getDate() + 1);
@@ -50,30 +52,30 @@ export async function GET(request: Request) {
     ] = await Promise.all([
       prisma.room.count({ where: { hotelId: hotelId } }),
       prisma.room.count({
-        where: { hotelId: hotelId, status: "occupied" },
+        where: { hotelId: hotelId, status: 'occupied' },
       }),
       prisma.booking.count({
         where: {
           hotelId: hotelId,
           checkIn: { gte: today, lt: tomorrow },
-          status: { in: ["confirmed", "checked-in"] },
+          status: { in: ['confirmed', 'checked-in'] },
         },
       }),
       prisma.booking.count({
         where: {
           hotelId: hotelId,
           checkOut: { gte: today, lt: tomorrow },
-          status: "checked-in",
+          status: 'checked-in',
         },
       }),
       prisma.guest.count({ where: { hotelId: hotelId } }),
       prisma.booking.count({
-        where: { hotelId: hotelId, status: { in: ["confirmed", "checked-in"] } },
+        where: { hotelId: hotelId, status: { in: ['confirmed', 'checked-in'] } },
       }),
       prisma.booking.findMany({
         where: { hotelId: hotelId },
         include: { guest: true, room: true },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: 5,
       }),
       prisma.cashMove.findMany({
@@ -84,7 +86,7 @@ export async function GET(request: Request) {
           hotelId: hotelId,
           checkIn: { lte: prevWeekEnd },
           checkOut: { gte: prevWeekStart },
-          status: { notIn: ["cancelled", "no-show"] },
+          status: { notIn: ['cancelled', 'no-show'] },
         },
       }),
       prisma.cashMove.findMany({
@@ -97,36 +99,36 @@ export async function GET(request: Request) {
         where: {
           hotelId: hotelId,
           createdAt: { gte: yesterday, lt: today },
-          status: { in: ["confirmed", "checked-in"] },
+          status: { in: ['confirmed', 'checked-in'] },
         },
       }),
       prisma.booking.findMany({
         where: {
           hotelId: hotelId,
           checkIn: { gte: today, lt: tomorrow },
-          status: { in: ["confirmed", "checked-in"] },
+          status: { in: ['confirmed', 'checked-in'] },
         },
         include: {
           guest: { select: { id: true, firstName: true, lastName: true, phone: true } },
           room: { select: { id: true, number: true, roomType: { select: { name: true } } } },
         },
-        orderBy: { checkIn: "asc" },
+        orderBy: { checkIn: 'asc' },
       }),
       prisma.booking.findMany({
         where: {
           hotelId: hotelId,
           checkOut: { gte: today, lt: tomorrow },
-          status: "checked-in",
+          status: 'checked-in',
         },
         include: {
           guest: { select: { id: true, firstName: true, lastName: true, phone: true } },
           room: { select: { id: true, number: true, roomType: { select: { name: true } } } },
         },
-        orderBy: { checkOut: "asc" },
+        orderBy: { checkOut: 'asc' },
       }),
       prisma.notification.findMany({
         where: { hotelId: hotelId },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: 5,
       }),
       prisma.cashMove.findMany({
@@ -135,47 +137,37 @@ export async function GET(request: Request) {
     ]);
 
     const todayRevenue = cashMoves
-      .filter((m) => m.type === "income")
+      .filter((m) => m.type === 'income')
       .reduce((s, m) => s + m.amount, 0);
     const todayExpenses = cashMoves
-      .filter((m) => m.type === "expense")
+      .filter((m) => m.type === 'expense')
       .reduce((s, m) => s + m.amount, 0);
 
     const sameDayLastWeekRevenue = sameDayLastWeekCashMoves
-      .filter((m) => m.type === "income")
+      .filter((m) => m.type === 'income')
       .reduce((s, m) => s + m.amount, 0);
 
-    const occupancyRate =
-      totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+    const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 
     const prevWeekOccupancyRate =
-      totalRooms > 0
-        ? Math.round((prevWeekOccupiedRooms / totalRooms) * 100)
-        : 0;
+      totalRooms > 0 ? Math.round((prevWeekOccupiedRooms / totalRooms) * 100) : 0;
 
     const todayNewBookings = await prisma.booking.count({
       where: {
         hotelId: hotelId,
         createdAt: { gte: today, lt: tomorrow },
-        status: { in: ["confirmed", "checked-in"] },
+        status: { in: ['confirmed', 'checked-in'] },
       },
     });
 
     const occupancyDiff =
       prevWeekOccupancyRate > 0
-        ? Math.round(
-            ((occupancyRate - prevWeekOccupancyRate) / prevWeekOccupancyRate) *
-              100
-          )
+        ? Math.round(((occupancyRate - prevWeekOccupancyRate) / prevWeekOccupancyRate) * 100)
         : 0;
 
     const revenueDiff =
       sameDayLastWeekRevenue > 0
-        ? Math.round(
-            ((todayRevenue - sameDayLastWeekRevenue) /
-              sameDayLastWeekRevenue) *
-              100
-          )
+        ? Math.round(((todayRevenue - sameDayLastWeekRevenue) / sameDayLastWeekRevenue) * 100)
         : 0;
 
     const revenueAmountDiff = todayRevenue - sameDayLastWeekRevenue;
@@ -183,7 +175,7 @@ export async function GET(request: Request) {
     const bookingsDiff = todayNewBookings - yesterdayBookingsCount;
 
     const roomsByStatus = await prisma.room.groupBy({
-      by: ["status"],
+      by: ['status'],
       where: { hotelId: hotelId },
       _count: { status: true },
     });
@@ -194,18 +186,12 @@ export async function GET(request: Request) {
       d.setDate(d.getDate() - i);
       const nextD = new Date(d);
       nextD.setDate(nextD.getDate() + 1);
-      const dateStr = d.toISOString().split("T")[0];
-      const dayMoves = allWeekCashMoves.filter(
-        (m) => m.createdAt >= d && m.createdAt < nextD
-      );
+      const dateStr = d.toISOString().split('T')[0];
+      const dayMoves = allWeekCashMoves.filter((m) => m.createdAt >= d && m.createdAt < nextD);
       last7Days.push({
         date: dateStr,
-        income: dayMoves
-          .filter((m) => m.type === "income")
-          .reduce((s, m) => s + m.amount, 0),
-        expense: dayMoves
-          .filter((m) => m.type === "expense")
-          .reduce((s, m) => s + m.amount, 0),
+        income: dayMoves.filter((m) => m.type === 'income').reduce((s, m) => s + m.amount, 0),
+        expense: dayMoves.filter((m) => m.type === 'expense').reduce((s, m) => s + m.amount, 0),
       });
     }
 
@@ -222,7 +208,7 @@ export async function GET(request: Request) {
       recentBookings,
       roomsByStatus,
       revenueChart: last7Days,
-      currency: hotel?.currency || "USD",
+      currency: hotel?.currency || 'USD',
       comparison: {
         occupancyDiff,
         prevWeekOccupancyRate,

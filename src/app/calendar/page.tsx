@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import Header from "@/components/Header";
-import Modal from "@/components/Modal";
-import StatusBadge from "@/components/StatusBadge";
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import Header from '@/components/Header';
+import Modal from '@/components/Modal';
+import StatusBadge from '@/components/StatusBadge';
+import QuickBookingPanel from '@/components/QuickBookingPanel';
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,9 +17,9 @@ import {
   XCircle,
   Eye,
   Pencil,
-} from "lucide-react";
-import { formatCurrency, bookingStatuses } from "@/lib/utils";
-import Link from "next/link";
+} from 'lucide-react';
+import { formatCurrency, bookingStatuses } from '@/lib/utils';
+import Link from 'next/link';
 
 interface Guest {
   id: string;
@@ -54,10 +55,20 @@ interface RoomWithBookings {
   bookings: Booking[];
 }
 
-const DAYS_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
 ];
 
 const CELL_WIDTH = 40;
@@ -66,55 +77,55 @@ const DEFAULT_RANGE = 21;
 
 const statusBarColors: Record<string, { bg: string; text: string; dot: string; hover: string }> = {
   confirmed: {
-    bg: "bg-blue-500",
-    text: "text-white",
-    dot: "bg-blue-300",
-    hover: "hover:bg-blue-600",
+    bg: 'bg-blue-500',
+    text: 'text-white',
+    dot: 'bg-blue-300',
+    hover: 'hover:bg-blue-600',
   },
-  "checked-in": {
-    bg: "bg-emerald-500",
-    text: "text-white",
-    dot: "bg-emerald-300",
-    hover: "hover:bg-emerald-600",
+  'checked-in': {
+    bg: 'bg-emerald-500',
+    text: 'text-white',
+    dot: 'bg-emerald-300',
+    hover: 'hover:bg-emerald-600',
   },
-  "checked-out": {
-    bg: "bg-slate-400",
-    text: "text-white",
-    dot: "bg-slate-300",
-    hover: "hover:bg-slate-500",
+  'checked-out': {
+    bg: 'bg-slate-400',
+    text: 'text-white',
+    dot: 'bg-slate-300',
+    hover: 'hover:bg-slate-500',
   },
   cancelled: {
-    bg: "bg-red-400",
-    text: "text-white",
-    dot: "bg-red-200",
-    hover: "hover:bg-red-500",
+    bg: 'bg-red-400',
+    text: 'text-white',
+    dot: 'bg-red-200',
+    hover: 'hover:bg-red-500',
   },
-  "no-show": {
-    bg: "bg-amber-500",
-    text: "text-white",
-    dot: "bg-amber-300",
-    hover: "hover:bg-amber-600",
+  'no-show': {
+    bg: 'bg-amber-500',
+    text: 'text-white',
+    dot: 'bg-amber-300',
+    hover: 'hover:bg-amber-600',
   },
 };
 
 const statusLightBg: Record<string, string> = {
-  confirmed: "bg-blue-50",
-  "checked-in": "bg-emerald-50",
-  "checked-out": "bg-slate-50",
-  cancelled: "bg-red-50",
-  "no-show": "bg-amber-50",
+  confirmed: 'bg-blue-50',
+  'checked-in': 'bg-emerald-50',
+  'checked-out': 'bg-slate-50',
+  cancelled: 'bg-red-50',
+  'no-show': 'bg-amber-50',
 };
 
 const roomStatusIcons: Record<string, { icon: string; color: string }> = {
-  available: { icon: "", color: "" },
-  occupied: { icon: "", color: "" },
-  maintenance: { icon: "🔧", color: "bg-yellow-50" },
-  "out-of-order": { icon: "🚫", color: "bg-red-50" },
-  cleaning: { icon: "🧹", color: "bg-purple-50" },
+  available: { icon: '', color: '' },
+  occupied: { icon: '', color: '' },
+  maintenance: { icon: '🔧', color: 'bg-yellow-50' },
+  'out-of-order': { icon: '🚫', color: 'bg-red-50' },
+  cleaning: { icon: '🧹', color: 'bg-purple-50' },
 };
 
 function toDateString(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function addDays(d: Date, n: number) {
@@ -174,7 +185,7 @@ export default function CalendarPage() {
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [dragBookingId, setDragBookingId] = useState<string | null>(null);
-  const [filterText, setFilterText] = useState("");
+  const [filterText, setFilterText] = useState('');
   const [showCancelled, setShowCancelled] = useState(true);
   const [groupByType, setGroupByType] = useState(true);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -182,7 +193,9 @@ export default function CalendarPage() {
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const fetchRooms = useCallback(() => {
-    fetch("/api/rooms").then((r) => r.json()).then(setRooms);
+    fetch('/api/rooms')
+      .then((r) => r.json())
+      .then(setRooms);
   }, []);
 
   useEffect(() => {
@@ -196,8 +209,8 @@ export default function CalendarPage() {
         setContextMenu(null);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, [contextMenu]);
 
   useEffect(() => {
@@ -205,7 +218,7 @@ export default function CalendarPage() {
       const container = gridRef.current;
       const todayEl = todayRef.current;
       const scrollLeft = todayEl.offsetLeft - container.clientWidth / 2 + CELL_WIDTH;
-      container.scrollTo({ left: Math.max(0, scrollLeft), behavior: "smooth" });
+      container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
     }
   }, [rooms]);
 
@@ -237,18 +250,18 @@ export default function CalendarPage() {
     if (!showCancelled) {
       result = result.map((r) => ({
         ...r,
-        bookings: r.bookings.filter((b) => b.status !== "cancelled"),
+        bookings: r.bookings.filter((b) => b.status !== 'cancelled'),
       }));
     }
     return result;
   }, [rooms, filterText, showCancelled]);
 
   const roomGroups = useMemo(() => {
-    if (!groupByType) return [{ name: "", rooms: filteredRooms }];
+    if (!groupByType) return [{ name: '', rooms: filteredRooms }];
     const groups: { name: string; rooms: RoomWithBookings[] }[] = [];
     const map = new Map<string, RoomWithBookings[]>();
     filteredRooms.forEach((r) => {
-      const typeName = r.roomType?.name || "Sin tipo";
+      const typeName = r.roomType?.name || 'Sin tipo';
       if (!map.has(typeName)) map.set(typeName, []);
       map.get(typeName)!.push(r);
     });
@@ -298,15 +311,13 @@ export default function CalendarPage() {
   };
 
   const handleDragStart = (e: React.DragEvent, bookingId: string) => {
-    const booking = rooms
-      .flatMap((r) => r.bookings)
-      .find((b) => b.id === bookingId);
-    if (!booking || !["confirmed", "checked-in"].includes(booking.status)) {
+    const booking = rooms.flatMap((r) => r.bookings).find((b) => b.id === bookingId);
+    if (!booking || !['confirmed', 'checked-in'].includes(booking.status)) {
       e.preventDefault();
       return;
     }
-    e.dataTransfer.setData("bookingId", bookingId);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData('bookingId', bookingId);
+    e.dataTransfer.effectAllowed = 'move';
     setDragBookingId(bookingId);
   };
 
@@ -314,21 +325,15 @@ export default function CalendarPage() {
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = async (
-    e: React.DragEvent,
-    roomId: string,
-    targetDate: Date
-  ) => {
+  const handleDrop = async (e: React.DragEvent, roomId: string, targetDate: Date) => {
     e.preventDefault();
-    const bookingId = e.dataTransfer.getData("bookingId");
+    const bookingId = e.dataTransfer.getData('bookingId');
     if (!bookingId) return;
 
-    const booking = rooms
-      .flatMap((r) => r.bookings)
-      .find((b) => b.id === bookingId);
+    const booking = rooms.flatMap((r) => r.bookings).find((b) => b.id === bookingId);
     if (!booking) return;
 
     const ci = new Date(booking.checkIn);
@@ -340,8 +345,8 @@ export default function CalendarPage() {
 
     try {
       const res = await fetch(`/api/bookings/${bookingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           checkIn: newCheckIn.toISOString(),
           checkOut: newCheckOut.toISOString(),
@@ -378,41 +383,41 @@ export default function CalendarPage() {
   const handleContextAction = async (action: string, booking: Booking) => {
     setContextMenu(null);
     switch (action) {
-      case "edit":
+      case 'edit':
         setSelectedBooking(booking);
         setShowDetail(true);
         break;
-      case "checkin":
+      case 'checkin':
         try {
           const res = await fetch(`/api/bookings/${booking.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "checked-in" }),
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'checked-in' }),
           });
           if (res.ok) fetchRooms();
         } catch {}
         break;
-      case "checkout":
+      case 'checkout':
         try {
           const res = await fetch(`/api/bookings/${booking.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "checked-out" }),
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'checked-out' }),
           });
           if (res.ok) fetchRooms();
         } catch {}
         break;
-      case "cancel":
+      case 'cancel':
         try {
           const res = await fetch(`/api/bookings/${booking.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "cancelled" }),
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'cancelled' }),
           });
           if (res.ok) fetchRooms();
         } catch {}
         break;
-      case "view":
+      case 'view':
         setSelectedBooking(booking);
         setShowDetail(true);
         break;
@@ -428,16 +433,16 @@ export default function CalendarPage() {
     let departing = 0;
     rooms.forEach((r) => {
       const hasOccupancy = r.bookings.some((b) => {
-        if (b.status === "cancelled") return false;
-        const ci = new Date(b.checkIn).toISOString().split("T")[0];
-        const co = new Date(b.checkOut).toISOString().split("T")[0];
+        if (b.status === 'cancelled') return false;
+        const ci = new Date(b.checkIn).toISOString().split('T')[0];
+        const co = new Date(b.checkOut).toISOString().split('T')[0];
         return todayStr >= ci && todayStr < co;
       });
       if (hasOccupancy) occupied++;
       r.bookings.forEach((b) => {
-        if (b.status === "cancelled") return;
-        const ci = new Date(b.checkIn).toISOString().split("T")[0];
-        const co = new Date(b.checkOut).toISOString().split("T")[0];
+        if (b.status === 'cancelled') return;
+        const ci = new Date(b.checkIn).toISOString().split('T')[0];
+        const co = new Date(b.checkOut).toISOString().split('T')[0];
         if (ci === todayStr) arriving++;
         if (co === todayStr) departing++;
       });
@@ -468,17 +473,21 @@ export default function CalendarPage() {
               ref={isToday ? todayRef : undefined}
               className={`text-center border-r border-gray-100 py-1.5 ${
                 isToday
-                  ? "bg-blue-50 border-l-2 border-l-blue-500"
+                  ? 'bg-blue-50 border-l-2 border-l-blue-500'
                   : isWeekend
-                  ? "bg-slate-50/70"
-                  : "bg-slate-50/30"
+                    ? 'bg-slate-50/70'
+                    : 'bg-slate-50/30'
               }`}
               style={{ width: CELL_WIDTH }}
             >
-              <div className={`text-[9px] font-medium uppercase tracking-wide ${isToday ? "text-blue-600" : "text-gray-400"}`}>
+              <div
+                className={`text-[9px] font-medium uppercase tracking-wide ${isToday ? 'text-blue-600' : 'text-gray-400'}`}
+              >
                 {DAYS_SHORT[getDayIndex(d)]}
               </div>
-              <div className={`text-sm font-semibold leading-tight ${isToday ? "text-blue-700 bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto" : "text-gray-700"}`}>
+              <div
+                className={`text-sm font-semibold leading-tight ${isToday ? 'text-blue-700 bg-blue-500 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto' : 'text-gray-700'}`}
+              >
                 {d.getDate()}
               </div>
             </div>
@@ -506,11 +515,11 @@ export default function CalendarPage() {
             <div
               key={i}
               className={`px-2 py-1 text-[10px] font-bold uppercase tracking-wider border-l ${
-                isToday ? "border-l-blue-500" : "border-l-gray-200"
-              } ${isMonthStart && i > 0 ? "bg-slate-100" : "bg-transparent"}`}
+                isToday ? 'border-l-blue-500' : 'border-l-gray-200'
+              } ${isMonthStart && i > 0 ? 'bg-slate-100' : 'bg-transparent'}`}
               style={{ width: span * CELL_WIDTH }}
             >
-              {isMonthStart || i === 0 ? MONTHS[d.getMonth()].slice(0, 3).toUpperCase() : ""}
+              {isMonthStart || i === 0 ? MONTHS[d.getMonth()].slice(0, 3).toUpperCase() : ''}
             </div>
           );
         })}
@@ -524,16 +533,18 @@ export default function CalendarPage() {
         className="shrink-0 border-r border-gray-200 bg-slate-50 flex items-center px-3"
         style={{ width: ROOM_COL_WIDTH }}
       >
-        <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Disponibles</span>
+        <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+          Disponibles
+        </span>
       </div>
       <div className="flex" style={{ width: numDays * CELL_WIDTH }}>
         {dates.map((d, i) => {
           const dateStr = toDateString(d);
           const occupied = rooms.filter((r) =>
             r.bookings.some((b) => {
-              if (b.status === "cancelled") return false;
-              const ci = new Date(b.checkIn).toISOString().split("T")[0];
-              const co = new Date(b.checkOut).toISOString().split("T")[0];
+              if (b.status === 'cancelled') return false;
+              const ci = new Date(b.checkIn).toISOString().split('T')[0];
+              const co = new Date(b.checkOut).toISOString().split('T')[0];
               return dateStr >= ci && dateStr < co;
             })
           ).length;
@@ -541,20 +552,26 @@ export default function CalendarPage() {
           const pct = rooms.length > 0 ? (avail / rooms.length) * 100 : 100;
           const isToday = sameDay(d, new Date());
           const isWeekend = getDayIndex(d) >= 5;
-          let bgColor = "bg-emerald-500";
-          let textColor = "text-white";
-          if (pct <= 0) { bgColor = "bg-red-500"; }
-          else if (pct <= 20) { bgColor = "bg-red-400"; }
-          else if (pct <= 50) { bgColor = "bg-amber-400"; textColor = "text-gray-900"; }
-          else if (pct <= 80) { bgColor = "bg-emerald-400"; }
+          let bgColor = 'bg-emerald-500';
+          let textColor = 'text-white';
+          if (pct <= 0) {
+            bgColor = 'bg-red-500';
+          } else if (pct <= 20) {
+            bgColor = 'bg-red-400';
+          } else if (pct <= 50) {
+            bgColor = 'bg-amber-400';
+            textColor = 'text-gray-900';
+          } else if (pct <= 80) {
+            bgColor = 'bg-emerald-400';
+          }
           return (
             <div
               key={i}
-              className={`flex items-center justify-center border-r border-gray-100 ${isWeekend ? "bg-slate-50/50" : ""}`}
+              className={`flex items-center justify-center border-r border-gray-100 ${isWeekend ? 'bg-slate-50/50' : ''}`}
               style={{ width: CELL_WIDTH }}
             >
               <span
-                className={`${bgColor} ${textColor} text-[9px] font-bold rounded px-1 py-0.5 min-w-[20px] text-center leading-none ${isToday ? "ring-1 ring-blue-500" : ""}`}
+                className={`${bgColor} ${textColor} text-[9px] font-bold rounded px-1 py-0.5 min-w-[20px] text-center leading-none ${isToday ? 'ring-1 ring-blue-500' : ''}`}
               >
                 {avail}
               </span>
@@ -574,8 +591,8 @@ export default function CalendarPage() {
           style={{ width: ROOM_COL_WIDTH }}
         >
           <div className="flex items-center gap-1.5">
-            {roomStatusIcons[room.status || "available"]?.icon && (
-              <span className="text-xs">{roomStatusIcons[room.status || "available"].icon}</span>
+            {roomStatusIcons[room.status || 'available']?.icon && (
+              <span className="text-xs">{roomStatusIcons[room.status || 'available'].icon}</span>
             )}
             <span className="text-sm font-bold text-gray-900">{room.number}</span>
           </div>
@@ -592,16 +609,20 @@ export default function CalendarPage() {
             const isWeekend = getDayIndex(d) >= 5;
             const dateStr = toDateString(d);
             const hasCheckIn = room.bookings.some(
-              (b) => new Date(b.checkIn).toISOString().split("T")[0] === dateStr && b.status !== "cancelled"
+              (b) =>
+                new Date(b.checkIn).toISOString().split('T')[0] === dateStr &&
+                b.status !== 'cancelled'
             );
             const hasCheckOut = room.bookings.some(
-              (b) => new Date(b.checkOut).toISOString().split("T")[0] === dateStr && b.status !== "cancelled"
+              (b) =>
+                new Date(b.checkOut).toISOString().split('T')[0] === dateStr &&
+                b.status !== 'cancelled'
             );
             return (
               <div
                 key={i}
                 className={`absolute top-0 bottom-0 border-r border-gray-50 ${
-                  isWeekend ? "bg-slate-50/40" : ""
+                  isWeekend ? 'bg-slate-50/40' : ''
                 }`}
                 style={{
                   left: i * CELL_WIDTH,
@@ -631,12 +652,13 @@ export default function CalendarPage() {
             if (!style) return null;
             const colors = statusBarColors[booking.status] || statusBarColors.confirmed;
             const isDragging = dragBookingId === booking.id;
-            const isCancelled = booking.status === "cancelled";
-            const draggable = ["confirmed", "checked-in"].includes(booking.status);
+            const isCancelled = booking.status === 'cancelled';
+            const draggable = ['confirmed', 'checked-in'].includes(booking.status);
             const ci = new Date(booking.checkIn);
             const co = new Date(booking.checkOut);
             const nights = Math.max(1, Math.ceil((co.getTime() - ci.getTime()) / 86400000));
-            const guestName = `${booking.guest?.firstName || ""} ${booking.guest?.lastName || ""}`.trim();
+            const guestName =
+              `${booking.guest?.firstName || ''} ${booking.guest?.lastName || ''}`.trim();
             const showName = style.width > 50;
             const showNights = style.width > 90;
             const showCode = style.width > 140;
@@ -651,8 +673,8 @@ export default function CalendarPage() {
                 onMouseEnter={(e) => handleBookingHover(booking, e)}
                 onMouseLeave={() => setTooltip(null)}
                 className={`absolute top-[3px] bottom-[3px] z-[5] ${colors.bg} ${colors.text} ${colors.hover} rounded-md cursor-pointer transition-all flex items-center px-1.5 gap-1 shadow-sm ${
-                  isDragging ? "opacity-40 scale-95" : ""
-                } ${isCancelled ? "opacity-60 line-through" : ""}`}
+                  isDragging ? 'opacity-40 scale-95' : ''
+                } ${isCancelled ? 'opacity-60 line-through' : ''}`}
                 style={{
                   left: style.left,
                   width: style.width,
@@ -664,9 +686,7 @@ export default function CalendarPage() {
                   </span>
                 )}
                 {showNights && (
-                  <span className="text-[9px] opacity-80 shrink-0 leading-none">
-                    {nights}n
-                  </span>
+                  <span className="text-[9px] opacity-80 shrink-0 leading-none">{nights}n</span>
                 )}
                 {showCode && (
                   <span className="text-[8px] opacity-60 truncate leading-none">
@@ -695,12 +715,9 @@ export default function CalendarPage() {
             </span>
             <span className="text-[10px] text-gray-400 ml-auto">{group.rooms.length}</span>
           </div>
-          <div
-            className="flex items-center px-2"
-            style={{ width: numDays * CELL_WIDTH }}
-          >
+          <div className="flex items-center px-2" style={{ width: numDays * CELL_WIDTH }}>
             <span className="text-[10px] text-gray-400">
-              {group.rooms.length} habitacion{group.rooms.length !== 1 ? "es" : ""}
+              {group.rooms.length} habitacion{group.rooms.length !== 1 ? 'es' : ''}
             </span>
           </div>
         </div>
@@ -713,17 +730,17 @@ export default function CalendarPage() {
     if (!contextMenu) return null;
     const booking = contextMenu.booking;
     const items = [
-      { label: "Ver Detalles", action: "view", icon: Eye },
-      { label: "Editar", action: "edit", icon: Pencil },
+      { label: 'Ver Detalles', action: 'view', icon: Eye },
+      { label: 'Editar', action: 'edit', icon: Pencil },
     ];
-    if (booking.status === "confirmed") {
-      items.push({ label: "Check-in", action: "checkin", icon: LogIn });
+    if (booking.status === 'confirmed') {
+      items.push({ label: 'Check-in', action: 'checkin', icon: LogIn });
     }
-    if (booking.status === "checked-in") {
-      items.push({ label: "Check-out", action: "checkout", icon: LogOut });
+    if (booking.status === 'checked-in') {
+      items.push({ label: 'Check-out', action: 'checkout', icon: LogOut });
     }
-    if (["confirmed", "checked-in"].includes(booking.status)) {
-      items.push({ label: "Cancelar", action: "cancel", icon: XCircle });
+    if (['confirmed', 'checked-in'].includes(booking.status)) {
+      items.push({ label: 'Cancelar', action: 'cancel', icon: XCircle });
     }
 
     return (
@@ -746,9 +763,9 @@ export default function CalendarPage() {
             key={item.action}
             onClick={() => handleContextAction(item.action, booking)}
             className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors ${
-              item.action === "cancel"
-                ? "text-red-600 hover:bg-red-50"
-                : "text-gray-700 hover:bg-gray-50"
+              item.action === 'cancel'
+                ? 'text-red-600 hover:bg-red-50'
+                : 'text-gray-700 hover:bg-gray-50'
             }`}
           >
             <item.icon className="h-3.5 w-3.5" />
@@ -776,11 +793,18 @@ export default function CalendarPage() {
       >
         <div className="flex items-center gap-1.5 mb-1">
           <div className={`w-2 h-2 rounded-full ${colors.bg}`} />
-          <span className="font-semibold">{b.guest?.firstName} {b.guest?.lastName}</span>
+          <span className="font-semibold">
+            {b.guest?.firstName} {b.guest?.lastName}
+          </span>
         </div>
         <div className="text-gray-300 space-y-0.5">
-          <p>{ci.toLocaleDateString("es-ES", { day: "numeric", month: "short" })} → {co.toLocaleDateString("es-ES", { day: "numeric", month: "short" })} ({nights}n)</p>
-          <p>Hab. {b.room?.number} · {formatCurrency(b.totalAmount)}</p>
+          <p>
+            {ci.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} →{' '}
+            {co.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} ({nights}n)
+          </p>
+          <p>
+            Hab. {b.room?.number} · {formatCurrency(b.totalAmount)}
+          </p>
           <p className="text-gray-400">{b.code}</p>
         </div>
       </div>
@@ -821,7 +845,9 @@ export default function CalendarPage() {
                 <button
                   onClick={() => setGroupByType(true)}
                   className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
-                    groupByType ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                    groupByType
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Agrupado
@@ -829,7 +855,9 @@ export default function CalendarPage() {
                 <button
                   onClick={() => setGroupByType(false)}
                   className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
-                    !groupByType ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                    !groupByType
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Lista
@@ -852,7 +880,13 @@ export default function CalendarPage() {
                 className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
                 title="Acercar"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </button>
@@ -861,7 +895,13 @@ export default function CalendarPage() {
                 className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
                 title="Alejar"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M5 12h14" />
                 </svg>
               </button>
@@ -920,7 +960,9 @@ export default function CalendarPage() {
               const bar = statusBarColors[s.value];
               return (
                 <div key={s.value} className="flex items-center gap-1">
-                  <div className={`h-4 px-1.5 rounded ${bar?.bg || "bg-gray-400"} ${bar?.text || "text-white"} text-[9px] font-medium flex items-center`}>
+                  <div
+                    className={`h-4 px-1.5 rounded ${bar?.bg || 'bg-gray-400'} ${bar?.text || 'text-white'} text-[9px] font-medium flex items-center`}
+                  >
                     {s.label}
                   </div>
                 </div>
@@ -950,7 +992,7 @@ export default function CalendarPage() {
       <Modal
         isOpen={showDetail}
         onClose={() => setShowDetail(false)}
-        title={`Reserva ${selectedBooking?.code || ""}`}
+        title={`Reserva ${selectedBooking?.code || ''}`}
       >
         {selectedBooking && (
           <div className="space-y-4">
@@ -958,52 +1000,51 @@ export default function CalendarPage() {
               <div>
                 <p className="text-xs text-gray-500">Huésped</p>
                 <p className="text-sm font-medium">
-                  {selectedBooking.guest?.firstName}{" "}
-                  {selectedBooking.guest?.lastName}
+                  {selectedBooking.guest?.firstName} {selectedBooking.guest?.lastName}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Habitación</p>
                 <p className="text-sm font-medium">
-                  Hab. {selectedBooking.room?.number} (
-                  {selectedBooking.room?.roomType?.name})
+                  Hab. {selectedBooking.room?.number} ({selectedBooking.room?.roomType?.name})
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Check-in</p>
                 <p className="text-sm font-medium">
-                  {new Date(
-                    selectedBooking.checkIn
-                  ).toLocaleDateString("es-ES", {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
+                  {new Date(selectedBooking.checkIn).toLocaleDateString('es-ES', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
                   })}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Check-out</p>
                 <p className="text-sm font-medium">
-                  {new Date(
-                    selectedBooking.checkOut
-                  ).toLocaleDateString("es-ES", {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
+                  {new Date(selectedBooking.checkOut).toLocaleDateString('es-ES', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
                   })}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Noches</p>
                 <p className="text-sm font-medium">
-                  {Math.max(1, Math.ceil((new Date(selectedBooking.checkOut).getTime() - new Date(selectedBooking.checkIn).getTime()) / 86400000))}
+                  {Math.max(
+                    1,
+                    Math.ceil(
+                      (new Date(selectedBooking.checkOut).getTime() -
+                        new Date(selectedBooking.checkIn).getTime()) /
+                        86400000
+                    )
+                  )}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Total</p>
-                <p className="text-sm font-medium">
-                  {formatCurrency(selectedBooking.totalAmount)}
-                </p>
+                <p className="text-sm font-medium">{formatCurrency(selectedBooking.totalAmount)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Adultos</p>
@@ -1015,14 +1056,12 @@ export default function CalendarPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Fuente</p>
-                <p className="text-sm font-medium capitalize">{selectedBooking.source || "N/A"}</p>
+                <p className="text-sm font-medium capitalize">{selectedBooking.source || 'N/A'}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Estado</p>
                 {(() => {
-                  const s = bookingStatuses.find(
-                    (st) => st.value === selectedBooking.status
-                  );
+                  const s = bookingStatuses.find((st) => st.value === selectedBooking.status);
                   return s ? (
                     <StatusBadge label={s.label} color={s.color} />
                   ) : (
@@ -1032,13 +1071,13 @@ export default function CalendarPage() {
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
-              {selectedBooking.status === "confirmed" && (
+              {selectedBooking.status === 'confirmed' && (
                 <button
                   onClick={async () => {
                     await fetch(`/api/bookings/${selectedBooking.id}`, {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ status: "checked-in" }),
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ status: 'checked-in' }),
                     });
                     fetchRooms();
                     setShowDetail(false);
@@ -1049,13 +1088,13 @@ export default function CalendarPage() {
                   Check-in
                 </button>
               )}
-              {selectedBooking.status === "checked-in" && (
+              {selectedBooking.status === 'checked-in' && (
                 <button
                   onClick={async () => {
                     await fetch(`/api/bookings/${selectedBooking.id}`, {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ status: "checked-out" }),
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ status: 'checked-out' }),
                     });
                     fetchRooms();
                     setShowDetail(false);

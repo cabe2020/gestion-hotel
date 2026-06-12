@@ -72,12 +72,22 @@ describe('roomTypeSchema', () => {
   });
 
   it('fails with negative basePrice', () => {
-    const result = roomTypeSchema.safeParse({ name: 'Suite', code: 'STE', basePrice: -10, capacity: 2 });
+    const result = roomTypeSchema.safeParse({
+      name: 'Suite',
+      code: 'STE',
+      basePrice: -10,
+      capacity: 2,
+    });
     expect(result.success).toBe(false);
   });
 
   it('fails with capacity less than 1', () => {
-    const result = roomTypeSchema.safeParse({ name: 'Suite', code: 'STE', basePrice: 100, capacity: 0 });
+    const result = roomTypeSchema.safeParse({
+      name: 'Suite',
+      code: 'STE',
+      basePrice: 100,
+      capacity: 0,
+    });
     expect(result.success).toBe(false);
   });
 });
