@@ -164,7 +164,7 @@ async function main() {
     guests.push(created);
   }
 
-  const _cashReg = await prisma.cashRegister.create({
+  await prisma.cashRegister.create({
     data: {
       openingCash: 200,
       status: 'open',

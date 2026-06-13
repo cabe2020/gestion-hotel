@@ -6,7 +6,7 @@ import StatusBadge from '@/components/StatusBadge';
 import {
   BedDouble,
   CalendarCheck,
-  Users,
+  CheckCircle2,
   DollarSign,
   LogIn,
   LogOut,
@@ -16,12 +16,10 @@ import {
   RefreshCw,
   Bell,
   TrendingUp,
-  CreditCard,
-  Receipt,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   X,
+  AlertCircle,
+  Clock,
+  Users,
 } from 'lucide-react';
 import { formatCurrency, formatDate, bookingStatuses } from '@/lib/utils';
 import Link from 'next/link';
@@ -103,11 +101,11 @@ function TrendIndicator({ value, label }: { value: number; label: string }) {
 
 function OccupancyDonut({
   occupancyRate,
-  occupiedRooms,
+  occupiedRooms: _occupiedRooms,
   totalRooms,
   roomsByStatus,
   statusLabels,
-  statusColors,
+  statusColors: _statusColors,
 }: {
   occupancyRate: number;
   occupiedRooms: number;
@@ -120,7 +118,6 @@ function OccupancyDonut({
   const stroke = 10;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const offset = circumference - (occupancyRate / 100) * circumference;
   const center = radius;
 
   const ringSegments = roomsByStatus.filter((s) => s._count.status > 0);
@@ -141,7 +138,6 @@ function OccupancyDonut({
       .reduce((sum, s) => sum + s._count.status / (totalSegments || 1), 0) * circumference;
     const arcLength = fraction * circumference;
 
-    const strokeDashOffset = circumference - startAngle - arcLength;
     const strokeDashArray = `${arcLength} ${circumference - arcLength}`;
 
     return (
@@ -456,19 +452,11 @@ function ActivityTimeline({
     }
   };
 
-  const statusLabel: Record<string, string> = {
-    confirmed: 'Confirmada',
-    'checked-in': 'Check-in',
-    'checked-out': 'Check-out',
-    cancelled: 'Cancelada',
-    'no-show': 'No Show',
-  };
-
   return (
     <div className="relative">
       <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-100 dark:bg-gray-700" />
       <div className="space-y-4">
-        {bookings.map((booking, i) => {
+        {  bookings.map((booking) => {
           const status = bookingStatuses.find((s) => s.value === booking.status);
           return (
             <div key={booking.id} className="flex items-start gap-3 relative">
@@ -583,10 +571,6 @@ export default function DashboardPage() {
 
   const incomeSparkline = useMemo(
     () => data?.revenueChart.map((d) => d.income) || [],
-    [data?.revenueChart]
-  );
-  const expenseSparkline = useMemo(
-    () => data?.revenueChart.map((d) => d.expense) || [],
     [data?.revenueChart]
   );
 

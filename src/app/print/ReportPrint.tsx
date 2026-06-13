@@ -1,7 +1,5 @@
 'use client';
 
-import { formatCurrency } from '@/lib/utils';
-
 interface ReportPrintProps {
   title: string;
   data: Record<string, unknown>[];

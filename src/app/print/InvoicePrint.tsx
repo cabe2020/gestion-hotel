@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 interface FolioItem {

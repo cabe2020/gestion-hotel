@@ -27,7 +27,7 @@ export default function Autocomplete({
   valueKey,
   placeholder = 'Buscar...',
   onSelect,
-  value,
+  value: _value,
   displayValue,
   onCreateNew,
   onClear,

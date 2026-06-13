@@ -52,10 +52,12 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     return () => {
-      for (const [, timer] of confirmTimers.current) {
+      const timers = confirmTimers.current;
+      const resolvers = confirmResolvers.current;
+      for (const [, timer] of timers) {
         clearTimeout(timer);
       }
-      for (const [, resolver] of confirmResolvers.current) {
+      for (const [, resolver] of resolvers) {
         resolver(false);
       }
       confirmResolvers.current.clear();

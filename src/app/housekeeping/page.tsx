@@ -14,10 +14,6 @@ import {
   User,
   Play,
   Check,
-  RefreshCw,
-  AlertTriangle,
-  ClipboardList,
-  CheckCircle2,
 } from 'lucide-react';
 
 interface RoomWithRelations {
@@ -116,7 +112,6 @@ export default function HousekeepingPage() {
   const [tasks, setTasks] = useState<HousekeepingTask[]>([]);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [kanbanView, setKanbanView] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [form, setForm] = useState({
@@ -155,8 +150,8 @@ export default function HousekeepingPage() {
   const dirtyCount = rooms.filter((r) => r.cleaningStatus === 'dirty').length;
   const inspectingCount = rooms.filter((r) => r.cleaningStatus === 'inspecting').length;
   const pendingCount = tasks.filter((t) => t.status === 'pending').length;
-  const inProgressCount = tasks.filter((t) => t.status === 'in-progress').length;
-  const completedToday = tasks.filter((t) => {
+  const _inProgressCount = tasks.filter((t) => t.status === 'in-progress').length;
+  const _completedToday = tasks.filter((t) => {
     if (t.status !== 'completed') return false;
     if (!t.completedAt) return false;
     const today = new Date();

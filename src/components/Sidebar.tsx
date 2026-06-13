@@ -14,7 +14,6 @@ import {
   LogIn,
   LogOut,
   Settings,
-  Hotel,
   BarChart3,
   ChevronLeft,
   ChevronRight,

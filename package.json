@@ -38,6 +38,9 @@
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
     "resend": "^6.12.4",
+    "swagger-ui-dist": "^5.32.6",
+    "swagger-ui-react": "^5.32.6",
+    "yamljs": "^0.3.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -53,6 +56,8 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
+    "@types/yamljs": "^0.2.34",
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",

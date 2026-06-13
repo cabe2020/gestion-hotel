@@ -12,7 +12,7 @@ import {
   BedDouble,
   DollarSign,
 } from 'lucide-react';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 interface ReportsData {
   period: string;

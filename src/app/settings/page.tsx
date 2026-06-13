@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Modal from '@/components/Modal';
-import { Save, Hotel, Plus, Trash2, Pencil, Calendar, ShoppingCart, Printer } from 'lucide-react';
+import { Save, Hotel, Plus, Trash2, Pencil, Calendar } from 'lucide-react';
 import ImageUpload from '@/components/ImageUpload';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { useToast } from '@/components/Toast';
@@ -48,7 +48,7 @@ interface UpsellData {
   active: boolean;
 }
 
-const UPSELL_CATEGORIES = [
+const _UPSELL_CATEGORIES = [
   { value: 'late-checkout', label: 'Late Checkout' },
   { value: 'early-checkin', label: 'Early Check-in' },
   { value: 'breakfast', label: 'Desayuno' },
@@ -81,8 +81,8 @@ export default function SettingsPage() {
   const [showRateModal, setShowRateModal] = useState(false);
   const [rateForm, setRateForm] = useState(emptyRateForm);
   const [editingRateId, setEditingRateId] = useState<string | null>(null);
-  const [upsells, setUpsells] = useState<UpsellData[]>([]);
-  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [_upsells, setUpsells] = useState<UpsellData[]>([]);
+  const [_showUpsellModal, setShowUpsellModal] = useState(false);
   const [upsellForm, setUpsellForm] = useState(emptyUpsellForm);
   const [editingUpsellId, setEditingUpsellId] = useState<string | null>(null);
 
@@ -213,13 +213,13 @@ export default function SettingsPage() {
     load();
   };
 
-  const openCreateUpsell = () => {
+  const _openCreateUpsell = () => {
     setEditingUpsellId(null);
     setUpsellForm(emptyUpsellForm);
     setShowUpsellModal(true);
   };
 
-  const openEditUpsell = (us: UpsellData) => {
+  const _openEditUpsell = (us: UpsellData) => {
     setEditingUpsellId(us.id);
     setUpsellForm({
       name: us.name,
@@ -231,7 +231,7 @@ export default function SettingsPage() {
     setShowUpsellModal(true);
   };
 
-  const handleSaveUpsell = async (e: React.FormEvent) => {
+  const _handleSaveUpsell = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingUpsellId) {
       await fetch(`/api/upsells/${editingUpsellId}`, {
@@ -252,7 +252,7 @@ export default function SettingsPage() {
     load();
   };
 
-  const handleToggleUpsell = async (us: UpsellData) => {
+  const _handleToggleUpsell = async (us: UpsellData) => {
     await fetch(`/api/upsells/${us.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -261,7 +261,7 @@ export default function SettingsPage() {
     load();
   };
 
-  const handleDeleteUpsell = async (id: string) => {
+  const _handleDeleteUpsell = async (id: string) => {
     if (!(await toast.confirm('Eliminar este servicio adicional?'))) return;
     await fetch(`/api/upsells/${id}`, { method: 'DELETE' });
     toast.success('Servicio adicional eliminado');

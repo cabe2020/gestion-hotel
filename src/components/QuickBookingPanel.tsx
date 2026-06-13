@@ -9,11 +9,10 @@ import {
   User,
   Users,
   BedDouble,
-  Hash,
   Globe,
   DollarSign,
 } from 'lucide-react';
-import { formatCurrency, bookingSources, generateBookingCode } from '@/lib/utils';
+import { formatCurrency, bookingSources } from '@/lib/utils';
 
 interface Guest {
   id: string;

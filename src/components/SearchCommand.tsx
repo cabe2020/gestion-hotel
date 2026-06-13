@@ -163,6 +163,7 @@ export default function SearchCommand() {
             placeholder={t('search.placeholder')}
             className="w-full py-4 text-sm outline-none placeholder-[var(--color-input-placeholder)] text-[var(--color-foreground)] bg-transparent"
             role="combobox"
+            aria-controls="search-results-list"
             aria-expanded={open}
             aria-activedescendant={
               activeIndex >= 0 && flat[activeIndex] ? `search-result-${activeIndex}` : undefined
@@ -185,7 +186,7 @@ export default function SearchCommand() {
           </kbd>
         </div>
 
-        <div className="max-h-80 overflow-y-auto py-2" role="listbox">
+        <div id="search-results-list" className="max-h-80 overflow-y-auto py-2" role="listbox">
           {loading && (
             <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
               {t('search.searching')}

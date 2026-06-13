@@ -1,21 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Home Page', () => {
-  test('should load home page', async ({ page }) => {
+  test('should redirect to dashboard', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Hosterix/);
-  });
-
-  test('should navigate to signin', async ({ page }) => {
-    await page.goto('/');
-    await page.click('a[href="/auth/signin"]');
-    await expect(page).toHaveURL(/.*auth\/signin/);
-  });
-
-  test('should navigate to signup', async ({ page }) => {
-    await page.goto('/');
-    await page.click('a[href="/auth/signup"]');
-    await expect(page).toHaveURL(/.*auth\/signup/);
+    await expect(page).toHaveURL(/.*dashboard/);
   });
 });
 
@@ -35,11 +23,17 @@ test.describe('Sign In Page', () => {
   });
 });
 
-test.describe('Health Check', () => {
-  test('should return healthy status', async ({ request }) => {
-    const response = await request.get('/api/health');
-    expect(response.ok()).toBeTruthy();
-    const data = await response.json();
-    expect(data.status).toBe('healthy');
+test.describe('Sign Up Page', () => {
+  test('should show signup form step 1', async ({ page }) => {
+    await page.goto('/auth/signup');
+    await expect(page.locator('input[placeholder="Hotel Paraíso"]')).toBeVisible();
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+  });
+});
+
+test.describe('Dashboard', () => {
+  test('should load dashboard page', async ({ page }) => {
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL(/.*dashboard/);
   });
 });

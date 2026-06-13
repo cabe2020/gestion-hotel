@@ -4,13 +4,11 @@ import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import Header from '@/components/Header';
 import Modal from '@/components/Modal';
 import StatusBadge from '@/components/StatusBadge';
-import QuickBookingPanel from '@/components/QuickBookingPanel';
 import {
   ChevronLeft,
   ChevronRight,
   Plus,
   Search,
-  Users,
   BedDouble,
   LogIn,
   LogOut,
@@ -108,14 +106,6 @@ const statusBarColors: Record<string, { bg: string; text: string; dot: string; h
   },
 };
 
-const statusLightBg: Record<string, string> = {
-  confirmed: 'bg-blue-50',
-  'checked-in': 'bg-emerald-50',
-  'checked-out': 'bg-slate-50',
-  cancelled: 'bg-red-50',
-  'no-show': 'bg-amber-50',
-};
-
 const roomStatusIcons: Record<string, { icon: string; color: string }> = {
   available: { icon: '', color: '' },
   occupied: { icon: '', color: '' },
@@ -131,15 +121,6 @@ function toDateString(d: Date) {
 function addDays(d: Date, n: number) {
   const r = new Date(d);
   r.setDate(r.getDate() + n);
-  return r;
-}
-
-function getMonday(d: Date) {
-  const r = new Date(d);
-  const day = r.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  r.setDate(r.getDate() + diff);
-  r.setHours(0, 0, 0, 0);
   return r;
 }
 
@@ -225,12 +206,6 @@ export default function CalendarPage() {
   const dates = useMemo(() => {
     return Array.from({ length: numDays }, (_, i) => addDays(startDate, i));
   }, [startDate, numDays]);
-
-  const todayIndex = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return dates.findIndex((d) => sameDay(d, today));
-  }, [dates]);
 
   const filteredRooms = useMemo(() => {
     let result = [...rooms];
@@ -583,7 +558,6 @@ export default function CalendarPage() {
   );
 
   const renderRoomRow = (room: RoomWithBookings) => {
-    const isRoomDragOver = false;
     return (
       <div className="flex border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
         <div

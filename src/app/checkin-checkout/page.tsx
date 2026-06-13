@@ -6,7 +6,6 @@ import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
 import { LogIn, LogOut, CreditCard, Receipt, Check, DollarSign, X, Loader2 } from 'lucide-react';
 import { formatCurrency, formatDate, paymentMethods } from '@/lib/utils';
-import { useTranslations } from '@/components/I18nProvider';
 
 interface Booking {
   id: string;
@@ -28,7 +27,6 @@ function todayStr() {
 }
 
 export default function CheckInCheckOutPage() {
-  const { t } = useTranslations();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [folioBooking, setFolioBooking] = useState<Booking | null>(null);

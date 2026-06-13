@@ -145,7 +145,7 @@ export default function InvoicesPage() {
     load();
   };
 
-  const handlePrint = (invoice: Invoice) => {
+  const _handlePrint = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setShowPrint(true);
   };

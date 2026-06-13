@@ -12,14 +12,14 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   securityHeaders.forEach((header) => {
     response.headers.set(header.key, header.value);
   });
 
-  const ip = getClientIp(request);
+  const _ip = getClientIp(request);
   const path = request.nextUrl.pathname;
 
   let rateLimitResult;
