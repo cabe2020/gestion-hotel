@@ -37,9 +37,12 @@ const iconMap: Record<ToastType, React.ReactNode> = {
 };
 
 const classMap: Record<ToastType, string> = {
-  success: 'border-[var(--color-success)] bg-[var(--color-success-light)] text-[var(--color-success)] dark:border-[var(--color-success)] dark:bg-[var(--color-success-light)] dark:text-[var(--color-success)]',
-  error: 'border-[var(--color-destructive)] bg-[var(--color-destructive-light)] text-[var(--color-destructive)] dark:border-[var(--color-destructive)] dark:bg-[var(--color-destructive-light)] dark:text-[var(--color-destructive)]',
-  warning: 'border-[var(--color-warning)] bg-[var(--color-warning-light)] text-[var(--color-warning)] dark:border-[var(--color-warning)] dark:bg-[var(--color-warning-light)] dark:text-[var(--color-warning)]',
+  success:
+    'border-[var(--color-success)] bg-[var(--color-success-light)] text-[var(--color-success)] dark:border-[var(--color-success)] dark:bg-[var(--color-success-light)] dark:text-[var(--color-success)]',
+  error:
+    'border-[var(--color-destructive)] bg-[var(--color-destructive-light)] text-[var(--color-destructive)] dark:border-[var(--color-destructive)] dark:bg-[var(--color-destructive-light)] dark:text-[var(--color-destructive)]',
+  warning:
+    'border-[var(--color-warning)] bg-[var(--color-warning-light)] text-[var(--color-warning)] dark:border-[var(--color-warning)] dark:bg-[var(--color-warning-light)] dark:text-[var(--color-warning)]',
   info: 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)] dark:border-[var(--color-primary)] dark:bg-[var(--color-primary-light)] dark:text-[var(--color-primary)]',
 };
 
@@ -137,9 +140,7 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
               className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 cursor-pointer ${classMap[toast.type]} ${toast.exiting ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`}
             >
               {iconMap[toast.type]}
-              <span className="text-sm font-medium flex-1">
-                {toast.message}
-              </span>
+              <span className="text-sm font-medium flex-1">{toast.message}</span>
               {isConfirm ? (
                 <div className="flex gap-2 ml-2">
                   <button

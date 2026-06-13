@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { apiRateLimiter, authRateLimiter, uploadRateLimiter, getClientIp } from '@/lib/rate-limiter';
+import {
+  apiRateLimiter,
+  authRateLimiter,
+  uploadRateLimiter,
+  getClientIp,
+} from '@/lib/rate-limiter';
 
 const securityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
@@ -52,7 +57,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
 };

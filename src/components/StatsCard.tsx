@@ -22,7 +22,9 @@ export default function StatsCard({
           <p className="text-sm font-medium text-[var(--color-muted-foreground)]">{title}</p>
           <p className="text-2xl font-bold text-[var(--color-foreground)] mt-1">{value}</p>
           {trend && (
-            <p className={`text-xs mt-1 ${trend.positive ? 'text-[var(--color-success)]' : 'text-[var(--color-destructive)]'}`}>
+            <p
+              className={`text-xs mt-1 ${trend.positive ? 'text-[var(--color-success)]' : 'text-[var(--color-destructive)]'}`}
+            >
               {trend.positive ? '+' : ''}
               {trend.value}% vs. ayer
             </p>

@@ -53,7 +53,10 @@ export default function Pagination({
         </button>
         {getPageNumbers().map((page, i) =>
           typeof page === 'string' ? (
-            <span key={`ellipsis-${i}`} className="px-2 py-1 text-sm text-[var(--color-muted-foreground)]">
+            <span
+              key={`ellipsis-${i}`}
+              className="px-2 py-1 text-sm text-[var(--color-muted-foreground)]"
+            >
               ...
             </span>
           ) : (

@@ -99,7 +99,13 @@ export default function Sidebar() {
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-2">
-          <Image src="/logos/logo-sidebar.svg" alt="Hosterix" width={28} height={28} className="h-7 w-auto" />
+          <Image
+            src="/logos/logo-sidebar.svg"
+            alt="Hosterix"
+            width={28}
+            height={28}
+            className="h-7 w-auto"
+          />
         </div>
         <div className="h-8 w-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-sm font-semibold text-[var(--color-primary-foreground)]">
           {initials}
@@ -172,7 +178,9 @@ export default function Sidebar() {
             </div>
             {(!collapsed || mobileOpen) && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate text-[var(--color-card-foreground)]">{session.user.name || 'Usuario'}</p>
+                <p className="text-sm font-medium truncate text-[var(--color-card-foreground)]">
+                  {session.user.name || 'Usuario'}
+                </p>
                 <button
                   onClick={() => signOut({ callbackUrl: '/auth/signin' })}
                   className="text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-destructive)] transition-colors"

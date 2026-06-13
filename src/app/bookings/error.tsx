@@ -30,9 +30,7 @@ export default function BookingsError({
             {t('error.bookingsError')}
           </h1>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('error.bookingsLoadFailed')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('error.bookingsLoadFailed')}</p>
 
           <div className="flex gap-3 justify-center">
             <button

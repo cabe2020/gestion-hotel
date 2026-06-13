@@ -49,11 +49,7 @@ export function getClientIp(request: Request): string {
   return request.headers.get('x-real-ip') || 'unknown';
 }
 
-export function createRateLimiter(
-  maxRequests: number,
-  windowMs: number,
-  keyPrefix = 'api'
-) {
+export function createRateLimiter(maxRequests: number, windowMs: number, keyPrefix = 'api') {
   return (request: Request) => {
     const ip = getClientIp(request);
     const key = `${keyPrefix}:${ip}`;

@@ -39,7 +39,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-card-border)]">
           <h2 className="text-lg font-semibold text-[var(--color-card-foreground)]">{title}</h2>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[var(--color-accent)] transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-[var(--color-accent)] transition-colors"
+          >
             <X className="h-5 w-5 text-[var(--color-muted-foreground)]" />
           </button>
         </div>

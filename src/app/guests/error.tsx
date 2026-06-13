@@ -30,9 +30,7 @@ export default function GuestsError({
             {t('error.guestsError')}
           </h1>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('error.guestsLoadFailed')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('error.guestsLoadFailed')}</p>
 
           <div className="flex gap-3 justify-center">
             <button

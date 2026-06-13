@@ -30,9 +30,7 @@ export default function InvoicesError({
             {t('error.invoicesError')}
           </h1>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('error.invoicesLoadFailed')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('error.invoicesLoadFailed')}</p>
 
           <div className="flex gap-3 justify-center">
             <button

@@ -42,9 +42,14 @@ export default function ThemeToggle() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-48 popover rounded-lg shadow-lg z-50 py-1" role="listbox">
+        <div
+          className="absolute right-0 top-full mt-1 w-48 popover rounded-lg shadow-lg z-50 py-1"
+          role="listbox"
+        >
           <div className="px-3 py-2 border-b border-[var(--color-popover-border)]">
-            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">{t('theme.theme')}</p>
+            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">
+              {t('theme.theme')}
+            </p>
           </div>
           {themeOptions.map((opt) => (
             <button
@@ -56,7 +61,9 @@ export default function ThemeToggle() {
               role="option"
               aria-selected={theme === opt.value}
               className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-[var(--color-accent)] transition-colors ${
-                theme === opt.value ? 'bg-[var(--color-primary-light)]/50 text-[var(--color-primary)]' : 'text-[var(--color-foreground)]'
+                theme === opt.value
+                  ? 'bg-[var(--color-primary-light)]/50 text-[var(--color-primary)]'
+                  : 'text-[var(--color-foreground)]'
               }`}
             >
               <opt.icon className="h-4 w-4 shrink-0" />
@@ -67,14 +74,18 @@ export default function ThemeToggle() {
 
           <div className="border-t border-[var(--color-popover-border)] my-1" />
           <div className="px-3 py-2 border-b border-[var(--color-popover-border)]">
-            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">{t('theme.accessibility')}</p>
+            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">
+              {t('theme.accessibility')}
+            </p>
           </div>
           <button
             onClick={() => setHighContrast(!highContrast)}
             role="menuitemcheckbox"
             aria-checked={highContrast}
             className={`w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-[var(--color-accent)] transition-colors ${
-              highContrast ? 'bg-[var(--color-primary-light)]/50 text-[var(--color-primary)]' : 'text-[var(--color-foreground)]'
+              highContrast
+                ? 'bg-[var(--color-primary-light)]/50 text-[var(--color-primary)]'
+                : 'text-[var(--color-foreground)]'
             }`}
           >
             <Contrast className="h-4 w-4 shrink-0" />

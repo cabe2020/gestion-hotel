@@ -45,14 +45,15 @@ export default function PWARegister() {
         <Download className="h-5 w-5 text-[var(--color-primary)]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[var(--color-popover-foreground)]">Instalar Hosterix</p>
-        <p className="text-xs text-[var(--color-muted-foreground)]">Usar como app en tu dispositivo</p>
+        <p className="text-sm font-medium text-[var(--color-popover-foreground)]">
+          Instalar Hosterix
+        </p>
+        <p className="text-xs text-[var(--color-muted-foreground)]">
+          Usar como app en tu dispositivo
+        </p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
-        <button
-          onClick={handleInstall}
-          className="text-xs font-medium btn-primary px-3 py-1.5"
-        >
+        <button onClick={handleInstall} className="text-xs font-medium btn-primary px-3 py-1.5">
           Instalar
         </button>
         <button

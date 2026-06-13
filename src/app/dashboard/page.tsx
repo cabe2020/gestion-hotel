@@ -133,9 +133,10 @@ function OccupancyDonut({
 
   const arcs = ringSegments.map((seg, index) => {
     const fraction = seg._count.status / (totalSegments || 1);
-    const startAngle = ringSegments
-      .slice(0, index)
-      .reduce((sum, s) => sum + s._count.status / (totalSegments || 1), 0) * circumference;
+    const startAngle =
+      ringSegments
+        .slice(0, index)
+        .reduce((sum, s) => sum + s._count.status / (totalSegments || 1), 0) * circumference;
     const arcLength = fraction * circumference;
 
     const strokeDashArray = `${arcLength} ${circumference - arcLength}`;
@@ -456,7 +457,7 @@ function ActivityTimeline({
     <div className="relative">
       <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-100 dark:bg-gray-700" />
       <div className="space-y-4">
-        {  bookings.map((booking) => {
+        {bookings.map((booking) => {
           const status = bookingStatuses.find((s) => s.value === booking.status);
           return (
             <div key={booking.id} className="flex items-start gap-3 relative">

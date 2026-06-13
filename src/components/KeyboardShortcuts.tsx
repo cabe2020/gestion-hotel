@@ -101,7 +101,9 @@ export default function KeyboardShortcuts() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-5 py-4 border-b border-[var(--color-card-border)]">
-              <h3 className="text-base font-semibold text-[var(--color-card-foreground)]">Atajos de Teclado</h3>
+              <h3 className="text-base font-semibold text-[var(--color-card-foreground)]">
+                Atajos de Teclado
+              </h3>
             </div>
             <div className="px-5 py-3 space-y-2">
               {availableShortcuts.map((s) => (

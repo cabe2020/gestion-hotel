@@ -113,7 +113,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   }, [applyTheme, applyHighContrast]);
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, highContrast, setTheme, setHighContrast }}>
+    <ThemeContext.Provider
+      value={{ theme, resolvedTheme, highContrast, setTheme, setHighContrast }}
+    >
       {children}
     </ThemeContext.Provider>
   );

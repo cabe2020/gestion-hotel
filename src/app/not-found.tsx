@@ -15,17 +15,11 @@ export default function NotFound() {
             <AlertCircle className="h-8 w-8 text-gray-500 dark:text-gray-400" />
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            404
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">404</h1>
 
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">
-            {t('error.pageNotFound')}
-          </p>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">{t('error.pageNotFound')}</p>
 
-          <p className="text-gray-500 dark:text-gray-500 mb-6">
-            {t('error.pageNotFoundDesc')}
-          </p>
+          <p className="text-gray-500 dark:text-gray-500 mb-6">{t('error.pageNotFoundDesc')}</p>
 
           <div className="flex gap-3 justify-center">
             <Link

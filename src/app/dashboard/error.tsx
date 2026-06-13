@@ -30,9 +30,7 @@ export default function DashboardError({
             {t('error.dashboardError')}
           </h1>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('error.dashboardLoadFailed')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('error.dashboardLoadFailed')}</p>
 
           <div className="flex gap-3 justify-center">
             <button

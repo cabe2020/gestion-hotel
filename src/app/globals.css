@@ -99,16 +99,11 @@
 
     --color-warning: #f97316;
     --color-warning-foreground: #ffffff;
-    --color-warning-light: #431407.
-
-    --color-border: #334155;
+    --color-warning-light: #431407. --color-border: #334155;
     --color-input: #1e293b;
     --color-input-border: #475569;
-    --color-input-placeholder: #64748b.
-
-    --color-ring: #3b82f6.
-
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --color-input-placeholder: #64748b. --color-ring: #3b82f6. --shadow-sm: 0 1px 2px 0
+      rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
@@ -544,7 +539,12 @@
   .theme-transition *,
   .theme-transition *::before,
   .theme-transition *::after {
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      fill 0.2s ease,
+      stroke 0.2s ease;
   }
 }
 
@@ -624,7 +624,7 @@
   }
 
   a[href]::after {
-    content: " (" attr(href) ")";
+    content: ' (' attr(href) ')';
     font-size: 0.8em;
     color: var(--color-muted-foreground);
   }

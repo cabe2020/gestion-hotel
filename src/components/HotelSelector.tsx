@@ -81,7 +81,13 @@ export default function HotelSelector() {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-primary-light)] border border-[var(--color-primary)] rounded-lg">
         {hotel.logo ? (
-          <Image src={hotel.logo} alt={hotel.name} width={20} height={20} className="h-5 w-5 rounded object-cover" />
+          <Image
+            src={hotel.logo}
+            alt={hotel.name}
+            width={20}
+            height={20}
+            className="h-5 w-5 rounded object-cover"
+          />
         ) : (
           <Building2 className="h-4 w-4 text-[var(--color-primary)] shrink-0" />
         )}
@@ -120,7 +126,9 @@ export default function HotelSelector() {
       {open && (
         <div className="absolute left-0 top-full mt-1 w-64 popover overflow-hidden z-50">
           <div className="px-3 py-2 border-b border-[var(--color-popover-border)]">
-            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">Propiedades</p>
+            <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase">
+              Propiedades
+            </p>
           </div>
           <div className="max-h-60 overflow-y-auto">
             {hotels.map((hotel) => (

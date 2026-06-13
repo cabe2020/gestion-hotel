@@ -235,7 +235,9 @@ export default function SearchCommand() {
                       >
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{item.label}</p>
-                          <p className="text-xs text-[var(--color-muted-foreground)] truncate">{item.subtitle}</p>
+                          <p className="text-xs text-[var(--color-muted-foreground)] truncate">
+                            {item.subtitle}
+                          </p>
                         </div>
                       </button>
                     );
@@ -246,7 +248,9 @@ export default function SearchCommand() {
         </div>
 
         {!query && (
-          <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">{t('search.hint')}</div>
+          <div className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
+            {t('search.hint')}
+          </div>
         )}
       </div>
     </div>

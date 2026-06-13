@@ -14,20 +14,14 @@ async function generateIcons() {
       .toFile(path.join(outputDir, `icon-${size}x${size}.png`));
     console.log(`Generated icon-${size}x${size}.png`);
   }
-  
+
   // Also generate shortcut icons
-  await sharp(inputSvg)
-    .resize(96, 96)
-    .png()
-    .toFile(path.join(outputDir, 'booking.png'));
+  await sharp(inputSvg).resize(96, 96).png().toFile(path.join(outputDir, 'booking.png'));
   console.log('Generated booking.png');
-  
-  await sharp(inputSvg)
-    .resize(96, 96)
-    .png()
-    .toFile(path.join(outputDir, 'checkin.png'));
+
+  await sharp(inputSvg).resize(96, 96).png().toFile(path.join(outputDir, 'checkin.png'));
   console.log('Generated checkin.png');
-  
+
   console.log('All icons generated!');
 }
 

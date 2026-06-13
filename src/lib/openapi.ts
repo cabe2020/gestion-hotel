@@ -68,7 +68,10 @@ export const openApiSpec = {
           floor: { type: 'integer' },
           roomTypeId: { type: 'string' },
           hotelId: { type: 'string' },
-          status: { type: 'string', enum: ['available', 'occupied', 'maintenance', 'out-of-order', 'cleaning'] },
+          status: {
+            type: 'string',
+            enum: ['available', 'occupied', 'maintenance', 'out-of-order', 'cleaning'],
+          },
           cleaningStatus: { type: 'string', enum: ['clean', 'dirty', 'inspecting'] },
           smoking: { type: 'boolean' },
           view: { type: 'string' },
@@ -98,7 +101,10 @@ export const openApiSpec = {
         properties: {
           id: { type: 'string' },
           code: { type: 'string' },
-          status: { type: 'string', enum: ['confirmed', 'checked-in', 'checked-out', 'cancelled', 'no-show'] },
+          status: {
+            type: 'string',
+            enum: ['confirmed', 'checked-in', 'checked-out', 'cancelled', 'no-show'],
+          },
           checkIn: { type: 'string', format: 'date-time' },
           checkOut: { type: 'string', format: 'date-time' },
           adults: { type: 'integer' },
@@ -189,8 +195,14 @@ export const openApiSpec = {
           },
         },
         responses: {
-          '201': { description: 'Hotel created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } },
-          '400': { description: 'Validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '201': {
+            description: 'Hotel created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } },
+          },
+          '400': {
+            description: 'Validation error',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
     },
@@ -201,8 +213,14 @@ export const openApiSpec = {
         security: [{ cookieAuth: [] }, { bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
-          '200': { description: 'Hotel details', content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } },
-          '404': { description: 'Hotel not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '200': {
+            description: 'Hotel details',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } },
+          },
+          '404': {
+            description: 'Hotel not found',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
       put: {
@@ -215,7 +233,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } },
         },
         responses: {
-          '200': { description: 'Hotel updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } } },
+          '200': {
+            description: 'Hotel updated',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Hotel' } } },
+          },
         },
       },
       delete: {
@@ -225,7 +246,10 @@ export const openApiSpec = {
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
           '204': { description: 'Hotel deleted' },
-          '404': { description: 'Hotel not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '404': {
+            description: 'Hotel not found',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
     },
@@ -240,7 +264,12 @@ export const openApiSpec = {
           { name: 'hotelId', in: 'query', schema: { type: 'string' } },
         ],
         responses: {
-          '200': { description: 'List of room types', content: { 'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } } } },
+          '200': {
+            description: 'List of room types',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } },
+            },
+          },
         },
       },
       post: {
@@ -252,7 +281,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/RoomType' } } },
         },
         responses: {
-          '201': { description: 'Room type created', content: { 'application/json': { schema: { $ref: '#/components/schemas/RoomType' } } } },
+          '201': {
+            description: 'Room type created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/RoomType' } } },
+          },
         },
       },
     },
@@ -268,7 +300,12 @@ export const openApiSpec = {
           { name: 'status', in: 'query', schema: { type: 'string' } },
         ],
         responses: {
-          '200': { description: 'List of rooms', content: { 'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } } } },
+          '200': {
+            description: 'List of rooms',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } },
+            },
+          },
         },
       },
       post: {
@@ -280,7 +317,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Room' } } },
         },
         responses: {
-          '201': { description: 'Room created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Room' } } } },
+          '201': {
+            description: 'Room created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Room' } } },
+          },
         },
       },
     },
@@ -296,7 +336,12 @@ export const openApiSpec = {
           { name: 'hotelId', in: 'query', schema: { type: 'string' } },
         ],
         responses: {
-          '200': { description: 'List of guests', content: { 'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } } } },
+          '200': {
+            description: 'List of guests',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } },
+            },
+          },
         },
       },
       post: {
@@ -308,7 +353,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Guest' } } },
         },
         responses: {
-          '201': { description: 'Guest created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Guest' } } } },
+          '201': {
+            description: 'Guest created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Guest' } } },
+          },
         },
       },
     },
@@ -322,7 +370,14 @@ export const openApiSpec = {
           { name: 'hotelId', in: 'query', schema: { type: 'string' } },
         ],
         responses: {
-          '200': { description: 'Search results', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Guest' } } } } },
+          '200': {
+            description: 'Search results',
+            content: {
+              'application/json': {
+                schema: { type: 'array', items: { $ref: '#/components/schemas/Guest' } },
+              },
+            },
+          },
         },
       },
     },
@@ -340,7 +395,12 @@ export const openApiSpec = {
           { name: 'checkOut', in: 'query', schema: { type: 'string', format: 'date' } },
         ],
         responses: {
-          '200': { description: 'List of bookings', content: { 'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } } } },
+          '200': {
+            description: 'List of bookings',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } },
+            },
+          },
         },
       },
       post: {
@@ -352,7 +412,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } },
         },
         responses: {
-          '201': { description: 'Booking created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } } },
+          '201': {
+            description: 'Booking created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } },
+          },
         },
       },
     },
@@ -363,8 +426,14 @@ export const openApiSpec = {
         security: [{ cookieAuth: [] }, { bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
-          '200': { description: 'Booking details', content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } } },
-          '404': { description: 'Booking not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '200': {
+            description: 'Booking details',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } },
+          },
+          '404': {
+            description: 'Booking not found',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
       put: {
@@ -377,7 +446,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } },
         },
         responses: {
-          '200': { description: 'Booking updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } } },
+          '200': {
+            description: 'Booking updated',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Booking' } } },
+          },
         },
       },
       delete: {
@@ -387,7 +459,10 @@ export const openApiSpec = {
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
           '204': { description: 'Booking deleted' },
-          '404': { description: 'Booking not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '404': {
+            description: 'Booking not found',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
     },
@@ -403,7 +478,12 @@ export const openApiSpec = {
           { name: 'hotelId', in: 'query', schema: { type: 'string' } },
         ],
         responses: {
-          '200': { description: 'List of invoices', content: { 'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } } } },
+          '200': {
+            description: 'List of invoices',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PaginatedResponse' } },
+            },
+          },
         },
       },
       post: {
@@ -415,7 +495,10 @@ export const openApiSpec = {
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Invoice' } } },
         },
         responses: {
-          '201': { description: 'Invoice created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Invoice' } } } },
+          '201': {
+            description: 'Invoice created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Invoice' } } },
+          },
         },
       },
     },
@@ -426,8 +509,14 @@ export const openApiSpec = {
         security: [{ cookieAuth: [] }, { bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: {
-          '200': { description: 'Invoice details', content: { 'application/json': { schema: { $ref: '#/components/schemas/Invoice' } } } },
-          '404': { description: 'Invoice not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '200': {
+            description: 'Invoice details',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Invoice' } } },
+          },
+          '404': {
+            description: 'Invoice not found',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
     },
@@ -447,8 +536,37 @@ export const openApiSpec = {
         tags: ['Health'],
         summary: 'Health check',
         responses: {
-          '200': { description: 'Service healthy', content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, timestamp: { type: 'string', format: 'date-time' }, database: { type: 'string' } } } } } },
-          '503': { description: 'Service unhealthy', content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, timestamp: { type: 'string', format: 'date-time' }, database: { type: 'string' }, error: { type: 'string' } } } } } },
+          '200': {
+            description: 'Service healthy',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string' },
+                    timestamp: { type: 'string', format: 'date-time' },
+                    database: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+          '503': {
+            description: 'Service unhealthy',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string' },
+                    timestamp: { type: 'string', format: 'date-time' },
+                    database: { type: 'string' },
+                    error: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -458,8 +576,21 @@ export const openApiSpec = {
         summary: 'Seed database with demo data',
         security: [{ cookieAuth: [] }, { bearerAuth: [] }],
         responses: {
-          '200': { description: 'Seed data created', content: { 'application/json': { schema: { type: 'object', properties: { message: { type: 'string' }, hotelId: { type: 'string' } } } } } },
-          '409': { description: 'Data already exists', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '200': {
+            description: 'Seed data created',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: { message: { type: 'string' }, hotelId: { type: 'string' } },
+                },
+              },
+            },
+          },
+          '409': {
+            description: 'Data already exists',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
         },
       },
     },

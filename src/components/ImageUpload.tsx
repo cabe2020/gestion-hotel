@@ -125,13 +125,18 @@ export default function ImageUpload({
         >
           <Upload className="h-8 w-8 mx-auto text-[var(--color-muted-foreground)] mb-2" />
           <p className="text-sm text-[var(--color-foreground)]">{label}</p>
-          <p className="text-xs text-[var(--color-muted-foreground)] mt-1">PNG, JPG, WebP - Max {maxSizeMB}MB</p>
+          <p className="text-xs text-[var(--color-muted-foreground)] mt-1">
+            PNG, JPG, WebP - Max {maxSizeMB}MB
+          </p>
         </div>
       )}
 
       {uploading && (
         <div className="w-full bg-[var(--color-muted)] rounded-full h-2">
-          <div className="bg-[var(--color-primary)] h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
+          <div
+            className="bg-[var(--color-primary)] h-2 rounded-full animate-pulse"
+            style={{ width: '60%' }}
+          />
         </div>
       )}
 

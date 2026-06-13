@@ -488,7 +488,11 @@ export default function QuickBookingPanel({
               <Globe className="h-3.5 w-3.5" />
               Origen
             </label>
-            <select value={source} onChange={(e) => setSource(e.target.value)} className="input-field">
+            <select
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              className="input-field"
+            >
               {bookingSources.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}

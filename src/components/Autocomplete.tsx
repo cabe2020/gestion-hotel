@@ -174,7 +174,9 @@ export default function Autocomplete({
       {showDropdown && (results.length > 0 || loading || onCreateNew) && (
         <div className="absolute z-50 w-full mt-1 popover rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {loading && (
-            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">{t('search.searching')}</div>
+            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">
+              {t('search.searching')}
+            </div>
           )}
 
           {!loading &&
@@ -192,7 +194,9 @@ export default function Autocomplete({
             ))}
 
           {!loading && results.length === 0 && query.length >= 1 && !onCreateNew && (
-            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">{t('search.noResults')}</div>
+            <div className="px-4 py-3 text-sm text-[var(--color-muted-foreground)]">
+              {t('search.noResults')}
+            </div>
           )}
 
           {!loading && onCreateNew && query.length >= 1 && (

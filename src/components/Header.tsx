@@ -179,7 +179,9 @@ export default function Header() {
                       key={n.id}
                       onClick={() => markAsRead(n.id)}
                       className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-[var(--color-accent)] transition-colors border-b border-[var(--color-popover-border)] ${
-                        !n.read ? 'bg-[var(--color-primary-light)]/50 dark:bg-[var(--color-primary-light)]/20' : ''
+                        !n.read
+                          ? 'bg-[var(--color-primary-light)]/50 dark:bg-[var(--color-primary-light)]/20'
+                          : ''
                       }`}
                     >
                       {typeIcon(n.type)}
